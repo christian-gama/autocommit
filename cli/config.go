@@ -27,7 +27,7 @@ func askUserForConfig() *configAnswers {
 	temperaturePrompt := survey.Input{
 		Message: "Temperature",
 		Help:    "What sampling temperature to use",
-		Default: "0.28",
+		Default: "0.1",
 	}
 
 	var answers configAnswers

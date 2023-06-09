@@ -26,10 +26,12 @@ func (cs *ChatService) createMessages(userInput string) []openai.ChatCompletionM
 		{
 			Role:    openai.ChatMessageRoleSystem,
 			Content: cs.config.Template,
+			Name:    "GitCommitMessageGenerator",
 		},
 		{
 			Role:    openai.ChatMessageRoleUser,
 			Content: userInput,
+			Name:    "UserInput",
 		},
 	}
 }
