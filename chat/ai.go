@@ -26,7 +26,7 @@ func (cs *ChatService) GenerateChatResponse(userInput string) (string, error) {
 	response, err := cs.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:       openai.GPT3Dot5Turbo,
+			Model:       cs.config.Model,
 			Temperature: cs.config.Temperature,
 			Messages:    cs.createMessages(userInput),
 		},
