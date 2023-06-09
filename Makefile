@@ -66,5 +66,5 @@ build-windows-amd64:
 .PHONY: release
 release: build-linux-amd64 build-macos-amd64 build-macos-arm64 build-windows-amd64
 	@echo "Releasing the application..."
-	@gh release create $(TAG) $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-linux-amd64.tar.gz $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-darwin-amd64.tar.gz $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-darwin-arm64.tar.gz $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-windows-amd64.tar.gz
+	@gh release create $(TAG) $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-linux-amd64.tar.gz $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-darwin-amd64.tar.gz $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-darwin-arm64.tar.gz $(OUTPUT_DIR)/$(BINARY_NAME)-$(TAG)-windows-amd64.zip
 
