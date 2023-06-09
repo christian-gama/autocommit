@@ -2,8 +2,15 @@ package store
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"os"
 	"path"
+)
+
+const (
+	ConfigFileName    = "config.json"
+	ConfigFileDirName = ".autocommit"
 )
 
 // Config represents the configuration of the application.
@@ -32,14 +39,14 @@ func (s *ConfigStore) IsStored() bool {
 func (s *ConfigStore) Config() *Config {
 	configFile, err := os.Open(getConfigPath())
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer configFile.Close()
 
 	var config Config
 	jsonParser := json.NewDecoder(configFile)
 	if err := jsonParser.Decode(&config); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return &config
@@ -64,18 +71,35 @@ func (s *ConfigStore) CreateConfigFile(config *Config) {
 
 	jsonParser := json.NewEncoder(configFile)
 	if err := jsonParser.Encode(config); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+}
+
+// DeleteConfigFile deletes the configuration file for the application.
+func (s *ConfigStore) DeleteConfigFile() {
+	configPath := getConfigPath()
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		fmt.Println("Configuration file does not exist.")
+		return
+	}
+
+	fmt.Println("Resetting configuration file...")
+	if err := os.Remove(configPath); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(
+		"Configuration file reset successfully - Next time you run autocommit, you will be asked to configure it again.",
+	)
 }
 
 func getAutocommitPath() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	return path.Join(home, ".autocommit")
+	return path.Join(home, ConfigFileDirName)
 }
 
 func getConfigPath() string {
-	return path.Join(getAutocommitPath(), "config.json")
+	return path.Join(getAutocommitPath(), ConfigFileName)
 }
