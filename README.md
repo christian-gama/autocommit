@@ -53,7 +53,7 @@ Once you have your API key, run the `autocommit` command. On the first run, Auto
     Options (Optional)
     -v, --verbose   Enable verbose output (default: false)
 
-    Commands (Optional)
+    Command (Optional)
     reset           Reset the configuration settings
     ```
 5. Follow the interactive command-line interface. Choose whether to commit changes to git, generate a new commit message, copy the commit message to the clipboard, or exit the tool.
