@@ -20,7 +20,7 @@ func Diff() (string, error) {
 		return "", err
 	}
 
-	output, err := executeCommandInDir(gitRootPath, "git", "diff", "--cached")
+	output, err := executeCommandInDir(gitRootPath, "git", "diff", "--minimal", "--cached")
 	if err != nil {
 		return "", err
 	}
