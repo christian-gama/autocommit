@@ -45,15 +45,16 @@ Once you have your API key, run the `autocommit` command. On the first run, Auto
 ## Usage
 1. Change to your git repository.
 2. Make the changes in your repository that you want to commit.
-3. Run the AutoCommit tool:
+3. Stage the changes.
+4. Run the AutoCommit tool:
     ```shell
     autocommit [OPTIONS]
 
     Options:
     -v, --verbose   Enable verbose output (default: false)
     ```
-4. Follow the interactive command-line interface. Choose whether to commit changes to git, generate a new commit message, copy the commit message to the clipboard, or exit the tool.
-5. If you select the commit option, the tool will use the generated message to make a git commit.
+5. Follow the interactive command-line interface. Choose whether to commit changes to git, generate a new commit message, copy the commit message to the clipboard, or exit the tool.
+6. If you select the commit option, the tool will use the generated message to make a git commit.
 
 ## Contributing
 Contributions to AutoCommit are welcomed and appreciated. Please follow the standard GitHub flow for contributing:
