@@ -48,10 +48,13 @@ Once you have your API key, run the `autocommit` command. On the first run, Auto
 3. Stage the changes.
 4. Run the AutoCommit tool:
     ```shell
-    autocommit [OPTIONS]
+    autocommit [COMMAND] [OPTIONS]
 
-    Options:
+    Options (Optional)
     -v, --verbose   Enable verbose output (default: false)
+
+    Commands (Optional)
+    reset           Reset the configuration settings
     ```
 5. Follow the interactive command-line interface. Choose whether to commit changes to git, generate a new commit message, copy the commit message to the clipboard, or exit the tool.
 6. If you select the commit option, the tool will use the generated message to make a git commit.
