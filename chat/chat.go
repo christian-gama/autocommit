@@ -21,8 +21,21 @@ func NewChatService(config *Config) *ChatService {
 	}
 }
 
-// GenerateChatResponse generates a chat response based on the user input.
-func (cs *ChatService) GenerateChatResponse(userInput string) (string, error) {
+func (cs *ChatService) createMessages(userInput string) []openai.ChatCompletionMessage {
+	return []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: cs.config.Template,
+		},
+		{
+			Role:    openai.ChatMessageRoleUser,
+			Content: userInput,
+		},
+	}
+}
+
+// Response generates a chat response based on the user input.
+func (cs *ChatService) Response(userInput string) (string, error) {
 	response, err := cs.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
@@ -41,17 +54,4 @@ func (cs *ChatService) GenerateChatResponse(userInput string) (string, error) {
 	}
 
 	return response.Choices[0].Message.Content, nil
-}
-
-func (cs *ChatService) createMessages(userInput string) []openai.ChatCompletionMessage {
-	return []openai.ChatCompletionMessage{
-		{
-			Role:    openai.ChatMessageRoleSystem,
-			Content: cs.config.Template,
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: userInput,
-		},
-	}
 }

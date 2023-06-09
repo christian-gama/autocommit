@@ -12,12 +12,11 @@ Compose a Git commit message strictly conforming the instructions below. Abide b
 - A scope MAY follow a type. A scope SHOULD be a noun referring to a part of the codebase enclosed in parentheses, e.g., 'fix(parser):'
 - A description MUST follow immediately after the colon and space succeeding the type/scope prefix. The description SHOULD be a succinct summary of the code changes, such as 'fix: resolved array parsing issue with multiple spaces in a string.'
 - The commit message MUST have only one line, with the type/scope prefix and description being separated by a colon and space.
-- Must have at most 75 characters.
 - Types other than fix and feat are allowed, for example: build, chore, ci, docs, style, refactor, perf, test.
-- NEVER write a body description, must have only one line.
-- You must NEVER write text that mention authors, co-authors or any other people information in the commit message.
+- You MUST NEVER write a body or footer, must have only one the structure <type>[optional scope]: <description> and no more.
+- You MUST NEVER write text that mention authors, co-authors or any other people information in the commit message.
 
-Example commit messages:
+Example of commit messages:
 feat(api)!: send an email to the customer when a product is shipped
 fix: prevent buffer overflow when reading from stdin
 feat(lang): add Polish language
@@ -27,7 +26,7 @@ refactor: rename getFoo() to getBar()
 refactor(lang): replace if-else with switch
 style: remove empty line at end of file
 
-Upon execution of 'git diff --cached', form the commit message as per the rules outlined. Under all circumstances, exclude the body and include only the description.
+Upon execution of 'git diff --cached', form the commit message as per the rules outlined. Under all circumstances, follow the structure <type>[optional scope]: <description>.
 `
 
 const VerboseTemplate = `
@@ -47,13 +46,14 @@ Formulate a Git commit message in strict adherence to the Git Conventional Commi
 - If included as a footer, a breaking change MUST consist of the uppercase text BREAKING CHANGE, followed by a colon, space, and description, e.g., BREAKING CHANGE: environment variables now take precedence over config files.
 - If included in the type/scope prefix, breaking changes MUST be indicated by a ! immediately before the :. If ! is used, BREAKING CHANGE: MAY be omitted from the footer section, and the commit description SHALL be used to describe the breaking change.
 - Types other than feat and fix MAY be used in your commit messages, e.g., docs: update ref docs.
-- The units of information that make up Conventional Commits MUST NOT be treated as case sensitive by implementors, with the exception of BREAKING CHANGE which MUST be uppercase.
+- BREAKING CHANGE which MUST be uppercase, when used.
 - BREAKING-CHANGE MUST be synonymous with BREAKING CHANGE, when used as a token in a footer.
 - If there are no breaking changes, the footer BREAKING CHANGE: must be omitted.
 - Each line of the commit message MUST be at most 50 characters long.
 - MUST be concise and MUST be brief. If the diff is not that long, there is not need to write a complex explanation.
 - Types other than fix: and feat: are allowed, for example: build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
-- You must NEVER write text that mention authors, co-authors or any other people information in the commit message.
+- You MUST NEVER write a body or footer, must have only one the structure <type>[optional scope]: <description> and no more.
+- You MUST NEVER write text that mention authors, co-authors or any other people information in the commit message.
 
 Exemplary commit messages:
 feat(api)!: send an email to the customer when a product is shipped
@@ -70,7 +70,6 @@ Introduce request id and reference to the most recent request. Dismiss
 responses that do not originate from the most recent request.
 
 Eliminate obsolete timeouts that were originally introduced to counter request races.'
-
 
 Upon the user prompting the output of 'git diff --cached', draft the requested commit message accordingly.
 `

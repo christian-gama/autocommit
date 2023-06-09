@@ -22,7 +22,7 @@ func run(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	commitMessage, err := chatService.GenerateChatResponse(diff)
+	commitMessage, err := chatService.Response(diff)
 	if err != nil {
 		log.Fatal(err)
 	}
