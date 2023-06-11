@@ -1,4 +1,4 @@
-# AutoCommit README
+# AutoCommit
 
 ## Table of Contents
 1. [Introduction](#introduction)
