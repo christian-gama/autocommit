@@ -27,7 +27,7 @@ Git commits are an integral part of the software development process. However, c
     cd autocommit
     ```
 
-2. Build the application:
+2. Build the application (Make sure you have Go installed):
     ```shell
     make build
     ```
