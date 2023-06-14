@@ -12,6 +12,8 @@ TAG ?= $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
 build:
 	@echo "Building the application..."
 	@go build -o $(OUTPUT_DIR)/$(BINARY_NAME) main.go
+	@chmod +x $(OUTPUT_DIR)/$(BINARY_NAME)
+	@echo "Done!"
 
 # Create the output directory if it does not exist.
 $(OUTPUT_DIR):
@@ -29,6 +31,7 @@ clean:
 install:
 	@echo "Installing the binary..."
 	@sudo mv $(OUTPUT_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+	@echo "Done!"
 
 # Build the application for Linux.
 .PHONY: build-linux-amd64
