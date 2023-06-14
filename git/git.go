@@ -25,7 +25,6 @@ func Diff() (string, error) {
 		"git",
 		"diff",
 		"--no-color",
-		"--minimal",
 		"--cached",
 	)
 	if err != nil {
@@ -33,7 +32,7 @@ func Diff() (string, error) {
 	}
 
 	if len(output) == 0 {
-		return "", errors.New("There are no changes to commit")
+		return "", errors.New("There are no changes to commit - did you forget to stage your changes?")
 	}
 
 	return output, nil
