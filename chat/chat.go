@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"errors"
+	"strings"
 
 	openai "github.com/sashabaranov/go-openai"
 )
@@ -41,14 +42,14 @@ func (cs *ChatService) Response(userInput string) (string, error) {
 	response, err := cs.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:       cs.config.Model,
+			Model:       cs.config.ModelName,
 			Temperature: cs.config.Temperature,
 			Messages:    cs.createMessages(userInput),
 		},
 	)
 
 	if err != nil {
-		return "", err
+		return "", checkError(err)
 	}
 
 	if len(response.Choices) == 0 {
@@ -56,4 +57,12 @@ func (cs *ChatService) Response(userInput string) (string, error) {
 	}
 
 	return response.Choices[0].Message.Content, nil
+}
+
+func checkError(err error) error {
+	if strings.Contains(err.Error(), "does not exist") {
+		return errors.New("The model you specified does not exist or is not available for your account.")
+	}
+
+	return err
 }
