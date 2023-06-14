@@ -22,8 +22,6 @@ feat, fix, chore, ci, build, docs, test, perf, style, refactor`
 // such as GPT-3.5-turbo-16k or GPT-4-32k.
 const DetailedInstructions = `
 Description:
-The Conventional Commits specification is a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of. This convention dovetails with SemVer, by describing the features, fixes, and breaking changes made in commit messages.
-
 The commit message should be structured as follows:
 <type>[optional scope]: <description>
 
@@ -32,32 +30,39 @@ The commit message should be structured as follows:
 [optional footer(s)]
 
 The commit contains the following structural elements, to communicate intent to the consumers of your library:
-- fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).
-- feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).
+- fix: This type is used for commits that fix a bug in the code. Similar to feat, this kind of commit is likely to trigger a patch version bump in semantic versioning.
+- chore: This type of commit is used for changes that don't modify the src (source) or test files. Examples include routine tasks like updating the build system or package manager configurations. Generally, it does not affect the functionality of the application.
+- ci: Stands for Continuous Integration. This is used for commits that are related to setting up, modifying, or fixing CI build systems and services, like Travis, Jenkins, or GitHub Actions.
+- build: This type is used for commits that affect the build system or external dependencies. Examples include changes in Makefile, npm, dependencies, and configurations related to the building process.
+- docs: Used for commits that update documentation, like README files or comments in the source code. This does not affect the functionality of the application.
+- test: This type of commit is used when adding or modifying test or fixing issues in existing tests. This ensures that the code is working as expected without changing any functionality. Should be used over 'feat' if changes only affect tests.
+- perf: Short for performance. It is used for commits that improve the runtime performance of the code. This kind of commit indicates optimization in the codebase which makes it run faster or use fewer resources.
+- style: This type is used for formatting changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.). It involves cosmetic changes that do not alter the logic of the code.
+- refactor: This type is used when code is being restructured or cleaned up, and this neither fixes a bug nor adds a feature. It is primarily used for reorganizing the code or cleaning up code redundancies.
+- feat: This type is short for "features". It is used when a new functionallity is added to the application. This kind of commit will usually trigger a minor version bump (if you follow semantic versioning). Creating or adding tests aren't considered as a new feature.
 - BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
-- types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
 - footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
-
-Additional types are not mandated by the Conventional Commits specification, and have no implicit effect in Semantic Versioning (unless they include a BREAKING CHANGE). A scope may be provided to a commit’s type, to provide additional contextual information and is contained within parenthesis, e.g., feat(parser): add ability to parse arrays.
+- If there are no BREAKING CHANGES, footers should be omitted.
 
 Examples:
-Commit message with description and breaking change footer
+Commit message with description and breaking change footer:
 feat: allow provided config object to extend other configs
 
 BREAKING CHANGE: 'extends' key in config file is now used for extending other config files
 
-Commit message with ! to draw attention to breaking change
+Commit message with ! to draw attention to breaking change:
 feat!: send an email to the customer when a product is shipped
 
-Commit message with scope and ! to draw attention to breaking change
+Commit message with scope and ! to draw attention to breaking change:
 feat(api)!: send an email to the customer when a product is shipped
 
-Commit message with both ! and BREAKING CHANGE footer
+Commit message with both ! and BREAKING CHANGE footer:
 chore!: drop support for Node 6
 
-BREAKING CHANGE: use JavaScript features not available in Node 6.
+Commit message with description when adding a new test:
+test: add unit tests for the new parser
 
-Commit message with no body
+Commit message with no body:
 docs: correct spelling of CHANGELOG
 
 Commit message with scope:
@@ -71,6 +76,9 @@ incoming responses other than from latest request.
 
 Remove timeouts which were used to mitigate the racing issue but are
 obsolete now.
+
+Commit message for a fix in the test suite:
+test: make failing test pass on Edge 13
 
 Specifications:
 - The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
@@ -96,13 +104,9 @@ Specifications:
 const ShortMode = `Objective: 
 Generate a single commit messages based on the output of a 'git diff --cached' command in the style of Conventional Commits based on Angular commit guidelines.
 The output should be a single very short, concise and readable commit message. Avoid writing descriptions that are longer than 50 characters.
-Additonally, try to avoid writing body and footer as much as possible - if really necessary, be very brief.
-
-The diff output starts with either plus or minus sign. Plus sign means that the line was added, minus sign means that the line was removed.`
+Additonally, try to avoid writing body and footer as much as possible - if really necessary, be very brief.`
 
 // DetailedMode is a template that generates a more detailed commit message.
 const DetailedMode = `Objective: 
 Generate a single commit messages based on the output of a 'git diff --cached' command in the style of Conventional Commits based on Angular commit guidelines.
-The output should be a single readable and meaningful commit message. You must never write descriptions that are longer than 75 characters.
-
-The diff output starts with either plus or minus sign. Plus sign means that the line was added, minus sign means that the line was removed.`
+The output should be a single readable and meaningful commit message. You must never write descriptions that are longer than 75 characters.`

@@ -11,6 +11,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var verbose bool
+var cmd = &cobra.Command{
+	Use:   "",
+	Run:   run,
+	Short: "Autocommit is a CLI tool that uses OpenAI's models to generate commit messages based on the changes made in the repository.",
+}
+
+func init() {
+	cmd.AddCommand(reset)
+	cmd.AddCommand(set)
+	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "create a verbose commit message")
+}
+
+// Execute executes the root command.
+func Execute() error {
+	return cmd.Execute()
+}
+
 func run(cmd *cobra.Command, args []string) {
 	config := loadConfig()
 	chatService := chat.NewChatService(
@@ -57,7 +75,7 @@ func handleChatOption(cmd *cobra.Command, option, commitMessage string) {
 		run(cmd, nil)
 
 	case copyCommitMessageToClipboardOption:
-		if err := clipboard.WriteAll(commitMessage); err != nil {
+		if err := clipboard.WriteAll(fmt.Sprintf("git commit -m \"%s\"", commitMessage)); err != nil {
 			log.Fatalf("Failed to copy commit message to clipboard: %v", err)
 		}
 	}

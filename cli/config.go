@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -41,9 +40,31 @@ func askUserForConfig() *configAnswers {
 	var answers configAnswers
 
 	err := survey.Ask([]*survey.Question{
-		{Name: "OpenAIAPIKey", Prompt: &openaiApiKeyPrompt, Validate: validateAPIKey},
-		{Name: "Model", Prompt: &modelPrompt, Validate: survey.Required},
-		{Name: "Temperature", Prompt: &temperaturePrompt, Transform: convertToFloat32, Validate: validateTemperature},
+		{
+			Name:   "OpenAIAPIKey",
+			Prompt: &openaiApiKeyPrompt,
+			Validate: func(ans any) error {
+				return chat.ValidateAPIKey(ans.(string))
+			},
+		},
+		{
+			Name:     "Model",
+			Prompt:   &modelPrompt,
+			Validate: survey.Required,
+		},
+		{
+			Name:      "Temperature",
+			Prompt:    &temperaturePrompt,
+			Transform: convertToFloat32,
+			Validate: func(ans any) error {
+				f, err := strconv.ParseFloat(ans.(string), 32)
+				if err != nil {
+					return err
+				}
+
+				return chat.ValidateTemperature(float32(f))
+			},
+		},
 	}, &answers)
 	if err != nil {
 		log.Fatalf("Failed to get config input: %v", err)
@@ -72,37 +93,4 @@ func createModelPrompt() survey.Select {
 		},
 		VimMode: true,
 	}
-}
-
-func convertToFloat32(ans any) any {
-	value, err := strconv.ParseFloat(ans.(string), 32)
-	if err != nil {
-		return float32(0.28)
-	}
-	return float32(value)
-}
-
-func validateTemperature(ans any) error {
-	value, err := strconv.ParseFloat(ans.(string), 32)
-	if err != nil {
-		return fmt.Errorf("temperature must be a number")
-	}
-	if value <= 0 || value > 1 {
-		return fmt.Errorf("temperature must be greater than 0 and less than or equal to 1")
-	}
-	return nil
-}
-
-func validateAPIKey(ans any) error {
-	if ans.(string) == "" {
-		return errors.New("API key cannot be empty")
-	}
-
-	// Can be any model, the point is to check if the API key is valid
-	err := chat.ValidateAPIKey(ans.(string))
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

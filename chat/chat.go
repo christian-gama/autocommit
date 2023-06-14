@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	openai "github.com/sashabaranov/go-openai"
@@ -31,7 +32,7 @@ func (cs *ChatService) createMessages(userInput string) []openai.ChatCompletionM
 		},
 		{
 			Role:    openai.ChatMessageRoleUser,
-			Content: userInput,
+			Content: fmt.Sprintf("Output of 'git diff --cached':\n\"%s\"", userInput),
 			Name:    "UserInput",
 		},
 	}

@@ -59,13 +59,13 @@ func (s *ConfigStore) CreateConfigFile(config *Config) {
 	// Create directory if it doesn't exist
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		if err := os.Mkdir(configPath, 0755); err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 
 	configFile, err := os.Create(getConfigPath())
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer configFile.Close()
 
@@ -90,6 +90,27 @@ func (s *ConfigStore) DeleteConfigFile() {
 	fmt.Println(
 		"Configuration file reset successfully - Next time you run autocommit, you will be asked to configure it again.",
 	)
+}
+
+// SetOpenAIAPIKey sets the OpenAI API key in the configuration file.
+func (s *ConfigStore) SetOpenAIAPIKey(apiKey string) {
+	config := s.Config()
+	config.OpenAIAPIKey = apiKey
+	s.CreateConfigFile(config)
+}
+
+// SetOpenAIModel sets the OpenAI model in the configuration file.
+func (s *ConfigStore) SetOpenAIModel(model string) {
+	config := s.Config()
+	config.OpenAIModel = model
+	s.CreateConfigFile(config)
+}
+
+// SetOpenAITemperature sets the OpenAI temperature in the configuration file.
+func (s *ConfigStore) SetOpenAITemperature(temperature float32) {
+	config := s.Config()
+	config.OpenAITemperature = temperature
+	s.CreateConfigFile(config)
 }
 
 func getAutocommitPath() string {

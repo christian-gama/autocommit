@@ -10,30 +10,6 @@ import (
 
 const openAIModelsURL = "https://api.openai.com/v1/models"
 
-// ValidateAPIKey validates the given API key by making a request to OpenAI API.
-func ValidateAPIKey(apiKey string) error {
-	if apiKey == "" {
-		return errors.New("API key cannot be empty")
-	}
-
-	httpRequest, err := createRequestWithHeaders("GET", openAIModelsURL, apiKey)
-	if err != nil {
-		return fmt.Errorf("failed to create request: %w", err)
-	}
-
-	httpResponse, err := http.DefaultClient.Do(httpRequest)
-	if err != nil {
-		return fmt.Errorf("failed to execute request: %w", err)
-	}
-	defer httpResponse.Body.Close()
-
-	if err := handleHTTPResponse(httpResponse); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func createRequestWithHeaders(method, url, apiKey string) (*http.Request, error) {
 	httpRequest, err := http.NewRequest(method, url, nil)
 	if err != nil {
