@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/christian-gama/autocommit/cli"
+	"github.com/christian-gama/autocommit/cmd"
 )
 
 func main() {
-	if err := cli.Execute(); err != nil {
+	if err := cmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
 }

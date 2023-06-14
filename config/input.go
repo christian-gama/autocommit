@@ -1,7 +1,6 @@
-package cli
+package config
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 
@@ -15,15 +14,7 @@ type configAnswers struct {
 	Temperature  float32
 }
 
-func printWelcome() {
-	fmt.Println("Welcome to AutoCommit! Let's get started by setting up your configuration.")
-	fmt.Println("You can reset these settings later by running 'autocommit reset'.")
-	fmt.Println("")
-}
-
 func askUserForConfig() *configAnswers {
-	printWelcome()
-
 	openaiApiKeyPrompt := survey.Password{
 		Message: "OpenAI API Key",
 		Help:    "The API key to use for OpenAI. Get one at https://platform.openai.com/account/api-keys",
@@ -93,4 +84,13 @@ func createModelPrompt() survey.Select {
 		},
 		VimMode: true,
 	}
+}
+
+func convertToFloat32(ans any) any {
+	value, err := strconv.ParseFloat(ans.(string), 32)
+	if err != nil {
+		log.Fatalf("Failed to convert %s to float32: %v", ans.(string), err)
+	}
+
+	return float32(value)
 }

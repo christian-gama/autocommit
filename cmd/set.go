@@ -1,18 +1,18 @@
-package cli
+package cmd
 
 import (
 	"log"
 
 	"github.com/christian-gama/autocommit/chat"
-	"github.com/christian-gama/autocommit/store"
+	"github.com/christian-gama/autocommit/config"
 	"github.com/spf13/cobra"
 )
 
-var set = &cobra.Command{
+var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set configuration options",
 	Run: func(cmd *cobra.Command, args []string) {
-		configStore := store.NewStore()
+		configStore := config.NewStore()
 
 		if !configStore.IsStored() {
 			log.Fatal("Config file not found - run 'autocommit' to set it up")
@@ -51,7 +51,7 @@ var (
 )
 
 func init() {
-	set.Flags().StringVarP(&OpenAIAPIKey, "openai-api-key", "k", "", "openAI API Key")
-	set.Flags().StringVarP(&OpenAIModel, "openai-model", "m", "", "openAI Model")
-	set.Flags().Float32VarP(&OpenAITemperature, "openai-temperature", "t", 0.0, "openAI Temperature")
+	setCmd.Flags().StringVarP(&OpenAIAPIKey, "openai-api-key", "k", "", "openAI API Key")
+	setCmd.Flags().StringVarP(&OpenAIModel, "openai-model", "m", "", "openAI Model")
+	setCmd.Flags().Float32VarP(&OpenAITemperature, "openai-temperature", "t", 0.0, "openAI Temperature")
 }
