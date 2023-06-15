@@ -56,8 +56,11 @@ PS: Commits from this repository were generated using AutoCommit 🤖
 
     Zsh:
     ```shell
-    autocommit completion zsh > "${fpath[1]}/_autocommit"
-    exec zsh
+    mkdir -p ~/.zsh/completions
+    autocommit completion zsh > ~/.zsh/completions/_autocommit
+    echo 'fpath=(~/.zsh/completions $fpath)' >> ~/.zshrc
+    echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+    source ~/.zshrc
     ```
 
     PowerShell:
