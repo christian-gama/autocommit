@@ -2,9 +2,10 @@ package helpers
 
 import "github.com/AlecAivazis/survey/v2"
 
-type SurveyFunc func() *survey.Question
+type surveyFunc func() *survey.Question
 
-func CreateQuestions(funcs ...SurveyFunc) []*survey.Question {
+// CreateQuestions creates a list of questions.
+func CreateQuestions(funcs ...surveyFunc) []*survey.Question {
 	var questions []*survey.Question
 
 	for _, f := range funcs {

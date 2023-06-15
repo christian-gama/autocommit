@@ -6,11 +6,13 @@ import (
 	"path"
 )
 
+// Storage is a struct that represents a file storage
 type Storage struct {
 	dir      string
 	filename string
 }
 
+// Create creates a file with the given content
 func (s *Storage) Create(content []byte) error {
 	s.createDirIfNotExists()
 
@@ -27,6 +29,7 @@ func (s *Storage) Create(content []byte) error {
 	return nil
 }
 
+// Read reads the file content
 func (s *Storage) Read() ([]byte, error) {
 	content, err := os.ReadFile(s.filename)
 	if err != nil {
@@ -35,6 +38,7 @@ func (s *Storage) Read() ([]byte, error) {
 	return content, nil
 }
 
+// Update updates the file content
 func (s *Storage) Update(newContent []byte) error {
 	if err := s.Delete(); err != nil {
 		return err
@@ -43,6 +47,7 @@ func (s *Storage) Update(newContent []byte) error {
 	return s.Create(newContent)
 }
 
+// Delete deletes the file
 func (s *Storage) Delete() error {
 	return os.Remove(s.filename)
 }
@@ -60,6 +65,7 @@ func (s *Storage) dirExists() bool {
 	return true
 }
 
+// NewStorage creates a new instance of Storage
 func NewStorage(filename string) *Storage {
 	home, err := os.UserHomeDir()
 	if err != nil {

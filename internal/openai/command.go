@@ -4,14 +4,18 @@ import (
 	"errors"
 )
 
+// ChatCommand is the interface that wraps the basic Execute method.
 type ChatCommand interface {
+	// Execute returns the response from the AI.
 	Execute(system *System, input string) (string, error)
 }
 
+// chatCommandImpl is an implementation of ChatCommand.
 type chatCommandImpl struct {
 	chat Chat
 }
 
+// Execute implements the ChatCommand interface.
 func (c *chatCommandImpl) Execute(system *System, input string) (string, error) {
 	response, err := c.chat.Response(system, input)
 	if err != nil {
@@ -20,20 +24,25 @@ func (c *chatCommandImpl) Execute(system *System, input string) (string, error) 
 	return response, nil
 }
 
+// NewChatCommand creates a new instance of ChatCommand.
 func NewChatCommand(chat Chat) ChatCommand {
 	return &chatCommandImpl{
 		chat: chat,
 	}
 }
 
+// VerifyConfigCommand is the interface that wraps the basic Execute method.
 type VerifyConfigCommand interface {
+	// Execute will verify if the configs were initialized and if not, it will initialize them.
 	Execute(getConfigsFn func() (*Config, error)) error
 }
 
+// verifyConfigCommandImpl is an implementation of VerifyConfigCommand.
 type verifyConfigCommandImpl struct {
 	repo Repo
 }
 
+// Execute Implements the VerifyConfigCommand interface.
 func (v *verifyConfigCommandImpl) Execute(getConfigsFn func() (*Config, error)) error {
 	ok := v.repo.Exists()
 	if !ok {
@@ -50,20 +59,25 @@ func (v *verifyConfigCommandImpl) Execute(getConfigsFn func() (*Config, error)) 
 	return nil
 }
 
+// NewVerifyConfigCommand creates a new instance of VerifyConfigCommand.
 func NewVerifyConfigCommand(repo Repo) VerifyConfigCommand {
 	return &verifyConfigCommandImpl{
 		repo: repo,
 	}
 }
 
+// ResetConfigCommand is the interface that wraps the basic Execute method.
 type ResetConfigCommand interface {
+	// Execute will reset the configs.
 	Execute() error
 }
 
+// resetConfigCommandImpl is an implementation of ResetConfigCommand.
 type resetConfigCommandImpl struct {
 	repo Repo
 }
 
+// Execute Implements the ResetConfigCommand interface.
 func (r *resetConfigCommandImpl) Execute() error {
 	if !r.repo.Exists() {
 		return nil
@@ -72,20 +86,25 @@ func (r *resetConfigCommandImpl) Execute() error {
 	return r.repo.DeleteConfig()
 }
 
+// NewResetConfigCommand creates a new instance of ResetConfigCommand.
 func NewResetConfigCommand(repo Repo) ResetConfigCommand {
 	return &resetConfigCommandImpl{
 		repo: repo,
 	}
 }
 
+// UpdateConfigCommand is the interface that wraps the basic Execute method.
 type UpdateConfigCommand interface {
+	// Execute will update the configs.
 	Execute(config *Config) error
 }
 
+// updateConfigCommandImpl is an implementation of UpdateConfigCommand.
 type updateConfigCommandImpl struct {
 	repo Repo
 }
 
+// Execute Implements the UpdateConfigCommand interface.
 func (u *updateConfigCommandImpl) Execute(config *Config) error {
 	savedConfig, err := u.repo.GetConfig()
 	if err != nil {
@@ -123,6 +142,7 @@ func (u *updateConfigCommandImpl) Execute(config *Config) error {
 	return u.repo.UpdateConfig(config)
 }
 
+// NewUpdateConfigCommand creates a new instance of UpdateConfigCommand.
 func NewUpdateConfigCommand(repo Repo) UpdateConfigCommand {
 	return &updateConfigCommandImpl{
 		repo: repo,

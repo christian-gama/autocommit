@@ -8,12 +8,15 @@ import (
 	"github.com/christian-gama/autocommit/internal/helpers"
 )
 
+// AskConfigsCli is a command line interface that asks the user for the configuration.
 type AskConfigsCli interface {
 	Execute() (*Config, error)
 }
 
+// askConfigsCliImpl is the implementation of AskConfigsCli.
 type askConfigsCliImpl struct{}
 
+// Execute asks the user for the configuration.
 func (a *askConfigsCliImpl) Execute() (*Config, error) {
 	questions := helpers.CreateQuestions(
 		a.createApiKeyQuestion,
@@ -42,7 +45,7 @@ func (a *askConfigsCliImpl) createModelQuestion() *survey.Question {
 		Message: "Model name",
 		Help:    "A model can be an algorithm or a set of algorithms that have been trained on data to make predictions or decisions.",
 		Default: GPT3Dot5Turbo16k,
-		Options: Models,
+		Options: allowedModels,
 		Description: func(value string, index int) string {
 			if value == GPT4 || value == GPT432K {
 				return "Beta - May not be available for all users"
@@ -105,6 +108,7 @@ func (a *askConfigsCliImpl) transformToFloat32(ans interface{}) (newAns interfac
 	return float32(f)
 }
 
+// NewAskConfigsCli creates a new instance of AskConfigsCli.
 func NewAskConfigsCli() AskConfigsCli {
 	return &askConfigsCliImpl{}
 }

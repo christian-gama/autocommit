@@ -5,12 +5,16 @@ import (
 	"github.com/christian-gama/autocommit/internal/helpers"
 )
 
+// PostCommitCli is an interface for executing post commit CLI operations.
 type PostCommitCli interface {
+	// Execute executes the post commit CLI.
 	Execute() (string, error)
 }
 
+// postCommitCliImpl is an implementation of PostCommitCli.
 type postCommitCliImpl struct{}
 
+// Execute implements the PostCommitCli interface.
 func (p *postCommitCliImpl) Execute() (string, error) {
 	questions := helpers.CreateQuestions(p.createActionQuestion)
 
@@ -39,6 +43,7 @@ func (p *postCommitCliImpl) createActionQuestion() *survey.Question {
 	return &survey.Question{Name: "Option", Prompt: &prompt, Validate: survey.Required}
 }
 
+// NewPostCommitCli creates a new instance of PostCommitCli.
 func NewPostCommitCli() PostCommitCli {
 	return &postCommitCliImpl{}
 }
