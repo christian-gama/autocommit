@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -15,8 +14,8 @@ var resetCmd = &cobra.Command{
 
 func runReset(cmd *cobra.Command, args []string) {
 	if err := resetConfigCommand.Execute(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	fmt.Println("Configuration file reset successfully - Next time you run autocommit, you will be asked to configure it again.")
+	fmt.Println("✅ Configuration file reset successfully - Next time you run autocommit, you will be asked to configure it again.")
 }

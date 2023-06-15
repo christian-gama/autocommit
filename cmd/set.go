@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/christian-gama/autocommit/internal/openai"
 	"github.com/spf13/cobra"
 )
@@ -29,7 +27,7 @@ func runSet(cmd *cobra.Command, args []string) {
 	config := openai.NewConfig(OpenAIAPIKey, OpenAIModel, OpenAITemperature)
 
 	if err := updateConfigCommand.Execute(config); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 }

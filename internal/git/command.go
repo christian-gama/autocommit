@@ -2,7 +2,6 @@ package git
 
 import (
 	"errors"
-	"log"
 	"strings"
 )
 
@@ -46,7 +45,7 @@ func NewCommitCommand(executor Executor) CommitCommand {
 	g.exec = executor
 
 	if err := g.setRootPath(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	return g
@@ -86,7 +85,7 @@ func NewDiffCommand(executor Executor) DiffCommand {
 	g.exec = executor
 
 	if err := g.setRootPath(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	return g

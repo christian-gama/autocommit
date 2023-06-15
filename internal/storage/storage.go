@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"log"
 	"os"
 	"path"
 )
@@ -69,7 +68,7 @@ func (s *Storage) dirExists() bool {
 func NewStorage(filename string) *Storage {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	return &Storage{dir: path.Join(home, ".autocommit"), filename: path.Join(home, ".autocommit", filename)}
 }

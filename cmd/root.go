@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/christian-gama/autocommit/internal/autocommit"
@@ -23,30 +22,30 @@ func Execute() error {
 func runCmd(cmd *cobra.Command, args []string) {
 	err := verifyConfigCommand.Execute(askConfigsCli.Execute)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	response, err := generatorCommand.Execute()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	fmt.Printf("📝 Commit message generated: \n%s\n\n", response)
 
 	option, err := postCommitCli.Execute()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	switch option {
 	case autocommit.CommitChangesOption:
 		if err := commitCommand.Execute(response); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 	case autocommit.CopyToClipboardOption:
 		if err := clipboardCommand.Execute(response); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 	case autocommit.RegenerateOption:
