@@ -3,24 +3,16 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 
-	"github.com/christian-gama/autocommit/chat"
-	"github.com/christian-gama/autocommit/config"
-	"github.com/christian-gama/autocommit/git"
+	"github.com/christian-gama/autocommit/internal/autocommit"
 	"github.com/spf13/cobra"
 )
 
-var verbose bool
 var cmd = &cobra.Command{
 	Use:   "",
-	Run:   run,
+	Run:   runCmd,
 	Short: "Autocommit is a CLI tool that uses OpenAI's models to generate commit messages based on the changes made in the repository.",
-}
-
-func init() {
-	cmd.AddCommand(resetCmd)
-	cmd.AddCommand(setCmd)
-	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "create a verbose commit message")
 }
 
 // Execute executes the root command.
@@ -28,24 +20,39 @@ func Execute() error {
 	return cmd.Execute()
 }
 
-func run(cmd *cobra.Command, args []string) {
-	config := config.Load()
-	chatService := chat.NewChatService(
-		chat.NewConfig(config.OpenAIAPIKey, config.OpenAIModel, verbose, config.OpenAITemperature),
-	)
-
-	diff, err := git.Diff()
+func runCmd(cmd *cobra.Command, args []string) {
+	err := verifyConfigCommand.Execute(askConfigsCli.Execute)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	commitMessage, err := chatService.Response(diff)
+	response, err := generatorCommand.Execute()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Commit message:\n'%s'\n\n", commitMessage)
+	fmt.Printf("Commit message generated: \n%s\n", response)
 
-	chatAnswer := chat.AskUserForChatOption()
-	chat.HandleChatOption(func() { run(cmd, args) }, chatAnswer.Option, commitMessage)
+	option, err := postCommitCli.Execute()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	switch option {
+	case autocommit.CommitChangesOption:
+		if err := commitCommand.Execute(response); err != nil {
+			log.Fatal(err)
+		}
+
+	case autocommit.CopyToClipboardOption:
+		if err := clipboardCommand.Execute(response); err != nil {
+			log.Fatal(err)
+		}
+
+	case autocommit.RegenerateOption:
+		runCmd(cmd, args)
+
+	case autocommit.ExitOption:
+		os.Exit(0)
+	}
 }
