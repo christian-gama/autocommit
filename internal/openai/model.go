@@ -38,7 +38,7 @@ const (
 	GPT432K          = "gpt-4-32k"
 )
 
-var allowedModels = []string{
+var AllowedModels = []string{
 	GPT3Dot5Turbo,
 	GPT3Dot5Turbo16k,
 	GPT4,

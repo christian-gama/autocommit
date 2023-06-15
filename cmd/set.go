@@ -21,6 +21,10 @@ func init() {
 	setCmd.Flags().StringVarP(&OpenAIAPIKey, "api-key", "k", "", "openAI API Key")
 	setCmd.Flags().StringVarP(&OpenAIModel, "model", "m", "", "openAI Model")
 	setCmd.Flags().Float32VarP(&OpenAITemperature, "temperature", "t", 0.0, "openAI Temperature")
+
+	setCmd.RegisterFlagCompletionFunc("model", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return openai.AllowedModels, cobra.ShellCompDirectiveNoFileComp
+	})
 }
 
 func runSet(cmd *cobra.Command, args []string) {

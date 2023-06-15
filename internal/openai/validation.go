@@ -52,7 +52,7 @@ func ValidateModel(model string) error {
 		return errors.New("model cannot be empty")
 	}
 
-	for _, v := range allowedModels {
+	for _, v := range AllowedModels {
 		if v == model {
 			return nil
 		}

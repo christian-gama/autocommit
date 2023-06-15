@@ -45,7 +45,7 @@ func (a *askConfigsCliImpl) createModelQuestion() *survey.Question {
 		Message: "Model name",
 		Help:    "A model can be an algorithm or a set of algorithms that have been trained on data to make predictions or decisions.",
 		Default: GPT3Dot5Turbo16k,
-		Options: allowedModels,
+		Options: AllowedModels,
 		Description: func(value string, index int) string {
 			if value == GPT4 || value == GPT432K {
 				return "Beta - May not be available for all users"
