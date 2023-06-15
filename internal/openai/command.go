@@ -139,7 +139,7 @@ func (u *updateConfigCommandImpl) Execute(config *Config) error {
 		savedConfig.Temperature = config.Temperature
 	}
 
-	return u.repo.UpdateConfig(config)
+	return u.repo.UpdateConfig(savedConfig)
 }
 
 // NewUpdateConfigCommand creates a new instance of UpdateConfigCommand.
