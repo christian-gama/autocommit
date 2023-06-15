@@ -65,7 +65,7 @@ type diffCommandImpl struct {
 func (d *diffCommandImpl) Execute() (string, error) {
 	output, err := d.exec.CommandInDir(
 		d.rootPath,
-		"diff", "--no-color", "--cached",
+		"diff", "--no-color", "--cached", "-U7",
 	)
 
 	if err != nil {
