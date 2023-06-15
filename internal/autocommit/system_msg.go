@@ -30,10 +30,11 @@ Explanation of the output:
 
 Knowing that, you must at all costs follow the rules below to create the commit message:
 - The commit message must be a single line.
+- There must be only one commit message at all costs.
 - The commit message must be less than 72 characters.
 - Always prioritize fewer words over more words.
 - Write only the most important information about the changes.
-- Never write file names, paths, or commands.
+- Never write file names, paths, or commands. E.g "fix: change method in file.go" is wrong.
 - Do not repeat comments from the codebase.
 - You should follow the format: <type>[optional scope]: <description>
 - The <description> of the commit message must start with lowercase.
