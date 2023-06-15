@@ -31,7 +31,7 @@ func runCmd(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Commit message generated: \n%s\n", response)
+	fmt.Printf("📝 Commit message generated: \n%s\n\n", response)
 
 	option, err := postCommitCli.Execute()
 	if err != nil {
