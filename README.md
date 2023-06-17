@@ -1,3 +1,5 @@
+![Demo](https://github.com/christian-gama/autocommit/assets/85251411/bdc4687e-3a7b-48f7-ab9c-40cadd3294a0)
+
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -54,8 +56,11 @@ PS: Commits from this repository were generated using AutoCommit 🤖
 
     Zsh:
     ```shell
-    autocommit completion zsh > "${fpath[1]}/_autocommit"
-    exec zsh
+    mkdir -p ~/.zsh/completions
+    autocommit completion zsh > ~/.zsh/completions/_autocommit
+    echo 'fpath=(~/.zsh/completions $fpath)' >> ~/.zshrc
+    echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+    source ~/.zshrc
     ```
 
     PowerShell:
