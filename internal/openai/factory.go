@@ -21,3 +21,7 @@ func MakeResetConfigCommand() ResetConfigCommand {
 func MakeUpdateConfigCommand() UpdateConfigCommand {
 	return NewUpdateConfigCommand(MakeConfigRepo())
 }
+
+func MakeAskToChangeModelCli() AskToChangeModelCli {
+	return NewAskToChangeModelCli()
+}

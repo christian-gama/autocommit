@@ -112,3 +112,45 @@ func (a *askConfigsCliImpl) transformToFloat32(ans interface{}) (newAns interfac
 func NewAskConfigsCli() AskConfigsCli {
 	return &askConfigsCliImpl{}
 }
+
+type AskToChangeModelCli interface {
+	Execute() (bool, error)
+}
+
+type askToChangeModelCliImpl struct{}
+
+func (a *askToChangeModelCliImpl) Execute() (bool, error) {
+	questions := helpers.CreateQuestions(
+		a.createModelQuestion,
+	)
+
+	type Answers struct {
+		ChangeModel bool
+	}
+
+	var answers Answers
+
+	err := survey.Ask(questions, &answers)
+	if err != nil {
+		return false, err
+	}
+
+	return answers.ChangeModel, nil
+}
+
+func (a *askToChangeModelCliImpl) createModelQuestion() *survey.Question {
+	prompt := survey.Confirm{
+		Message: "You reached the maximum number of tokens, but there is a model that can generate longer messages. Do you want to temporarily change the model?",
+		Help:    "A model have a limited amount of tokens that can be generated at once. If you want to generate longer messages, you can temporarily change the model.",
+		Default: true,
+	}
+
+	return &survey.Question{
+		Name:   "ChangeModel",
+		Prompt: &prompt,
+	}
+}
+
+func NewAskToChangeModelCli() AskToChangeModelCli {
+	return &askToChangeModelCliImpl{}
+}

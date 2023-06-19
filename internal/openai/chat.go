@@ -11,7 +11,7 @@ import (
 // Chat is the interface that wraps the Response method.
 type Chat interface {
 	// Response returns the response from the AI.
-	Response(system *System, input string) (string, error)
+	Response(config *Config, system *System, input string) (string, error)
 }
 
 // chatImpl is an implementation of Chat.
@@ -20,13 +20,10 @@ type chatImpl struct {
 }
 
 // Chat implements the Chat interface.
-func (c *chatImpl) Response(system *System, input string) (string, error) {
-	config, err := c.repo.GetConfig()
-	if err != nil {
-		return "", err
-	}
-
+func (c *chatImpl) Response(config *Config, system *System, input string) (string, error) {
+	fmt.Printf("🤖 Using model: %s\n", config.Model)
 	fmt.Printf("⌛ Waiting for response from OpenAI...\n\n")
+
 	response, err := openai.
 		NewClient(config.ApiKey).
 		CreateChatCompletion(

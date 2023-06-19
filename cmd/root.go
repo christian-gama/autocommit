@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/christian-gama/autocommit/internal/autocommit"
+	"github.com/christian-gama/autocommit/internal/openai"
 	"github.com/spf13/cobra"
 )
 
@@ -24,18 +26,27 @@ func Execute() error {
 }
 
 func runCmd(cmd *cobra.Command, args []string) {
-	err := verifyConfigCommand.Execute(askConfigsCli.Execute)
+	var err error
+	config, err = verifyConfigCommand.Execute(askConfigsCli.Execute)
 	if err != nil {
 		panic(err)
 	}
 
-	response, err := generatorCommand.Execute()
+	handleCmd(cmd, args)
+}
+
+func handleCmd(cmd *cobra.Command, args []string) {
+	response, err := generatorCommand.Execute(config)
 	if err != nil {
-		panic(err)
+		handleMaxToken(err, cmd, args)
 	}
 
 	fmt.Printf("📝 Commit message generated: \n%s\n\n", response)
 
+	handlePostCommit(response, cmd, args)
+}
+
+func handlePostCommit(response string, cmd *cobra.Command, args []string) {
 	option, err := postCommitCli.Execute()
 	if err != nil {
 		panic(err)
@@ -53,9 +64,38 @@ func runCmd(cmd *cobra.Command, args []string) {
 		}
 
 	case autocommit.RegenerateOption:
-		runCmd(cmd, args)
+		handleCmd(cmd, args)
 
 	case autocommit.ExitOption:
 		os.Exit(0)
 	}
+}
+
+func handleMaxToken(err error, cmd *cobra.Command, args []string) {
+	var isTokenError = strings.Contains(err.Error(), "Please reduce the length of the messages")
+	var isElegibleModel = config.Model == openai.GPT3Dot5Turbo || config.Model == openai.GPT4
+
+	if !isTokenError || !isElegibleModel {
+		panic(err)
+	}
+
+	var modelMap = map[string]string{
+		openai.GPT3Dot5Turbo: openai.GPT3Dot5Turbo16k,
+		openai.GPT4:          openai.GPT432K,
+	}
+
+	answer, err := askToChangeModelCli.Execute()
+	if err != nil {
+		panic(err)
+	}
+
+	if answer {
+		config.Model = modelMap[config.Model]
+		handleCmd(cmd, args)
+		return
+	}
+
+	panic(
+		"🚧 You reached the maximum allowed token for this model. You can try a new model running 'autocommit set --model <model>' or decrease the amount of files being commited.",
+	)
 }

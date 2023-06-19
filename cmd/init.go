@@ -15,6 +15,8 @@ var (
 	clipboardCommand    autocommit.ClipboardCommand
 	resetConfigCommand  openai.ResetConfigCommand
 	updateConfigCommand openai.UpdateConfigCommand
+	askToChangeModelCli openai.AskToChangeModelCli
+	config              *openai.Config
 )
 
 func init() {
@@ -26,6 +28,7 @@ func init() {
 	clipboardCommand = autocommit.MakeClipboardCommand()
 	resetConfigCommand = openai.MakeResetConfigCommand()
 	updateConfigCommand = openai.MakeUpdateConfigCommand()
+	askToChangeModelCli = openai.MakeAskToChangeModelCli()
 }
 
 func init() {

@@ -7,7 +7,7 @@ import (
 // ChatCommand is the interface that wraps the basic Execute method.
 type ChatCommand interface {
 	// Execute returns the response from the AI.
-	Execute(system *System, input string) (string, error)
+	Execute(config *Config, system *System, input string) (string, error)
 }
 
 // chatCommandImpl is an implementation of ChatCommand.
@@ -16,8 +16,8 @@ type chatCommandImpl struct {
 }
 
 // Execute implements the ChatCommand interface.
-func (c *chatCommandImpl) Execute(system *System, input string) (string, error) {
-	response, err := c.chat.Response(system, input)
+func (c *chatCommandImpl) Execute(config *Config, system *System, input string) (string, error) {
+	response, err := c.chat.Response(config, system, input)
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +34,7 @@ func NewChatCommand(chat Chat) ChatCommand {
 // VerifyConfigCommand is the interface that wraps the basic Execute method.
 type VerifyConfigCommand interface {
 	// Execute will verify if the configs were initialized and if not, it will initialize them.
-	Execute(getConfigsFn func() (*Config, error)) error
+	Execute(getConfigsFn func() (*Config, error)) (*Config, error)
 }
 
 // verifyConfigCommandImpl is an implementation of VerifyConfigCommand.
@@ -43,20 +43,27 @@ type verifyConfigCommandImpl struct {
 }
 
 // Execute Implements the VerifyConfigCommand interface.
-func (v *verifyConfigCommandImpl) Execute(getConfigsFn func() (*Config, error)) error {
+func (v *verifyConfigCommandImpl) Execute(
+	getConfigsFn func() (*Config, error),
+) (config *Config, err error) {
 	ok := v.repo.Exists()
 	if !ok {
-		configsInput, err := getConfigsFn()
+		config, err = getConfigsFn()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		if err := v.repo.SaveConfig(configsInput); err != nil {
-			return err
+		if err := v.repo.SaveConfig(config); err != nil {
+			return nil, err
+		}
+	} else {
+		config, err = v.repo.GetConfig()
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	return nil
+	return config, err
 }
 
 // NewVerifyConfigCommand creates a new instance of VerifyConfigCommand.
