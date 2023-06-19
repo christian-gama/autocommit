@@ -60,7 +60,7 @@ type clipboardCommandImpl struct {
 }
 
 func (c *clipboardCommandImpl) Execute(message string) error {
-	return c.clipboard.Copy(message)
+	return c.clipboard.Copy(fmt.Sprintf("git commit -m \"%s\"", message))
 }
 
 func NewClipboardCommand(clipboard Clipboard) ClipboardCommand {
