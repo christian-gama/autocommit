@@ -23,7 +23,7 @@ type chatImpl struct {
 
 // Chat implements the Chat interface.
 func (c *chatImpl) Response(config *Config, system *System, input string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	response, err := openai.
