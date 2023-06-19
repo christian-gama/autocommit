@@ -72,7 +72,7 @@ func NewClipboardCommand(clipboard Clipboard) ClipboardCommand {
 }
 
 type AddInstructionCommand interface {
-	Execute(config *openai.Config, system *openai.System, instruction string) error
+	Execute(config *openai.Config, instruction string) (string, error)
 }
 
 type addInstructionCommandImpl struct {
@@ -81,20 +81,15 @@ type addInstructionCommandImpl struct {
 
 func (a *addInstructionCommandImpl) Execute(
 	config *openai.Config,
-	system *openai.System,
 	instruction string,
-) error {
+) (string, error) {
 	fmt.Printf("💡 Enhancing the message with your new instruction...\n")
-	_, err := a.chatCommand.Execute(
-		config,
-		system,
-		instruction,
-	)
+	response, err := a.chatCommand.Execute(config, nil, instruction)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return response, nil
 }
 
 func NewAddInstructionCommand(

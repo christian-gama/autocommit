@@ -43,8 +43,7 @@ func handleCmd(cmd *cobra.Command, args []string) {
 		handleMaxToken(err, cmd, args)
 	}
 
-	fmt.Printf("📝 Commit message generated: \n%s\n\n", response)
-
+	printSuccessMessage(response)
 	handlePostCommit(response, cmd, args)
 }
 
@@ -56,33 +55,47 @@ func handlePostCommit(response string, cmd *cobra.Command, args []string) {
 
 	switch option {
 	case autocommit.CommitChangesOption:
-		if err := commitCommand.Execute(response); err != nil {
-			panic(err)
-		}
+		handleCommit(response)
 
 	case autocommit.CopyToClipboardOption:
-		if err := clipboardCommand.Execute(response); err != nil {
-			panic(err)
-		}
+		handleCopyToClipboard(response)
 
 	case autocommit.RegenerateOption:
 		handleCmd(cmd, args)
 
 	case autocommit.AddInstructionOption:
-		instructions, err := addInstructionCli.Execute()
-		if err != nil {
-			panic(err)
-		}
-
-		if err := addInstructionCommand.Execute(config, nil, instructions); err != nil {
-			panic(err)
-		}
-
-		handleCmd(cmd, args)
+		handleNewInstructions(cmd, args)
 
 	case autocommit.ExitOption:
 		os.Exit(0)
 	}
+}
+
+func handleCommit(response string) {
+	if err := commitCommand.Execute(response); err != nil {
+		panic(err)
+	}
+}
+
+func handleCopyToClipboard(response string) {
+	if err := clipboardCommand.Execute(response); err != nil {
+		panic(err)
+	}
+}
+
+func handleNewInstructions(cmd *cobra.Command, args []string) {
+	instructions, err := addInstructionCli.Execute()
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := addInstructionCommand.Execute(config, instructions)
+	if err != nil {
+		panic(err)
+	}
+
+	printSuccessMessage(response)
+	handlePostCommit(response, cmd, args)
 }
 
 func handleMaxToken(err error, cmd *cobra.Command, args []string) {
@@ -112,4 +125,8 @@ func handleMaxToken(err error, cmd *cobra.Command, args []string) {
 	panic(
 		"🚧 You reached the maximum allowed token for this model. You can try a new model running 'autocommit set --model <model>' or decrease the amount of files being commited.",
 	)
+}
+
+func printSuccessMessage(response string) {
+	fmt.Printf("📝 Commit message generated: \n%s\n\n", response)
 }

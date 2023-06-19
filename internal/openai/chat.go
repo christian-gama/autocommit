@@ -3,6 +3,7 @@ package openai
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/sashabaranov/go-openai"
 )
@@ -22,11 +23,13 @@ type chatImpl struct {
 
 // Chat implements the Chat interface.
 func (c *chatImpl) Response(config *Config, system *System, input string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	defer cancel()
 
 	response, err := openai.
 		NewClient(config.ApiKey).
 		CreateChatCompletion(
-			context.Background(),
+			ctx,
 			openai.ChatCompletionRequest{
 				Model:       config.Model,
 				Temperature: config.Temperature,
