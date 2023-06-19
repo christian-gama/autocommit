@@ -23,7 +23,10 @@ You must follow the rules below:
 11. Types other than feat and fix allowed (e.g., docs:, refactor:, style:, test:, chore:, ci:, perf:, build:).
 12. Commit message must have only one type.
 13. Don’t mention file names or paths in commit message.c
-14. Never repeat the content of a file in the commit message.
+14. Never write the content of a git diff command in the commit message.
+15. If there are no breaking changes, you must omit it and the footer from the commit message.
+16. If there are no breaking changes, there is no need to tell that there are no breaking changes in the commit message.
+17. The description of a commit message must have at most 72 characters.
 
 Here are different examples:
 1. feat!: notify customer on product shipment
