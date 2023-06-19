@@ -1,6 +1,8 @@
 package autocommit
 
 import (
+	"fmt"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/christian-gama/autocommit/internal/helpers"
 )
@@ -49,12 +51,12 @@ func NewPostCommitCli() PostCommitCli {
 	return &postCommitCliImpl{}
 }
 
-const (
-	CommitChangesOption   = "Commit changes to git"
-	RegenerateOption      = "Regenerate commit message"
-	CopyToClipboardOption = "Copy message to clipboard"
-	AddInstructionOption  = "Add instruction"
-	ExitOption            = "Exit"
+var (
+	CommitChangesOption   = fmt.Sprintf("%-2s Commit changes", "💾")
+	RegenerateOption      = fmt.Sprintf("%-2s Regenerate", "🔄")
+	CopyToClipboardOption = fmt.Sprintf("%-2s Copy to clipboard", "📋")
+	AddInstructionOption  = fmt.Sprintf("%-4s Add instruction", "✏️")
+	ExitOption            = fmt.Sprintf("%-2s Exit", "🚪")
 )
 
 // AddInstructionCli is an interface for executing add instruction CLI operations.
