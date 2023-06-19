@@ -32,6 +32,8 @@ func runCmd(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
+	fmt.Printf("🤖 Using model: %s\n", config.Model)
+
 	handleCmd(cmd, args)
 }
 
@@ -64,6 +66,18 @@ func handlePostCommit(response string, cmd *cobra.Command, args []string) {
 		}
 
 	case autocommit.RegenerateOption:
+		handleCmd(cmd, args)
+
+	case autocommit.AddInstructionOption:
+		instructions, err := addInstructionCli.Execute()
+		if err != nil {
+			panic(err)
+		}
+
+		if err := addInstructionCommand.Execute(config, nil, instructions); err != nil {
+			panic(err)
+		}
+
 		handleCmd(cmd, args)
 
 	case autocommit.ExitOption:

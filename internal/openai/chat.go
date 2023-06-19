@@ -3,7 +3,6 @@ package openai
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/sashabaranov/go-openai"
 )
@@ -17,12 +16,12 @@ type Chat interface {
 // chatImpl is an implementation of Chat.
 type chatImpl struct {
 	repo Repo
+
+	messages []openai.ChatCompletionMessage
 }
 
 // Chat implements the Chat interface.
 func (c *chatImpl) Response(config *Config, system *System, input string) (string, error) {
-	fmt.Printf("🤖 Using model: %s\n", config.Model)
-	fmt.Printf("⌛ Waiting for response from OpenAI...\n\n")
 
 	response, err := openai.
 		NewClient(config.ApiKey).
@@ -43,22 +42,27 @@ func (c *chatImpl) Response(config *Config, system *System, input string) (strin
 		return "", errors.New("Received empty response from AI")
 	}
 
+	c.messages = append(c.messages, response.Choices[0].Message)
+
 	return response.Choices[0].Message.Content, nil
 }
 
 func (c *chatImpl) createMessages(system *System, userInput string) []openai.ChatCompletionMessage {
-	return []openai.ChatCompletionMessage{
-		{
+	if len(c.messages) == 0 && system != nil {
+		c.messages = append(c.messages, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleSystem,
 			Content: system.Message,
 			Name:    system.Name,
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: userInput,
-			Name:    "UserInput",
-		},
+		})
 	}
+
+	c.messages = append(c.messages, openai.ChatCompletionMessage{
+		Role:    openai.ChatMessageRoleUser,
+		Content: userInput,
+		Name:    "UserInput",
+	})
+
+	return c.messages
 }
 
 func (c *chatImpl) checkError(err error) error {
@@ -72,6 +76,7 @@ func (c *chatImpl) checkError(err error) error {
 // NewChat creates a new instance of Chat.
 func NewChat(repo Repo) Chat {
 	return &chatImpl{
-		repo: repo,
+		repo:     repo,
+		messages: make([]openai.ChatCompletionMessage, 0),
 	}
 }

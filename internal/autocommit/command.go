@@ -21,6 +21,7 @@ type generatorCommandImpl struct {
 
 // Execute implements the GeneratorCommand interface.
 func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
+
 	diff, err := g.diffCommand.Execute()
 	if err != nil {
 		return "", err
@@ -28,6 +29,7 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 
 	system := openai.NewSystem(SystemMsg, "CommitMessageGenerator")
 
+	fmt.Printf("⌛ Creating a commit message...\n")
 	response, err := g.chatCommand.Execute(
 		config,
 		system,
@@ -66,5 +68,39 @@ func (c *clipboardCommandImpl) Execute(message string) error {
 func NewClipboardCommand(clipboard Clipboard) ClipboardCommand {
 	return &clipboardCommandImpl{
 		clipboard: clipboard,
+	}
+}
+
+type AddInstructionCommand interface {
+	Execute(config *openai.Config, system *openai.System, instruction string) error
+}
+
+type addInstructionCommandImpl struct {
+	chatCommand openai.ChatCommand
+}
+
+func (a *addInstructionCommandImpl) Execute(
+	config *openai.Config,
+	system *openai.System,
+	instruction string,
+) error {
+	fmt.Printf("💡 Enhancing the message with your new instruction...\n")
+	_, err := a.chatCommand.Execute(
+		config,
+		system,
+		instruction,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewAddInstructionCommand(
+	chatCommand openai.ChatCommand,
+) AddInstructionCommand {
+	return &addInstructionCommandImpl{
+		chatCommand: chatCommand,
 	}
 }

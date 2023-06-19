@@ -25,3 +25,7 @@ func MakeUpdateConfigCommand() UpdateConfigCommand {
 func MakeAskToChangeModelCli() AskToChangeModelCli {
 	return NewAskToChangeModelCli()
 }
+
+func MakeChatCommand() ChatCommand {
+	return NewChatCommand(NewChat(MakeConfigRepo()))
+}

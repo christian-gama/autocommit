@@ -5,8 +5,9 @@ import (
 	"github.com/christian-gama/autocommit/internal/openai"
 )
 
+var chatCommand = openai.MakeChatCommand()
+
 func MakeGeneratorCommand() GeneratorCommand {
-	chatCommand := openai.NewChatCommand(openai.NewChat(openai.MakeConfigRepo()))
 	diffCommand := git.MakeDiffCommand()
 
 	return NewGeneratorCommand(chatCommand, diffCommand)
@@ -22,4 +23,12 @@ func MakePostCommitCli() PostCommitCli {
 
 func MakeClipboardCommand() ClipboardCommand {
 	return NewClipboardCommand(MakeClipboard())
+}
+
+func MakeAddInstructionCommand() AddInstructionCommand {
+	return NewAddInstructionCommand(chatCommand)
+}
+
+func MakeAddInstructionCli() AddInstructionCli {
+	return NewAddInstructionCli()
 }

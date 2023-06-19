@@ -7,16 +7,18 @@ import (
 )
 
 var (
-	postCommitCli       autocommit.PostCommitCli
-	verifyConfigCommand openai.VerifyConfigCommand
-	generatorCommand    autocommit.GeneratorCommand
-	askConfigsCli       openai.AskConfigsCli
-	commitCommand       git.CommitCommand
-	clipboardCommand    autocommit.ClipboardCommand
-	resetConfigCommand  openai.ResetConfigCommand
-	updateConfigCommand openai.UpdateConfigCommand
-	askToChangeModelCli openai.AskToChangeModelCli
-	config              *openai.Config
+	postCommitCli         autocommit.PostCommitCli
+	verifyConfigCommand   openai.VerifyConfigCommand
+	generatorCommand      autocommit.GeneratorCommand
+	askConfigsCli         openai.AskConfigsCli
+	commitCommand         git.CommitCommand
+	clipboardCommand      autocommit.ClipboardCommand
+	resetConfigCommand    openai.ResetConfigCommand
+	updateConfigCommand   openai.UpdateConfigCommand
+	askToChangeModelCli   openai.AskToChangeModelCli
+	addInstructionCommand autocommit.AddInstructionCommand
+	addInstructionCli     autocommit.AddInstructionCli
+	config                *openai.Config
 )
 
 func init() {
@@ -29,6 +31,8 @@ func init() {
 	resetConfigCommand = openai.MakeResetConfigCommand()
 	updateConfigCommand = openai.MakeUpdateConfigCommand()
 	askToChangeModelCli = openai.MakeAskToChangeModelCli()
+	addInstructionCommand = autocommit.MakeAddInstructionCommand()
+	addInstructionCli = autocommit.MakeAddInstructionCli()
 }
 
 func init() {
