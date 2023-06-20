@@ -1,5 +1,4 @@
-
-![Demo](https://github.com/christian-gama/autocommit/assets/85251411/442c9d29-212e-48d7-9724-e46e543db9ea)
+![autocommit](https://github.com/christian-gama/autocommit/assets/85251411/bf6ffc5a-af71-4fc1-854f-d0873a94bc90)
 
 ## Table of Contents
 1. [Introduction](#introduction)
