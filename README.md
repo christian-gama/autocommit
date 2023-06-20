@@ -1,4 +1,5 @@
-![autocommit](https://github.com/christian-gama/autocommit/assets/85251411/bf6ffc5a-af71-4fc1-854f-d0873a94bc90)
+
+[autocommit.webm](https://github.com/christian-gama/autocommit/assets/85251411/92b41c89-730c-4dfe-b6ee-05b6dd8e7264)
 
 ## Table of Contents
 1. [Introduction](#introduction)
