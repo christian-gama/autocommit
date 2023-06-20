@@ -65,7 +65,7 @@ type diffCommandImpl struct {
 func (d *diffCommandImpl) Execute() (string, error) {
 	output, err := d.exec.CommandInDir(
 		d.rootPath,
-		"diff", "--no-color", "--cached", "-U7",
+		"diff", "--no-color", "--minimal", "--cached", "-U2",
 	)
 
 	if err != nil {
@@ -73,7 +73,9 @@ func (d *diffCommandImpl) Execute() (string, error) {
 	}
 
 	if len(output) == 0 {
-		return "", errors.New("There are no changes to commit - did you forget to stage your changes?")
+		return "", errors.New(
+			"There are no changes to commit - did you forget to stage your changes?",
+		)
 	}
 
 	return output, nil

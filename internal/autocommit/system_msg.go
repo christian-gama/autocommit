@@ -38,9 +38,4 @@ Here are different examples:
 5. fix: resolve request racing 
 
 Introduced request id and reference to latest request. 
-
-Removed obsolete timeouts.
-6. feat: extend config object 
-
-BREAKING CHANGE: "extends" key now for extending configs
 `
