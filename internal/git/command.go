@@ -7,19 +7,16 @@ import (
 
 // baseCommand is a struct that holds the common attributes for all git commands.
 type baseCommand struct {
-	exec     Executor
-	rootPath string
+	exec Executor
 }
 
-func (b *baseCommand) setRootPath() error {
+func (b *baseCommand) rootPath() string {
 	output, err := b.exec.Command("rev-parse", "--show-toplevel")
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	b.rootPath = strings.TrimSpace(output)
-
-	return nil
+	return strings.TrimSpace(output)
 }
 
 // CommitCommand is an interface that defines the contract for the git commit command.
@@ -43,11 +40,6 @@ func (c *commitCommandImpl) Execute(message string) error {
 func NewCommitCommand(executor Executor) CommitCommand {
 	g := new(commitCommandImpl)
 	g.exec = executor
-
-	if err := g.setRootPath(); err != nil {
-		panic(err)
-	}
-
 	return g
 }
 
@@ -64,8 +56,8 @@ type diffCommandImpl struct {
 // Execute implements the DiffCommand interface.
 func (d *diffCommandImpl) Execute() (string, error) {
 	output, err := d.exec.CommandInDir(
-		d.rootPath,
-		"diff", "--no-color", "--minimal", "--cached", "-U2",
+		d.rootPath(),
+		"diff", "--no-color", "--minimal", "--cached", "-U3",
 	)
 
 	if err != nil {
@@ -85,10 +77,5 @@ func (d *diffCommandImpl) Execute() (string, error) {
 func NewDiffCommand(executor Executor) DiffCommand {
 	g := new(diffCommandImpl)
 	g.exec = executor
-
-	if err := g.setRootPath(); err != nil {
-		panic(err)
-	}
-
 	return g
 }

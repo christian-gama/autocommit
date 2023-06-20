@@ -28,12 +28,16 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 	}
 
 	system := openai.NewSystem(SystemMsg, "CommitMessageGenerator")
+	msg := fmt.Sprintf(
+		"Create a commit message based on the output of 'git diff' below. As a reminder, be concise and always write the texts in imperative mood and in present tense:\n\n%s",
+		diff,
+	)
 
 	fmt.Printf("⌛ Creating a commit message...\n")
 	response, err := g.chatCommand.Execute(
 		config,
 		system,
-		fmt.Sprintf("Create a commit message based on this output of 'git diff':\n%s", diff),
+		msg,
 	)
 	if err != nil {
 		return "", err
