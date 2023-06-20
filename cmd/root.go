@@ -14,10 +14,6 @@ var cmd = &cobra.Command{
 	Use:   "autocommit",
 	Run:   runCmd,
 	Short: "Autocommit is a CLI tool that uses OpenAI's models to generate commit messages based on the changes made in the repository.",
-	ValidArgs: []string{
-		"set",
-		"reset",
-	},
 }
 
 // Execute executes the root command.
