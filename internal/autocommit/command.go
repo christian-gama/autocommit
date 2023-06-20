@@ -33,7 +33,7 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 	response, err := g.chatCommand.Execute(
 		config,
 		system,
-		fmt.Sprintf("Here is the output of 'git diff':\n'%s'", diff),
+		fmt.Sprintf("Create a commit message based on this output of 'git diff':\n%s", diff),
 	)
 	if err != nil {
 		return "", err

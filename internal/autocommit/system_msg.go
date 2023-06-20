@@ -38,4 +38,5 @@ Here are different examples:
 5. fix: resolve request racing 
 
 Introduced request id and reference to latest request. 
+6. fix: correct minor typos in code
 `
