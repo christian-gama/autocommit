@@ -19,6 +19,8 @@ var (
 	addInstructionCommand autocommit.AddInstructionCommand
 	addInstructionCli     autocommit.AddInstructionCli
 	config                *openai.Config
+	openSystemMsgCommand  autocommit.OpenSystemMsgCommand
+	systemMsgHealthCheck  autocommit.SystemMsgHealthCheckCommand
 )
 
 func init() {
@@ -33,9 +35,12 @@ func init() {
 	askToChangeModelCli = openai.MakeAskToChangeModelCli()
 	addInstructionCommand = autocommit.MakeAddInstructionCommand()
 	addInstructionCli = autocommit.MakeAddInstructionCli()
+	openSystemMsgCommand = autocommit.MakeOpenSystemMsgCommand()
+	systemMsgHealthCheck = autocommit.MakeSystemMsgHealthCheckCommand()
 }
 
 func init() {
 	cmd.AddCommand(resetCmd)
 	cmd.AddCommand(setCmd)
+	cmd.AddCommand(editCmd)
 }

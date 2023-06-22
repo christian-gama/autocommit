@@ -28,6 +28,10 @@ func runCmd(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
+	if err := systemMsgHealthCheck.Execute(); err != nil {
+		panic(err)
+	}
+
 	fmt.Printf("🤖 Using model: %s\n", config.Model)
 
 	handleCmd(cmd, args)
@@ -95,14 +99,14 @@ func handleNewInstructions(cmd *cobra.Command, args []string) {
 }
 
 func handleMaxToken(err error, cmd *cobra.Command, args []string) {
-	var isTokenError = strings.Contains(err.Error(), "Please reduce the length of the messages")
-	var isElegibleModel = config.Model == openai.GPT3Dot5Turbo || config.Model == openai.GPT4
+	isTokenError := strings.Contains(err.Error(), "Please reduce the length of the messages")
+	isElegibleModel := config.Model == openai.GPT3Dot5Turbo || config.Model == openai.GPT4
 
 	if !isTokenError || !isElegibleModel {
 		panic(err)
 	}
 
-	var modelMap = map[string]string{
+	modelMap := map[string]string{
 		openai.GPT3Dot5Turbo: openai.GPT3Dot5Turbo16k,
 		openai.GPT4:          openai.GPT432K,
 	}
