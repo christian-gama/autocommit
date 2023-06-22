@@ -39,11 +39,10 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 
 	system := openai.NewSystem(systemMsg, "CommitMessageGenerator")
 	msg := fmt.Sprintf(
-		"As a reminder, be concise and always write the texts in imperative mood and in present tense. Here is my 'git diff' output: \n\n%s",
+		"As a reminder, be concise and always write the texts in imperative mood and in present tense. Here is the 'git diff' output: \n\n%s",
 		diff,
 	)
 
-	fmt.Printf("⌛ Creating a commit message...\n")
 	response, err := g.chatCommand.Execute(
 		config,
 		system,
@@ -106,7 +105,6 @@ func (a *addInstructionCommandImpl) Execute(
 	config *openai.Config,
 	instruction string,
 ) (string, error) {
-	fmt.Printf("💡 Enhancing the message with your new instruction...\n")
 	response, err := a.chatCommand.Execute(config, nil, instruction)
 	if err != nil {
 		return "", err

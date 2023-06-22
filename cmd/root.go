@@ -38,6 +38,7 @@ func runCmd(cmd *cobra.Command, args []string) {
 }
 
 func handleCmd(cmd *cobra.Command, args []string) {
+	fmt.Printf("⌛ Creating a commit message...\n")
 	response, err := generatorCommand.Execute(config)
 	if err != nil {
 		handleMaxToken(err, cmd, args)
@@ -61,7 +62,7 @@ func handlePostCommit(response string, cmd *cobra.Command, args []string) {
 		handleCopyToClipboard(response)
 
 	case autocommit.RegenerateOption:
-		handleCmd(cmd, args)
+		handleRegenerate(cmd, args)
 
 	case autocommit.AddInstructionOption:
 		handleNewInstructions(cmd, args)
@@ -89,7 +90,22 @@ func handleNewInstructions(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
+	fmt.Printf("💡 Enhancing the message with your new instruction...\n")
 	response, err := addInstructionCommand.Execute(config, instructions)
+	if err != nil {
+		panic(err)
+	}
+
+	printSuccessMessage(response)
+	handlePostCommit(response, cmd, args)
+}
+
+func handleRegenerate(cmd *cobra.Command, args []string) {
+	fmt.Printf("🔄 Regenerating the commit message...\n")
+	response, err := addInstructionCommand.Execute(
+		config,
+		"Recreate the commit message from scratch. As a reminder, stick to the previous rules.",
+	)
 	if err != nil {
 		panic(err)
 	}
