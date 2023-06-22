@@ -34,6 +34,7 @@ func (p *postCommitCliImpl) createActionQuestion() *survey.Question {
 	prompt := survey.Select{
 		Message: "What would you like to do?",
 		Help:    "Pick an option that you would like to do",
+		VimMode: true,
 		Options: []string{
 			CommitChangesOption,
 			RegenerateOption,

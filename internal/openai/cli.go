@@ -46,14 +46,13 @@ func (a *askConfigsCliImpl) createModelQuestion() *survey.Question {
 		Help:    "A model can be an algorithm or a set of algorithms that have been trained on data to make predictions or decisions.",
 		Default: GPT3Dot5Turbo16k,
 		Options: AllowedModels,
+		VimMode: true,
 		Description: func(value string, index int) string {
 			if value == GPT4 || value == GPT432K {
 				return "Beta - May not be available for all users"
 			}
 			return ""
 		},
-
-		VimMode: true,
 	}
 
 	return &survey.Question{
