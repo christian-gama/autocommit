@@ -13,7 +13,9 @@ type Storage struct {
 
 // Create creates a file with the given content
 func (s *Storage) Create(content []byte) error {
-	s.createDirIfNotExists()
+	if err := s.createDirIfNotExists(); err != nil {
+		return err
+	}
 
 	file, err := os.Create(s.filename)
 	if err != nil {
@@ -51,10 +53,11 @@ func (s *Storage) Delete() error {
 	return os.Remove(s.filename)
 }
 
-func (s *Storage) createDirIfNotExists() {
+func (s *Storage) createDirIfNotExists() error {
 	if !s.dirExists() {
-		os.MkdirAll(s.dir, os.ModePerm)
+		return os.MkdirAll(s.dir, os.ModePerm)
 	}
+	return nil
 }
 
 func (s *Storage) dirExists() bool {
@@ -70,5 +73,8 @@ func NewStorage(filename string) *Storage {
 	if err != nil {
 		panic(err)
 	}
-	return &Storage{dir: path.Join(home, ".autocommit"), filename: path.Join(home, ".autocommit", filename)}
+	return &Storage{
+		dir:      path.Join(home, ".autocommit"),
+		filename: path.Join(home, ".autocommit", filename),
+	}
 }
