@@ -6,8 +6,8 @@ import (
 	"github.com/christian-gama/autocommit/internal/storage"
 )
 
-// Repo is the interface that wraps the basic operations with the config file.
-type Repo interface {
+// ConfigRepo is the interface that wraps the basic operations with the config file.
+type ConfigRepo interface {
 	// SaveConfig saves the config file.
 	SaveConfig(config *Config) error
 
@@ -24,18 +24,18 @@ type Repo interface {
 	Exists() bool
 }
 
-// repoImpl is an implementation of Repo.
-type repoImpl struct {
+// configRepoImpl is an implementation of Repo.
+type configRepoImpl struct {
 	storage *storage.Storage
 }
 
 // DeleteConfig implements the Repo interface.
-func (r *repoImpl) DeleteConfig() error {
+func (r *configRepoImpl) DeleteConfig() error {
 	return r.storage.Delete()
 }
 
 // GetConfig implements the Repo interface.
-func (r *repoImpl) GetConfig() (*Config, error) {
+func (r *configRepoImpl) GetConfig() (*Config, error) {
 	content, err := r.storage.Read()
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (r *repoImpl) GetConfig() (*Config, error) {
 }
 
 // SaveConfig implements the Repo interface.
-func (r *repoImpl) SaveConfig(config *Config) error {
+func (r *configRepoImpl) SaveConfig(config *Config) error {
 	content, err := MarshalConfig(config)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (r *repoImpl) SaveConfig(config *Config) error {
 }
 
 // UpdateConfig implements the Repo interface.
-func (r *repoImpl) UpdateConfig(config *Config) error {
+func (r *configRepoImpl) UpdateConfig(config *Config) error {
 	content, err := MarshalConfig(config)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (r *repoImpl) UpdateConfig(config *Config) error {
 }
 
 // Exists implements the Repo interface.
-func (r *repoImpl) Exists() bool {
+func (r *configRepoImpl) Exists() bool {
 	content, err := r.storage.Read()
 	if err != nil {
 		return false
@@ -83,7 +83,7 @@ func (r *repoImpl) Exists() bool {
 	return len(content) > 0
 }
 
-// NewRepo creates a new instance of Repo.
-func NewRepo(storage *storage.Storage) Repo {
-	return &repoImpl{storage: storage}
+// NewConfigRepo creates a new instance of Repo.
+func NewConfigRepo(storage *storage.Storage) ConfigRepo {
+	return &configRepoImpl{storage: storage}
 }

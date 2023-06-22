@@ -39,7 +39,7 @@ type VerifyConfigCommand interface {
 
 // verifyConfigCommandImpl is an implementation of VerifyConfigCommand.
 type verifyConfigCommandImpl struct {
-	repo Repo
+	repo ConfigRepo
 }
 
 // Execute Implements the VerifyConfigCommand interface.
@@ -67,7 +67,7 @@ func (v *verifyConfigCommandImpl) Execute(
 }
 
 // NewVerifyConfigCommand creates a new instance of VerifyConfigCommand.
-func NewVerifyConfigCommand(repo Repo) VerifyConfigCommand {
+func NewVerifyConfigCommand(repo ConfigRepo) VerifyConfigCommand {
 	return &verifyConfigCommandImpl{
 		repo: repo,
 	}
@@ -81,7 +81,7 @@ type ResetConfigCommand interface {
 
 // resetConfigCommandImpl is an implementation of ResetConfigCommand.
 type resetConfigCommandImpl struct {
-	repo Repo
+	repo ConfigRepo
 }
 
 // Execute Implements the ResetConfigCommand interface.
@@ -94,7 +94,7 @@ func (r *resetConfigCommandImpl) Execute() error {
 }
 
 // NewResetConfigCommand creates a new instance of ResetConfigCommand.
-func NewResetConfigCommand(repo Repo) ResetConfigCommand {
+func NewResetConfigCommand(repo ConfigRepo) ResetConfigCommand {
 	return &resetConfigCommandImpl{
 		repo: repo,
 	}
@@ -108,7 +108,7 @@ type UpdateConfigCommand interface {
 
 // updateConfigCommandImpl is an implementation of UpdateConfigCommand.
 type updateConfigCommandImpl struct {
-	repo Repo
+	repo ConfigRepo
 }
 
 // Execute Implements the UpdateConfigCommand interface.
@@ -150,7 +150,7 @@ func (u *updateConfigCommandImpl) Execute(config *Config) error {
 }
 
 // NewUpdateConfigCommand creates a new instance of UpdateConfigCommand.
-func NewUpdateConfigCommand(repo Repo) UpdateConfigCommand {
+func NewUpdateConfigCommand(repo ConfigRepo) UpdateConfigCommand {
 	return &updateConfigCommandImpl{
 		repo: repo,
 	}

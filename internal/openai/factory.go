@@ -2,8 +2,8 @@ package openai
 
 import "github.com/christian-gama/autocommit/internal/storage"
 
-func MakeConfigRepo() Repo {
-	return NewRepo(storage.NewStorage("config.json"))
+func MakeConfigRepo() ConfigRepo {
+	return NewConfigRepo(storage.NewStorage("config.json"))
 }
 
 func MakeAskConfigsCli() AskConfigsCli {

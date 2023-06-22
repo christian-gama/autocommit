@@ -16,7 +16,7 @@ type Chat interface {
 
 // chatImpl is an implementation of Chat.
 type chatImpl struct {
-	repo Repo
+	repo ConfigRepo
 
 	messages []openai.ChatCompletionMessage
 }
@@ -36,7 +36,6 @@ func (c *chatImpl) Response(config *Config, system *System, input string) (strin
 				Messages:    c.createMessages(system, input),
 			},
 		)
-
 	if err != nil {
 		return "", c.checkError(err)
 	}
@@ -77,7 +76,7 @@ func (c *chatImpl) checkError(err error) error {
 }
 
 // NewChat creates a new instance of Chat.
-func NewChat(repo Repo) Chat {
+func NewChat(repo ConfigRepo) Chat {
 	return &chatImpl{
 		repo:     repo,
 		messages: make([]openai.ChatCompletionMessage, 0),
