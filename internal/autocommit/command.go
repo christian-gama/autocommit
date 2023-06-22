@@ -39,7 +39,7 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 
 	system := openai.NewSystem(systemMsg, "CommitMessageGenerator")
 	msg := fmt.Sprintf(
-		"Create a commit message based on the output of 'git diff' below. As a reminder, be concise and always write the texts in imperative mood and in present tense:\n\n%s",
+		"As a reminder, be concise and always write the texts in imperative mood and in present tense. Here is my 'git diff' output: \n\n%s",
 		diff,
 	)
 
