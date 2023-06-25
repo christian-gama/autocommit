@@ -7,7 +7,7 @@
 3. [Installation](#installation)
 4. [Configuration](#configuration)
 5. [Usage](#usage)
-6. [Contributing](#contributing)
+6. [Customization](#customization)
 7. [License](#license)
 
 ## Introduction
@@ -100,11 +100,25 @@ Once you have your API key, run the `autocommit` command. On the first run, Auto
 5. Follow the interactive command-line interface. Choose whether to commit changes to git, generate a new commit message, copy the commit message to the clipboard, or exit the tool.
 6. If you select the commit option, the tool will use the generated message to make a git commit.
 
+## Customization
+AutoCommit provides you with a unique command called `autocommit edit` that allows you to customize the default instructions given to the AI. With this feature, you can tailor AutoCommit's behavior to better match your workflow and style.
+
+### Usage
+Simply run `autocommit edit` in your terminal to open up the current instruction set in your default text editor.
+
+```shell
+autocommit edit
+```
+
+After making your changes, save and exit the editor. AutoCommit will now use your updated instructions when generating commit messages. This allows you to adjust the level of detail, tone, and style of the generated commit messages.
+
+Please note that if the instruction file is deleted or found to be empty, AutoCommit will automatically recreate it with the default instructions.
+
 ## About Conventional Commits
 AutoCommit generates commit messages that follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. It is a good practice to make small, incremental commits that are easy to understand and follow. If you're trying to make a commit that contains multiple changes, consider splitting it into multiple commits - it will make your commit history much cleaner and helps the AI generate better commit messages.
 
 ## Known Issues
-- The tool currently only supports the English language model.
+- The tool currently only supports english generated messages.
 - Sometimes the tool ignores some instructions (gpt-3.5 model).
 - Commits with a lot of changes may produce a meaningless commit message.
 
