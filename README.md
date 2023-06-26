@@ -42,6 +42,7 @@ PS: Commits from this repository were generated using AutoCommit 🤖
     ```
 
 4. Add completion to your shell (Optional):
+
     Fish:
     ```shell
     autocommit completion fish > ~/.config/fish/completions/autocommit.fish
