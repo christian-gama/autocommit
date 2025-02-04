@@ -1,6 +1,8 @@
 package autocommit
 
 import (
+	"os"
+
 	"github.com/christian-gama/autocommit/internal/storage"
 )
 
@@ -33,7 +35,12 @@ func (r *systemMsgRepoImpl) GetSystemMsg() (string, error) {
 
 // SaveSystemMsg implements the SystemMsgRepo interface.
 func (r *systemMsgRepoImpl) SaveSystemMsg() error {
-	return r.storage.Create([]byte(SystemMsg))
+	content, err := os.ReadFile("system_msg.txt")
+	if err != nil {
+		return err
+	}
+
+	return r.storage.Create(content)
 }
 
 // Exists implements the SystemMsgRepo interface.

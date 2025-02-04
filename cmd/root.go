@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/christian-gama/autocommit/internal/autocommit"
@@ -115,16 +116,13 @@ func handleRegenerate(cmd *cobra.Command, args []string) {
 }
 
 func handleMaxToken(err error, cmd *cobra.Command, args []string) {
-	isTokenError := strings.Contains(err.Error(), "Please reduce the length of the messages")
-	isElegibleModel := config.Model == openai.GPT3Dot5Turbo || config.Model == openai.GPT4
+	isTokenError := strings.Contains(
+		err.Error(),
+		"Please reduce the length of the messages",
+	)
 
-	if !isTokenError || !isElegibleModel {
+	if !isTokenError || slices.Contains(openai.AllowedModels, config.Model) {
 		panic(err)
-	}
-
-	modelMap := map[string]string{
-		openai.GPT3Dot5Turbo: openai.GPT3Dot5Turbo16k,
-		openai.GPT4:          openai.GPT432K,
 	}
 
 	answer, err := askToChangeModelCli.Execute()
@@ -133,7 +131,6 @@ func handleMaxToken(err error, cmd *cobra.Command, args []string) {
 	}
 
 	if answer {
-		config.Model = modelMap[config.Model]
 		handleCmd(cmd, args)
 		return
 	}

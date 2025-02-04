@@ -8,10 +8,10 @@ type Config struct {
 }
 
 // NewConfig creates a new Config.
-func NewConfig(apiKey, model string, temperature float32) *Config {
+func NewConfig(apiKey, model string) *Config {
 	return &Config{
 		ApiKey:      apiKey,
-		Temperature: temperature,
+		Temperature: 0.3,
 		Model:       model,
 	}
 }
@@ -28,19 +28,20 @@ func NewSystem(message, name string) *System {
 		Message: message,
 		Name:    name,
 	}
-
 }
 
 const (
-	GPT3Dot5Turbo16k = "gpt-3.5-turbo-16k"
-	GPT3Dot5Turbo    = "gpt-3.5-turbo"
-	GPT4             = "gpt-4"
-	GPT432K          = "gpt-4-32k"
+	O1Mini      = "o1-mini"
+	GPT4o       = "gpt-4o"
+	GPT4oLatest = "chatgpt-4o-latest"
+	GPT4oMini   = "gpt-4o-mini"
+	GPT4Turbo   = "gpt-4-turbo"
 )
 
 var AllowedModels = []string{
-	GPT3Dot5Turbo,
-	GPT3Dot5Turbo16k,
-	GPT4,
-	GPT432K,
+	O1Mini,
+	GPT4o,
+	GPT4oLatest,
+	GPT4oMini,
+	GPT4Turbo,
 }

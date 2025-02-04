@@ -12,26 +12,27 @@ var setCmd = &cobra.Command{
 }
 
 var (
-	OpenAIAPIKey      string
-	OpenAIModel       string
-	OpenAITemperature float32
+	OpenAIAPIKey string
+	OpenAIModel  string
 )
 
 func init() {
-	setCmd.Flags().StringVarP(&OpenAIAPIKey, "api-key", "k", "", "openAI API Key")
+	setCmd.Flags().
+		StringVarP(&OpenAIAPIKey, "api-key", "k", "", "openAI API Key")
 	setCmd.Flags().StringVarP(&OpenAIModel, "model", "m", "", "openAI Model")
-	setCmd.Flags().Float32VarP(&OpenAITemperature, "temperature", "t", 0.0, "openAI Temperature")
 
-	setCmd.RegisterFlagCompletionFunc("model", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return openai.AllowedModels, cobra.ShellCompDirectiveNoFileComp
-	})
+	setCmd.RegisterFlagCompletionFunc(
+		"model",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return openai.AllowedModels, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
 }
 
 func runSet(cmd *cobra.Command, args []string) {
-	config := openai.NewConfig(OpenAIAPIKey, OpenAIModel, OpenAITemperature)
+	config := openai.NewConfig(OpenAIAPIKey, OpenAIModel)
 
 	if err := updateConfigCommand.Execute(config); err != nil {
 		panic(err)
 	}
-
 }

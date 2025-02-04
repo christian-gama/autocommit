@@ -11,7 +11,12 @@ func main() {
 		if err := recover(); err != nil {
 			const redColor = "\033[31m"
 			const resetColor = "\033[0m"
-			fmt.Printf("%sX Sorry, something went wrong: %s%s\n", redColor, err, resetColor)
+			fmt.Printf(
+				"%sX Sorry, something went wrong: %s%s\n",
+				redColor,
+				err,
+				resetColor,
+			)
 		}
 	}()
 
