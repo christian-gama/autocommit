@@ -20,13 +20,21 @@ const (
 type AudioResponseFormat string
 
 const (
-	AudioResponseFormatJSON AudioResponseFormat = "json"
-	AudioResponseFormatSRT  AudioResponseFormat = "srt"
-	AudioResponseFormatVTT  AudioResponseFormat = "vtt"
+	AudioResponseFormatJSON        AudioResponseFormat = "json"
+	AudioResponseFormatText        AudioResponseFormat = "text"
+	AudioResponseFormatSRT         AudioResponseFormat = "srt"
+	AudioResponseFormatVerboseJSON AudioResponseFormat = "verbose_json"
+	AudioResponseFormatVTT         AudioResponseFormat = "vtt"
+)
+
+type TranscriptionTimestampGranularity string
+
+const (
+	TranscriptionTimestampGranularityWord    TranscriptionTimestampGranularity = "word"
+	TranscriptionTimestampGranularitySegment TranscriptionTimestampGranularity = "segment"
 )
 
 // AudioRequest represents a request structure for audio API.
-// ResponseFormat is not supported for now. We only return JSON text, which may be sufficient.
 type AudioRequest struct {
 	Model string
 
@@ -36,15 +44,52 @@ type AudioRequest struct {
 	// Reader is an optional io.Reader when you do not want to use an existing file.
 	Reader io.Reader
 
-	Prompt      string // For translation, it should be in English
-	Temperature float32
-	Language    string // For translation, just do not use it. It seems "en" works, not confirmed...
-	Format      AudioResponseFormat
+	Prompt                 string
+	Temperature            float32
+	Language               string // Only for transcription.
+	Format                 AudioResponseFormat
+	TimestampGranularities []TranscriptionTimestampGranularity // Only for transcription.
 }
 
 // AudioResponse represents a response structure for audio API.
 type AudioResponse struct {
+	Task     string  `json:"task"`
+	Language string  `json:"language"`
+	Duration float64 `json:"duration"`
+	Segments []struct {
+		ID               int     `json:"id"`
+		Seek             int     `json:"seek"`
+		Start            float64 `json:"start"`
+		End              float64 `json:"end"`
+		Text             string  `json:"text"`
+		Tokens           []int   `json:"tokens"`
+		Temperature      float64 `json:"temperature"`
+		AvgLogprob       float64 `json:"avg_logprob"`
+		CompressionRatio float64 `json:"compression_ratio"`
+		NoSpeechProb     float64 `json:"no_speech_prob"`
+		Transient        bool    `json:"transient"`
+	} `json:"segments"`
+	Words []struct {
+		Word  string  `json:"word"`
+		Start float64 `json:"start"`
+		End   float64 `json:"end"`
+	} `json:"words"`
 	Text string `json:"text"`
+
+	httpHeader
+}
+
+type audioTextResponse struct {
+	Text string `json:"text"`
+
+	httpHeader
+}
+
+func (r *audioTextResponse) ToAudioResponse() AudioResponse {
+	return AudioResponse{
+		Text:       r.Text,
+		httpHeader: r.httpHeader,
+	}
 }
 
 // CreateTranscription — API call to create a transcription. Returns transcribed text.
@@ -77,16 +122,23 @@ func (c *Client) callAudioAPI(
 	}
 
 	urlSuffix := fmt.Sprintf("/audio/%s", endpointSuffix)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.fullURL(urlSuffix, request.Model), &formBody)
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL(urlSuffix, withModel(request.Model)),
+		withBody(&formBody),
+		withContentType(builder.FormDataContentType()),
+	)
 	if err != nil {
 		return AudioResponse{}, err
 	}
-	req.Header.Add("Content-Type", builder.FormDataContentType())
 
 	if request.HasJSONResponse() {
 		err = c.sendRequest(req, &response)
 	} else {
-		err = c.sendRequest(req, &response.Text)
+		var textResponse audioTextResponse
+		err = c.sendRequest(req, &textResponse)
+		response = textResponse.ToAudioResponse()
 	}
 	if err != nil {
 		return AudioResponse{}, err
@@ -96,7 +148,7 @@ func (c *Client) callAudioAPI(
 
 // HasJSONResponse returns true if the response format is JSON.
 func (r AudioRequest) HasJSONResponse() bool {
-	return r.Format == "" || r.Format == AudioResponseFormatJSON
+	return r.Format == "" || r.Format == AudioResponseFormatJSON || r.Format == AudioResponseFormatVerboseJSON
 }
 
 // audioMultipartForm creates a form with audio file contents and the name of the model to use for
@@ -141,6 +193,15 @@ func audioMultipartForm(request AudioRequest, b utils.FormBuilder) error {
 		err = b.WriteField("language", request.Language)
 		if err != nil {
 			return fmt.Errorf("writing language: %w", err)
+		}
+	}
+
+	if len(request.TimestampGranularities) > 0 {
+		for _, tg := range request.TimestampGranularities {
+			err = b.WriteField("timestamp_granularities[]", string(tg))
+			if err != nil {
+				return fmt.Errorf("writing timestamp_granularities[]: %w", err)
+			}
 		}
 	}
 

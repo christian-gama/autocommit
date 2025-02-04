@@ -1,30 +1,62 @@
 package openai
 
 import (
-	"bufio"
 	"context"
 	"net/http"
-
-	utils "github.com/sashabaranov/go-openai/internal"
 )
 
 type ChatCompletionStreamChoiceDelta struct {
-	Content string `json:"content,omitempty"`
-	Role    string `json:"role,omitempty"`
+	Content      string        `json:"content,omitempty"`
+	Role         string        `json:"role,omitempty"`
+	FunctionCall *FunctionCall `json:"function_call,omitempty"`
+	ToolCalls    []ToolCall    `json:"tool_calls,omitempty"`
+	Refusal      string        `json:"refusal,omitempty"`
+}
+
+type ChatCompletionStreamChoiceLogprobs struct {
+	Content []ChatCompletionTokenLogprob `json:"content,omitempty"`
+	Refusal []ChatCompletionTokenLogprob `json:"refusal,omitempty"`
+}
+
+type ChatCompletionTokenLogprob struct {
+	Token       string                                 `json:"token"`
+	Bytes       []int64                                `json:"bytes,omitempty"`
+	Logprob     float64                                `json:"logprob,omitempty"`
+	TopLogprobs []ChatCompletionTokenLogprobTopLogprob `json:"top_logprobs"`
+}
+
+type ChatCompletionTokenLogprobTopLogprob struct {
+	Token   string  `json:"token"`
+	Bytes   []int64 `json:"bytes"`
+	Logprob float64 `json:"logprob"`
 }
 
 type ChatCompletionStreamChoice struct {
-	Index        int                             `json:"index"`
-	Delta        ChatCompletionStreamChoiceDelta `json:"delta"`
-	FinishReason string                          `json:"finish_reason"`
+	Index                int                                 `json:"index"`
+	Delta                ChatCompletionStreamChoiceDelta     `json:"delta"`
+	Logprobs             *ChatCompletionStreamChoiceLogprobs `json:"logprobs,omitempty"`
+	FinishReason         FinishReason                        `json:"finish_reason"`
+	ContentFilterResults ContentFilterResults                `json:"content_filter_results,omitempty"`
+}
+
+type PromptFilterResult struct {
+	Index                int                  `json:"index"`
+	ContentFilterResults ContentFilterResults `json:"content_filter_results,omitempty"`
 }
 
 type ChatCompletionStreamResponse struct {
-	ID      string                       `json:"id"`
-	Object  string                       `json:"object"`
-	Created int64                        `json:"created"`
-	Model   string                       `json:"model"`
-	Choices []ChatCompletionStreamChoice `json:"choices"`
+	ID                  string                       `json:"id"`
+	Object              string                       `json:"object"`
+	Created             int64                        `json:"created"`
+	Model               string                       `json:"model"`
+	Choices             []ChatCompletionStreamChoice `json:"choices"`
+	SystemFingerprint   string                       `json:"system_fingerprint"`
+	PromptAnnotations   []PromptAnnotation           `json:"prompt_annotations,omitempty"`
+	PromptFilterResults []PromptFilterResult         `json:"prompt_filter_results,omitempty"`
+	// An optional field that will only be present when you set stream_options: {"include_usage": true} in your request.
+	// When present, it contains a null value except for the last chunk which contains the token usage statistics
+	// for the entire request.
+	Usage *Usage `json:"usage,omitempty"`
 }
 
 // ChatCompletionStream
@@ -41,34 +73,33 @@ func (c *Client) CreateChatCompletionStream(
 	ctx context.Context,
 	request ChatCompletionRequest,
 ) (stream *ChatCompletionStream, err error) {
-	urlSuffix := "/chat/completions"
+	urlSuffix := chatCompletionsSuffix
 	if !checkEndpointSupportsModel(urlSuffix, request.Model) {
 		err = ErrChatCompletionInvalidModel
 		return
 	}
 
 	request.Stream = true
-	req, err := c.newStreamRequest(ctx, "POST", urlSuffix, request, request.Model)
-	if err != nil {
+	if err = validateRequestForO1Models(request); err != nil {
 		return
 	}
 
-	resp, err := c.config.HTTPClient.Do(req) //nolint:bodyclose // body is closed in stream.Close()
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL(urlSuffix, withModel(request.Model)),
+		withBody(request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := sendRequestStream[ChatCompletionStreamResponse](c, req)
 	if err != nil {
 		return
 	}
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
-		return nil, c.handleErrorResp(resp)
-	}
-
 	stream = &ChatCompletionStream{
-		streamReader: &streamReader[ChatCompletionStreamResponse]{
-			emptyMessagesLimit: c.config.EmptyMessagesLimit,
-			reader:             bufio.NewReader(resp.Body),
-			response:           resp,
-			errAccumulator:     utils.NewErrorAccumulator(),
-			unmarshaler:        &utils.JSONUnmarshaler{},
-		},
+		streamReader: resp,
 	}
 	return
 }

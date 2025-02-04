@@ -10,6 +10,11 @@ import (
 	utils "github.com/sashabaranov/go-openai/internal"
 )
 
+var (
+	headerData  = []byte("data: ")
+	errorPrefix = []byte(`data: {"error":`)
+)
+
 type streamable interface {
 	ChatCompletionStreamResponse | CompletionResponse
 }
@@ -22,51 +27,76 @@ type streamReader[T streamable] struct {
 	response       *http.Response
 	errAccumulator utils.ErrorAccumulator
 	unmarshaler    utils.Unmarshaler
+
+	httpHeader
 }
 
 func (stream *streamReader[T]) Recv() (response T, err error) {
-	if stream.isFinished {
-		err = io.EOF
-		return
-	}
-
-	var emptyMessagesCount uint
-
-waitForData:
-	line, err := stream.reader.ReadBytes('\n')
+	rawLine, err := stream.RecvRaw()
 	if err != nil {
-		respErr := stream.unmarshalError()
-		if respErr != nil {
-			err = fmt.Errorf("error, %w", respErr.Error)
-		}
 		return
 	}
 
-	var headerData = []byte("data: ")
-	line = bytes.TrimSpace(line)
-	if !bytes.HasPrefix(line, headerData) {
-		if writeErr := stream.errAccumulator.Write(line); writeErr != nil {
-			err = writeErr
-			return
-		}
-		emptyMessagesCount++
-		if emptyMessagesCount > stream.emptyMessagesLimit {
-			err = ErrTooManyEmptyStreamMessages
-			return
-		}
-
-		goto waitForData
-	}
-
-	line = bytes.TrimPrefix(line, headerData)
-	if string(line) == "[DONE]" {
-		stream.isFinished = true
-		err = io.EOF
+	err = stream.unmarshaler.Unmarshal(rawLine, &response)
+	if err != nil {
 		return
 	}
+	return response, nil
+}
 
-	err = stream.unmarshaler.Unmarshal(line, &response)
-	return
+func (stream *streamReader[T]) RecvRaw() ([]byte, error) {
+	if stream.isFinished {
+		return nil, io.EOF
+	}
+
+	return stream.processLines()
+}
+
+//nolint:gocognit
+func (stream *streamReader[T]) processLines() ([]byte, error) {
+	var (
+		emptyMessagesCount uint
+		hasErrorPrefix     bool
+	)
+
+	for {
+		rawLine, readErr := stream.reader.ReadBytes('\n')
+		if readErr != nil || hasErrorPrefix {
+			respErr := stream.unmarshalError()
+			if respErr != nil {
+				return nil, fmt.Errorf("error, %w", respErr.Error)
+			}
+			return nil, readErr
+		}
+
+		noSpaceLine := bytes.TrimSpace(rawLine)
+		if bytes.HasPrefix(noSpaceLine, errorPrefix) {
+			hasErrorPrefix = true
+		}
+		if !bytes.HasPrefix(noSpaceLine, headerData) || hasErrorPrefix {
+			if hasErrorPrefix {
+				noSpaceLine = bytes.TrimPrefix(noSpaceLine, headerData)
+			}
+			writeErr := stream.errAccumulator.Write(noSpaceLine)
+			if writeErr != nil {
+				return nil, writeErr
+			}
+			emptyMessagesCount++
+			if emptyMessagesCount > stream.emptyMessagesLimit {
+				return nil, ErrTooManyEmptyStreamMessages
+			}
+
+			continue
+		}
+
+		noPrefixLine := bytes.TrimPrefix(noSpaceLine, headerData)
+		if string(noPrefixLine) == "[DONE]" {
+			stream.isFinished = true
+			return nil, io.EOF
+		}
+
+		return noPrefixLine, nil
+	}
 }
 
 func (stream *streamReader[T]) unmarshalError() (errResp *ErrorResponse) {
@@ -83,6 +113,6 @@ func (stream *streamReader[T]) unmarshalError() (errResp *ErrorResponse) {
 	return
 }
 
-func (stream *streamReader[T]) Close() {
-	stream.response.Body.Close()
+func (stream *streamReader[T]) Close() error {
+	return stream.response.Body.Close()
 }

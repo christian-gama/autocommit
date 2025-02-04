@@ -13,6 +13,9 @@ const (
 	CreateImageSize256x256   = "256x256"
 	CreateImageSize512x512   = "512x512"
 	CreateImageSize1024x1024 = "1024x1024"
+	// dall-e-3 supported only.
+	CreateImageSize1792x1024 = "1792x1024"
+	CreateImageSize1024x1792 = "1024x1792"
 )
 
 const (
@@ -20,11 +23,29 @@ const (
 	CreateImageResponseFormatB64JSON = "b64_json"
 )
 
+const (
+	CreateImageModelDallE2 = "dall-e-2"
+	CreateImageModelDallE3 = "dall-e-3"
+)
+
+const (
+	CreateImageQualityHD       = "hd"
+	CreateImageQualityStandard = "standard"
+)
+
+const (
+	CreateImageStyleVivid   = "vivid"
+	CreateImageStyleNatural = "natural"
+)
+
 // ImageRequest represents the request structure for the image API.
 type ImageRequest struct {
 	Prompt         string `json:"prompt,omitempty"`
+	Model          string `json:"model,omitempty"`
 	N              int    `json:"n,omitempty"`
+	Quality        string `json:"quality,omitempty"`
 	Size           string `json:"size,omitempty"`
+	Style          string `json:"style,omitempty"`
 	ResponseFormat string `json:"response_format,omitempty"`
 	User           string `json:"user,omitempty"`
 }
@@ -33,18 +54,26 @@ type ImageRequest struct {
 type ImageResponse struct {
 	Created int64                    `json:"created,omitempty"`
 	Data    []ImageResponseDataInner `json:"data,omitempty"`
+
+	httpHeader
 }
 
 // ImageResponseDataInner represents a response data structure for image API.
 type ImageResponseDataInner struct {
-	URL     string `json:"url,omitempty"`
-	B64JSON string `json:"b64_json,omitempty"`
+	URL           string `json:"url,omitempty"`
+	B64JSON       string `json:"b64_json,omitempty"`
+	RevisedPrompt string `json:"revised_prompt,omitempty"`
 }
 
 // CreateImage - API call to create an image. This is the main endpoint of the DALL-E API.
 func (c *Client) CreateImage(ctx context.Context, request ImageRequest) (response ImageResponse, err error) {
 	urlSuffix := "/images/generations"
-	req, err := c.requestBuilder.Build(ctx, http.MethodPost, c.fullURL(urlSuffix), request)
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL(urlSuffix, withModel(request.Model)),
+		withBody(request),
+	)
 	if err != nil {
 		return
 	}
@@ -58,6 +87,7 @@ type ImageEditRequest struct {
 	Image          *os.File `json:"image,omitempty"`
 	Mask           *os.File `json:"mask,omitempty"`
 	Prompt         string   `json:"prompt,omitempty"`
+	Model          string   `json:"model,omitempty"`
 	N              int      `json:"n,omitempty"`
 	Size           string   `json:"size,omitempty"`
 	ResponseFormat string   `json:"response_format,omitempty"`
@@ -107,13 +137,17 @@ func (c *Client) CreateEditImage(ctx context.Context, request ImageEditRequest) 
 		return
 	}
 
-	urlSuffix := "/images/edits"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.fullURL(urlSuffix), body)
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL("/images/edits", withModel(request.Model)),
+		withBody(body),
+		withContentType(builder.FormDataContentType()),
+	)
 	if err != nil {
 		return
 	}
 
-	req.Header.Set("Content-Type", builder.FormDataContentType())
 	err = c.sendRequest(req, &response)
 	return
 }
@@ -121,6 +155,7 @@ func (c *Client) CreateEditImage(ctx context.Context, request ImageEditRequest) 
 // ImageVariRequest represents the request structure for the image API.
 type ImageVariRequest struct {
 	Image          *os.File `json:"image,omitempty"`
+	Model          string   `json:"model,omitempty"`
 	N              int      `json:"n,omitempty"`
 	Size           string   `json:"size,omitempty"`
 	ResponseFormat string   `json:"response_format,omitempty"`
@@ -158,14 +193,17 @@ func (c *Client) CreateVariImage(ctx context.Context, request ImageVariRequest) 
 		return
 	}
 
-	//https://platform.openai.com/docs/api-reference/images/create-variation
-	urlSuffix := "/images/variations"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.fullURL(urlSuffix), body)
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL("/images/variations", withModel(request.Model)),
+		withBody(body),
+		withContentType(builder.FormDataContentType()),
+	)
 	if err != nil {
 		return
 	}
 
-	req.Header.Set("Content-Type", builder.FormDataContentType())
 	err = c.sendRequest(req, &response)
 	return
 }

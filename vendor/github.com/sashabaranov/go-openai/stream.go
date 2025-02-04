@@ -1,12 +1,9 @@
 package openai
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"net/http"
-
-	utils "github.com/sashabaranov/go-openai/internal"
 )
 
 var (
@@ -37,27 +34,22 @@ func (c *Client) CreateCompletionStream(
 	}
 
 	request.Stream = true
-	req, err := c.newStreamRequest(ctx, "POST", urlSuffix, request, request.Model)
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL(urlSuffix, withModel(request.Model)),
+		withBody(request),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := sendRequestStream[CompletionResponse](c, req)
 	if err != nil {
 		return
 	}
-
-	resp, err := c.config.HTTPClient.Do(req) //nolint:bodyclose // body is closed in stream.Close()
-	if err != nil {
-		return
-	}
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusBadRequest {
-		return nil, c.handleErrorResp(resp)
-	}
-
 	stream = &CompletionStream{
-		streamReader: &streamReader[CompletionResponse]{
-			emptyMessagesLimit: c.config.EmptyMessagesLimit,
-			reader:             bufio.NewReader(resp.Body),
-			response:           resp,
-			errAccumulator:     utils.NewErrorAccumulator(),
-			unmarshaler:        &utils.JSONUnmarshaler{},
-		},
+		streamReader: resp,
 	}
 	return
 }

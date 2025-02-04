@@ -2,6 +2,7 @@ package openai
 
 import (
 	"context"
+	"errors"
 	"net/http"
 )
 
@@ -13,10 +14,24 @@ import (
 // If you use text-moderation-stable, we will provide advanced notice before updating the model.
 // Accuracy of text-moderation-stable may be slightly lower than for text-moderation-latest.
 const (
-	ModerationTextStable = "text-moderation-stable"
-	ModerationTextLatest = "text-moderation-latest"
-	ModerationText001    = "text-moderation-001"
+	ModerationOmniLatest   = "omni-moderation-latest"
+	ModerationOmni20240926 = "omni-moderation-2024-09-26"
+	ModerationTextStable   = "text-moderation-stable"
+	ModerationTextLatest   = "text-moderation-latest"
+	// Deprecated: use ModerationTextStable and ModerationTextLatest instead.
+	ModerationText001 = "text-moderation-001"
 )
+
+var (
+	ErrModerationInvalidModel = errors.New("this model is not supported with moderation, please use text-moderation-stable or text-moderation-latest instead") //nolint:lll
+)
+
+var validModerationModel = map[string]struct{}{
+	ModerationOmniLatest:   {},
+	ModerationOmni20240926: {},
+	ModerationTextStable:   {},
+	ModerationTextLatest:   {},
+}
 
 // ModerationRequest represents a request structure for moderation API.
 type ModerationRequest struct {
@@ -33,24 +48,32 @@ type Result struct {
 
 // ResultCategories represents Categories of Result.
 type ResultCategories struct {
-	Hate            bool `json:"hate"`
-	HateThreatening bool `json:"hate/threatening"`
-	SelfHarm        bool `json:"self-harm"`
-	Sexual          bool `json:"sexual"`
-	SexualMinors    bool `json:"sexual/minors"`
-	Violence        bool `json:"violence"`
-	ViolenceGraphic bool `json:"violence/graphic"`
+	Hate                  bool `json:"hate"`
+	HateThreatening       bool `json:"hate/threatening"`
+	Harassment            bool `json:"harassment"`
+	HarassmentThreatening bool `json:"harassment/threatening"`
+	SelfHarm              bool `json:"self-harm"`
+	SelfHarmIntent        bool `json:"self-harm/intent"`
+	SelfHarmInstructions  bool `json:"self-harm/instructions"`
+	Sexual                bool `json:"sexual"`
+	SexualMinors          bool `json:"sexual/minors"`
+	Violence              bool `json:"violence"`
+	ViolenceGraphic       bool `json:"violence/graphic"`
 }
 
 // ResultCategoryScores represents CategoryScores of Result.
 type ResultCategoryScores struct {
-	Hate            float32 `json:"hate"`
-	HateThreatening float32 `json:"hate/threatening"`
-	SelfHarm        float32 `json:"self-harm"`
-	Sexual          float32 `json:"sexual"`
-	SexualMinors    float32 `json:"sexual/minors"`
-	Violence        float32 `json:"violence"`
-	ViolenceGraphic float32 `json:"violence/graphic"`
+	Hate                  float32 `json:"hate"`
+	HateThreatening       float32 `json:"hate/threatening"`
+	Harassment            float32 `json:"harassment"`
+	HarassmentThreatening float32 `json:"harassment/threatening"`
+	SelfHarm              float32 `json:"self-harm"`
+	SelfHarmIntent        float32 `json:"self-harm/intent"`
+	SelfHarmInstructions  float32 `json:"self-harm/instructions"`
+	Sexual                float32 `json:"sexual"`
+	SexualMinors          float32 `json:"sexual/minors"`
+	Violence              float32 `json:"violence"`
+	ViolenceGraphic       float32 `json:"violence/graphic"`
 }
 
 // ModerationResponse represents a response structure for moderation API.
@@ -58,12 +81,23 @@ type ModerationResponse struct {
 	ID      string   `json:"id"`
 	Model   string   `json:"model"`
 	Results []Result `json:"results"`
+
+	httpHeader
 }
 
 // Moderations — perform a moderation api call over a string.
 // Input can be an array or slice but a string will reduce the complexity.
 func (c *Client) Moderations(ctx context.Context, request ModerationRequest) (response ModerationResponse, err error) {
-	req, err := c.requestBuilder.Build(ctx, http.MethodPost, c.fullURL("/moderations", request.Model), request)
+	if _, ok := validModerationModel[request.Model]; len(request.Model) > 0 && !ok {
+		err = ErrModerationInvalidModel
+		return
+	}
+	req, err := c.newRequest(
+		ctx,
+		http.MethodPost,
+		c.fullURL("/moderations", withModel(request.Model)),
+		withBody(&request),
+	)
 	if err != nil {
 		return
 	}
