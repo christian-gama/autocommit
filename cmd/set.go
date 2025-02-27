@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/christian-gama/autocommit/internal/openai"
+	"github.com/christian-gama/autocommit/internal/llm/openai"
 	"github.com/spf13/cobra"
 )
 
@@ -30,6 +30,9 @@ func init() {
 }
 
 func runSet(cmd *cobra.Command, args []string) {
+	// We're still providing a specific OpenAI config here
+	// In a more complete refactoring, we might want to make this more generic too
+	// by determining which provider to configure based on a flag
 	config := openai.NewConfig(OpenAIAPIKey, OpenAIModel)
 
 	if err := updateConfigCommand.Execute(config); err != nil {

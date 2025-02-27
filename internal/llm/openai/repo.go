@@ -1,27 +1,16 @@
 package openai
 
 import (
+	"encoding/json"
 	"errors"
 
+	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/christian-gama/autocommit/internal/storage"
 )
 
 // ConfigRepo is the interface that wraps the basic operations with the config file.
 type ConfigRepo interface {
-	// SaveConfig saves the config file.
-	SaveConfig(config *Config) error
-
-	// GetConfig returns the config file.
-	GetConfig() (*Config, error)
-
-	// DeleteConfig deletes the config file.
-	DeleteConfig() error
-
-	// UpdateConfig updates the config file.
-	UpdateConfig(config *Config) error
-
-	// Exists returns true if the config file exists.
-	Exists() bool
+	llm.ConfigRepo
 }
 
 // configRepoImpl is an implementation of Repo.
@@ -35,13 +24,13 @@ func (r *configRepoImpl) DeleteConfig() error {
 }
 
 // GetConfig implements the Repo interface.
-func (r *configRepoImpl) GetConfig() (*Config, error) {
+func (r *configRepoImpl) GetConfig() (llm.Config, error) {
 	content, err := r.storage.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	config, err := UnmarshalConfig(content)
+	config, err := unmarshalConfig(content)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +43,13 @@ func (r *configRepoImpl) GetConfig() (*Config, error) {
 }
 
 // SaveConfig implements the Repo interface.
-func (r *configRepoImpl) SaveConfig(config *Config) error {
-	content, err := MarshalConfig(config)
+func (r *configRepoImpl) SaveConfig(config llm.Config) error {
+	openAIConfig, ok := config.(*Config)
+	if !ok {
+		return errors.New("invalid config type: expected OpenAI config")
+	}
+
+	content, err := marshalConfig(openAIConfig)
 	if err != nil {
 		return err
 	}
@@ -64,8 +58,13 @@ func (r *configRepoImpl) SaveConfig(config *Config) error {
 }
 
 // UpdateConfig implements the Repo interface.
-func (r *configRepoImpl) UpdateConfig(config *Config) error {
-	content, err := MarshalConfig(config)
+func (r *configRepoImpl) UpdateConfig(config llm.Config) error {
+	openAIConfig, ok := config.(*Config)
+	if !ok {
+		return errors.New("invalid config type: expected OpenAI config")
+	}
+
+	content, err := marshalConfig(openAIConfig)
 	if err != nil {
 		return err
 	}
@@ -81,6 +80,21 @@ func (r *configRepoImpl) Exists() bool {
 	}
 
 	return len(content) > 0
+}
+
+// unmarshalConfig unmarshals a Config from a byte slice.
+func unmarshalConfig(data []byte) (*Config, error) {
+	var config Config
+	if err := json.Unmarshal(data, &config); err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}
+
+// marshalConfig marshals a Config into a byte slice.
+func marshalConfig(config *Config) ([]byte, error) {
+	return json.Marshal(config)
 }
 
 // NewConfigRepo creates a new instance of Repo.

@@ -2,11 +2,15 @@ package autocommit
 
 import (
 	"github.com/christian-gama/autocommit/internal/git"
-	"github.com/christian-gama/autocommit/internal/openai"
+	"github.com/christian-gama/autocommit/internal/llm/openai"
 	"github.com/christian-gama/autocommit/internal/storage"
 )
 
-var chatCommand = openai.MakeChatCommand()
+// Factory holds LLM implementation factory
+var factory = openai.NewFactory()
+
+// Get shared instances
+var chatCommand = factory.MakeChatCommand()
 
 func MakeGeneratorCommand() GeneratorCommand {
 	diffCommand := git.MakeDiffCommand()

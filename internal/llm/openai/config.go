@@ -7,26 +7,17 @@ type Config struct {
 	Model       string  `json:"openai_model"`
 }
 
+// Provider returns the name of the LLM provider
+func (c *Config) Provider() string {
+	return "openai"
+}
+
 // NewConfig creates a new Config.
 func NewConfig(apiKey, model string) *Config {
 	return &Config{
 		ApiKey:      apiKey,
 		Temperature: 0.3,
 		Model:       model,
-	}
-}
-
-// System is the system configuration for the OpenAI API - the initial message and name.
-type System struct {
-	Message string
-	Name    string
-}
-
-// NewSystem creates a new System.
-func NewSystem(message, name string) *System {
-	return &System{
-		Message: message,
-		Name:    name,
 	}
 }
 

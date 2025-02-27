@@ -5,14 +5,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/sashabaranov/go-openai"
 )
-
-// Chat is the interface that wraps the Response method.
-type Chat interface {
-	// Response returns the response from the AI.
-	Response(config *Config, system *System, input string) (string, error)
-}
 
 // chatImpl is an implementation of Chat.
 type chatImpl struct {
@@ -21,18 +16,27 @@ type chatImpl struct {
 	messages []openai.ChatCompletionMessage
 }
 
-// Chat implements the Chat interface.
-func (c *chatImpl) Response(config *Config, system *System, input string) (string, error) {
+// Response implements the Chat interface.
+func (c *chatImpl) Response(
+	config llm.Config,
+	system *llm.System,
+	input string,
+) (string, error) {
+	openAIConfig, ok := config.(*Config)
+	if !ok {
+		return "", errors.New("invalid config type: expected OpenAI config")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 18*time.Second)
 	defer cancel()
 
 	response, err := openai.
-		NewClient(config.ApiKey).
+		NewClient(openAIConfig.ApiKey).
 		CreateChatCompletion(
 			ctx,
 			openai.ChatCompletionRequest{
-				Model:       config.Model,
-				Temperature: config.Temperature,
+				Model:       openAIConfig.Model,
+				Temperature: openAIConfig.Temperature,
 				Messages:    c.createMessages(system, input),
 			},
 		)
@@ -49,7 +53,10 @@ func (c *chatImpl) Response(config *Config, system *System, input string) (strin
 	return response.Choices[0].Message.Content, nil
 }
 
-func (c *chatImpl) createMessages(system *System, userInput string) []openai.ChatCompletionMessage {
+func (c *chatImpl) createMessages(
+	system *llm.System,
+	userInput string,
+) []openai.ChatCompletionMessage {
 	if len(c.messages) == 0 && system != nil {
 		c.messages = append(c.messages, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleSystem,
@@ -76,7 +83,7 @@ func (c *chatImpl) checkError(err error) error {
 }
 
 // NewChat creates a new instance of Chat.
-func NewChat(repo ConfigRepo) Chat {
+func NewChat(repo ConfigRepo) llm.Chat {
 	return &chatImpl{
 		repo:     repo,
 		messages: make([]openai.ChatCompletionMessage, 0),

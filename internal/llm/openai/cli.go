@@ -3,18 +3,14 @@ package openai
 import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/christian-gama/autocommit/internal/helpers"
+	"github.com/christian-gama/autocommit/internal/llm"
 )
-
-// AskConfigsCli is a command line interface that asks the user for the configuration.
-type AskConfigsCli interface {
-	Execute() (*Config, error)
-}
 
 // askConfigsCliImpl is the implementation of AskConfigsCli.
 type askConfigsCliImpl struct{}
 
 // Execute asks the user for the configuration.
-func (a *askConfigsCliImpl) Execute() (*Config, error) {
+func (a *askConfigsCliImpl) Execute() (llm.Config, error) {
 	questions := helpers.CreateQuestions(
 		a.createApiKeyQuestion,
 		a.createModelQuestion,
@@ -66,14 +62,11 @@ func (a *askConfigsCliImpl) createApiKeyQuestion() *survey.Question {
 }
 
 // NewAskConfigsCli creates a new instance of AskConfigsCli.
-func NewAskConfigsCli() AskConfigsCli {
+func NewAskConfigsCli() llm.AskConfigsCli {
 	return &askConfigsCliImpl{}
 }
 
-type AskToChangeModelCli interface {
-	Execute() (bool, error)
-}
-
+// askToChangeModelCliImpl implements AskToChangeModelCli
 type askToChangeModelCliImpl struct{}
 
 func (a *askToChangeModelCliImpl) Execute() (bool, error) {
@@ -108,6 +101,7 @@ func (a *askToChangeModelCliImpl) createModelQuestion() *survey.Question {
 	}
 }
 
-func NewAskToChangeModelCli() AskToChangeModelCli {
+// NewAskToChangeModelCli creates a new AskToChangeModelCli
+func NewAskToChangeModelCli() llm.AskToChangeModelCli {
 	return &askToChangeModelCliImpl{}
 }

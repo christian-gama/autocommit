@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/christian-gama/autocommit/internal/autocommit"
-	"github.com/christian-gama/autocommit/internal/openai"
+	"github.com/christian-gama/autocommit/internal/llm/openai"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,12 @@ func runCmd(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	fmt.Printf("🤖 Using model: %s\n", config.Model)
+	// Use type assertion to get provider-specific information for display
+	if openAIConfig, ok := config.(*openai.Config); ok {
+		fmt.Printf("🤖 Using model: %s\n", openAIConfig.Model)
+	} else {
+		fmt.Printf("🤖 Using %s provider\n", config.Provider())
+	}
 
 	handleCmd(cmd, args)
 }
@@ -116,12 +121,16 @@ func handleRegenerate(cmd *cobra.Command, args []string) {
 }
 
 func handleMaxToken(err error, cmd *cobra.Command, args []string) {
+	// This is OpenAI-specific error handling
+	// In a more generic solution, we might want to make this provider-specific too
 	isTokenError := strings.Contains(
 		err.Error(),
 		"Please reduce the length of the messages",
 	)
 
-	if !isTokenError || slices.Contains(openai.AllowedModels, config.Model) {
+	openAIConfig, isOpenAI := config.(*openai.Config)
+	if !isTokenError || !isOpenAI ||
+		slices.Contains(openai.AllowedModels, openAIConfig.Model) {
 		panic(err)
 	}
 
