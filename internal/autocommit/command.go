@@ -9,6 +9,7 @@ import (
 	"runtime"
 
 	"github.com/christian-gama/autocommit/internal/git"
+	"github.com/christian-gama/autocommit/internal/ls"
 	"github.com/christian-gama/autocommit/internal/openai"
 )
 
@@ -32,6 +33,11 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 		return "", err
 	}
 
+	projectStructure, err := ls.ListProjectStructure()
+	if err != nil {
+		return "", err
+	}
+
 	systemMsg, err := g.systemMsgRepo.GetSystemMsg()
 	if err != nil {
 		return "", err
@@ -39,7 +45,14 @@ func (g *generatorCommandImpl) Execute(config *openai.Config) (string, error) {
 
 	system := openai.NewSystem(systemMsg, "CommitMessageGenerator")
 	msg := fmt.Sprintf(
-		"As a reminder, be concise and always write the texts in imperative mood and in present tense. Here is the 'git diff' output: \n\n%s",
+		`As a reminder, be concise and always write the texts in imperative mood and in present tense.
+
+Current project structure:
+%s
+
+Git diff output:
+%s`,
+		projectStructure,
 		diff,
 	)
 
