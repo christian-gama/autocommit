@@ -33,7 +33,7 @@ func runCmd(cmd *cobra.Command, args []string) {
 		panic(err)
 	}
 
-	fmt.Printf("🤖 Using model: %s\n", config.Model)
+	fmt.Printf("🤖 Using model: %s\n", config.GetModel())
 
 	handleCmd(cmd, args)
 }
@@ -121,7 +121,7 @@ func handleMaxToken(err error, cmd *cobra.Command, args []string) {
 		"Please reduce the length of the messages",
 	)
 
-	if !isTokenError || slices.Contains(openai.AllowedModels, config.Model) {
+	if !isTokenError || slices.Contains(openai.AllowedModels, config.GetModel()) {
 		panic(err)
 	}
 
