@@ -8,6 +8,7 @@ import (
 
 	"github.com/christian-gama/autocommit/internal/autocommit"
 	"github.com/christian-gama/autocommit/internal/openai"
+	"github.com/christian-gama/autocommit/internal/provider"
 	"github.com/spf13/cobra"
 )
 
@@ -23,6 +24,13 @@ func Execute() error {
 }
 
 func runCmd(cmd *cobra.Command, args []string) {
+	llmProvider := loadProvider()
+	providerFactory := provider.NewProviderFactory(llmProvider)
+
+	verifyConfigCommand := providerFactory.MakeVerifyConfigCommand()
+	askConfigsCli := providerFactory.MakeAskConfigsCli()
+	systemMsgHealthCheck := autocommit.MakeSystemMsgHealthCheckCommand()
+
 	var err error
 	config, err = verifyConfigCommand.Execute(askConfigsCli.Execute)
 	if err != nil {
@@ -35,10 +43,10 @@ func runCmd(cmd *cobra.Command, args []string) {
 
 	fmt.Printf("🤖 Using model: %s\n", config.GetModel())
 
-	handleCmd(cmd, args)
+	handleCmd(generatorCommand, cmd, args)
 }
 
-func handleCmd(cmd *cobra.Command, args []string) {
+func handleCmd(generator autocommit.GeneratorCommand, cmd *cobra.Command, args []string) {
 	fmt.Printf("⌛ Creating a commit message...\n")
 	response, err := generatorCommand.Execute(config)
 	if err != nil {
@@ -131,7 +139,7 @@ func handleMaxToken(err error, cmd *cobra.Command, args []string) {
 	}
 
 	if answer {
-		handleCmd(cmd, args)
+		handleCmd(generatorCommand, cmd, args)
 		return
 	}
 
