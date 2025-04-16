@@ -10,6 +10,11 @@ type Provider interface {
 	UpdateConfigCommand() UpdateConfigCommand
 	ChatCommand() ChatCommand
 	GetValidationURL() string
+	GetDefaultModel() string
+	GetModelHelpText() string
+	GetApiKeyLabel() string
+	GetApiKeyHelpText() string
+	NewConfig(apiKey string, model string) Config
 	ValidateModel(string) error
 	ValidateTemperature(float32) error
 }

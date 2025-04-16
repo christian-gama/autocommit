@@ -1,4 +1,4 @@
-package openai
+package groq
 
 import (
 	"context"
@@ -8,12 +8,6 @@ import (
 	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/sashabaranov/go-openai"
 )
-
-// // Chat is the interface that wraps the Response method.
-// type Chat interface {
-// 	// Response returns the response from the AI.
-// 	Response(config *OpenAIConfig, system *System, input string) (string, error)
-// }
 
 // chatImpl is an implementation of Chat.
 type chatImpl struct {

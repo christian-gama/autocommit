@@ -3,26 +3,27 @@ package openai
 import (
 	"errors"
 
+	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/christian-gama/autocommit/internal/storage"
 )
 
-// ConfigRepo is the interface that wraps the basic operations with the config file.
-type ConfigRepo interface {
-	// SaveConfig saves the config file.
-	SaveConfig(config *Config) error
-
-	// GetConfig returns the config file.
-	GetConfig() (*Config, error)
-
-	// DeleteConfig deletes the config file.
-	DeleteConfig() error
-
-	// UpdateConfig updates the config file.
-	UpdateConfig(config *Config) error
-
-	// Exists returns true if the config file exists.
-	Exists() bool
-}
+// // ConfigRepo is the interface that wraps the basic operations with the config file.
+// type ConfigRepo interface {
+// 	// SaveConfig saves the config file.
+// 	SaveConfig(config *OpenAIConfig) error
+//
+// 	// GetConfig returns the config file.
+// 	GetConfig() (*OpenAIConfig, error)
+//
+// 	// DeleteConfig deletes the config file.
+// 	DeleteConfig() error
+//
+// 	// UpdateConfig updates the config file.
+// 	UpdateConfig(config *OpenAIConfig) error
+//
+// 	// Exists returns true if the config file exists.
+// 	Exists() bool
+// }
 
 // configRepoImpl is an implementation of Repo.
 type configRepoImpl struct {
@@ -35,13 +36,13 @@ func (r *configRepoImpl) DeleteConfig() error {
 }
 
 // GetConfig implements the Repo interface.
-func (r *configRepoImpl) GetConfig() (*Config, error) {
+func (r *configRepoImpl) GetConfig() (llm.Config, error) {
 	content, err := r.storage.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	config, err := UnmarshalConfig(content)
+	config, err := llm.UnmarshalConfig(content)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +55,9 @@ func (r *configRepoImpl) GetConfig() (*Config, error) {
 }
 
 // SaveConfig implements the Repo interface.
-func (r *configRepoImpl) SaveConfig(config *Config) error {
-	content, err := MarshalConfig(config)
+func (r *configRepoImpl) SaveConfig(config llm.Config) error {
+	openAIConfig := config.(*OpenAIConfig)
+	content, err := llm.MarshalConfig(openAIConfig)
 	if err != nil {
 		return err
 	}
@@ -64,8 +66,9 @@ func (r *configRepoImpl) SaveConfig(config *Config) error {
 }
 
 // UpdateConfig implements the Repo interface.
-func (r *configRepoImpl) UpdateConfig(config *Config) error {
-	content, err := MarshalConfig(config)
+func (r *configRepoImpl) UpdateConfig(config llm.Config) error {
+	openAIConfig := config.(*OpenAIConfig)
+	content, err := llm.MarshalConfig(openAIConfig)
 	if err != nil {
 		return err
 	}
@@ -84,6 +87,6 @@ func (r *configRepoImpl) Exists() bool {
 }
 
 // NewConfigRepo creates a new instance of Repo.
-func NewConfigRepo(storage *storage.Storage) ConfigRepo {
+func NewConfigRepo(storage *storage.Storage) llm.ConfigRepo {
 	return &configRepoImpl{storage: storage}
 }
