@@ -14,11 +14,11 @@ func NewOpenAIProvider() *OpenAIProvider {
 }
 
 func (o *OpenAIProvider) MakeConfigRepo() llm.ConfigRepo {
-	return NewConfigRepo(storage.NewStorage("config.json"))
+	return llm.NewConfigRepo(storage.NewStorage("config.json"))
 }
 
 func (o *OpenAIProvider) ChatCommand() llm.ChatCommand {
-	return NewChatCommand(NewChat(o.MakeConfigRepo()))
+	return llm.NewChatCommand(NewChat(o.MakeConfigRepo()))
 }
 
 func (o *OpenAIProvider) AskConfigsCli() llm.AskConfigsCli {

@@ -12,5 +12,4 @@ package openai
 //
 // // MarshalConfig marshals a Config into a byte slice.
 // func MarshalConfig(config *OpenAIConfig) ([]byte, error) {
-// 	return json.Marshal(config)
 // }
