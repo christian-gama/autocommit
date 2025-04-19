@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/christian-gama/autocommit/internal/helpers"
+	"github.com/christian-gama/autocommit/internal/llm"
 )
 
 // PostCommitCli is an interface for executing post commit CLI operations.
@@ -13,12 +13,14 @@ type PostCommitCli interface {
 	Execute() (string, error)
 }
 
+var provider llm.Provider
+
 // postCommitCliImpl is an implementation of PostCommitCli.
 type postCommitCliImpl struct{}
 
 // Execute implements the PostCommitCli interface.
 func (p *postCommitCliImpl) Execute() (string, error) {
-	questions := helpers.CreateQuestions(p.createActionQuestion)
+	questions := llm.CreateQuestions(provider, p.createActionQuestion)
 
 	var option string
 
@@ -30,7 +32,7 @@ func (p *postCommitCliImpl) Execute() (string, error) {
 	return option, nil
 }
 
-func (p *postCommitCliImpl) createActionQuestion() *survey.Question {
+func (p *postCommitCliImpl) createActionQuestion(provider llm.Provider) *survey.Question {
 	prompt := survey.Select{
 		Message: "What would you like to do?",
 		Help:    "Pick an option that you would like to do",
@@ -71,7 +73,7 @@ type addInstructionCliImpl struct{}
 
 // Execute implements the AddInstructionCli interface.
 func (a *addInstructionCliImpl) Execute() (string, error) {
-	questions := helpers.CreateQuestions(a.createActionQuestion)
+	questions := llm.CreateQuestions(provider, a.createActionQuestion)
 
 	var option string
 
@@ -83,7 +85,7 @@ func (a *addInstructionCliImpl) Execute() (string, error) {
 	return option, nil
 }
 
-func (a *addInstructionCliImpl) createActionQuestion() *survey.Question {
+func (a *addInstructionCliImpl) createActionQuestion(provider llm.Provider) *survey.Question {
 	prompt := survey.Input{
 		Message: "Add your your instruction",
 		Help:    "This instruction will be used to regenerate your commit message based on your instructions.",

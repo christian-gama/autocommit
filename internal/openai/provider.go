@@ -1,6 +1,7 @@
 package openai
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/christian-gama/autocommit/internal/llm"
@@ -14,7 +15,7 @@ func NewOpenAIProvider() *OpenAIProvider {
 }
 
 func (o *OpenAIProvider) MakeConfigRepo() llm.ConfigRepo {
-	return llm.NewConfigRepo(storage.NewStorage("config.json"))
+	return llm.NewConfigRepo(storage.NewStorage("config.json"), o)
 }
 
 func (o *OpenAIProvider) ChatCommand() llm.ChatCommand {
@@ -94,6 +95,25 @@ func (o *OpenAIProvider) ValidateApiKey(apiKey string) error {
 
 func (o *OpenAIProvider) GetApiKeyLabel() string {
 	return "OpenAI API Key"
+}
+
+// UnmarshalConfig unmarshals a Config from a byte slice.
+func (o *OpenAIProvider) UnmarshalConfig(data []byte) (llm.Config, error) {
+	var openaiConfig OpenAIConfig
+	if err := json.Unmarshal(data, &openaiConfig); err != nil {
+		return nil, err
+	}
+
+	return &openaiConfig, nil
+}
+
+// MarshalConfig marshals a Config into a byte slice.
+func (o *OpenAIProvider) MarshalConfig(config llm.Config) ([]byte, error) {
+	openaiConfig, ok := config.(*OpenAIConfig)
+	if !ok {
+		return nil, fmt.Errorf("invalid config type %T", config)
+	}
+	return json.Marshal(openaiConfig)
 }
 
 func (o *OpenAIProvider) NewConfig(apiKey string, model string) llm.Config {

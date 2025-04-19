@@ -1,6 +1,7 @@
 package groq
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/christian-gama/autocommit/internal/llm"
@@ -13,12 +14,31 @@ func NewGroqProvider() *GroqProvider {
 	return &GroqProvider{}
 }
 
+// UnmarshalConfig unmarshals a Config from a byte slice.
+func (o *GroqProvider) UnmarshalConfig(data []byte) (llm.Config, error) {
+	var groqConfig GroqConfig
+	if err := json.Unmarshal(data, &groqConfig); err != nil {
+		return nil, err
+	}
+
+	return &groqConfig, nil
+}
+
+// MarshalConfig marshals a Config into a byte slice.
+func (o *GroqProvider) MarshalConfig(config llm.Config) ([]byte, error) {
+	groqconfig, ok := config.(*GroqConfig)
+	if !ok {
+		return nil, fmt.Errorf("invalid config type %T", config)
+	}
+	return json.Marshal(groqconfig)
+}
+
 func (o *GroqProvider) MakeConfigRepo() llm.ConfigRepo {
-	return llm.NewConfigRepo(storage.NewStorage("config.json"))
+	return llm.NewConfigRepo(storage.NewStorage("config.json"), o)
 }
 
 func (o *GroqProvider) ChatCommand() llm.ChatCommand {
-	return llm.NewChatCommand(NewChat(o.MakeConfigRepo()))
+	return llm.NewChatCommand(NewGroqChat(o.MakeConfigRepo()))
 }
 
 func (o *GroqProvider) AskConfigsCli() llm.AskConfigsCli {

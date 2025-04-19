@@ -6,6 +6,9 @@ github.com/AlecAivazis/survey/v2/terminal
 # github.com/atotto/clipboard v0.1.4
 ## explicit
 github.com/atotto/clipboard
+# github.com/hasitpbhatt/groq-go v0.0.0-20250222082140-3266472dd038
+## explicit; go 1.20
+github.com/hasitpbhatt/groq-go
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap

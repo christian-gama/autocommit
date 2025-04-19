@@ -35,16 +35,16 @@ func ValidateApiKey(apiKey string, provider Provider) error {
 	return nil
 }
 
-// func ValidateModel(model string) error {
-// 	if model == "" {
-// 		return errors.New("model cannot be empty")
-// 	}
-//
-// 	for _, v := range AllowedModels {
-// 		if v == model {
-// 			return nil
-// 		}
-// 	}
-//
-// 	return fmt.Errorf("model %s was not found", model)
-// }
+func ValidateModel(model string, provider Provider) error {
+	if model == "" {
+		return errors.New("model cannot be empty")
+	}
+
+	for _, v := range provider.GetAllowedModels() {
+		if v == model {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("model %s was not found", model)
+}

@@ -5,7 +5,6 @@ type Config interface {
 	GetAPIKey() string
 	GetTemperature() float32
 	GetModel() string
-
 	SetAPIKey(string)
 	SetTemperature(float32)
 	SetModel(string)

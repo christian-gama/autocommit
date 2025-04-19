@@ -1,42 +1,31 @@
 package groq
 
 import (
-	"context"
 	"errors"
-	"time"
 
 	"github.com/christian-gama/autocommit/internal/llm"
-	"github.com/sashabaranov/go-openai"
+	groq "github.com/hasitpbhatt/groq-go"
 )
 
 // chatImpl is an implementation of Chat.
+// chatImpl is an implementation of Chat.
 type chatImpl struct {
-	repo llm.ConfigRepo
-
-	messages []openai.ChatCompletionMessage
+	repo     llm.ConfigRepo
+	messages []groq.Message
 }
 
 // Chat implements the Chat interface.
 func (c *chatImpl) Response(config llm.Config, system *llm.System, input string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 18*time.Second)
-	defer cancel()
+	client := groq.NewClient(groq.WithAPIKey(config.GetAPIKey()))
 
-	response, err := openai.
-		NewClient(config.GetAPIKey()).
-		CreateChatCompletion(
-			ctx,
-			openai.ChatCompletionRequest{
-				Model:       config.GetModel(),
-				Temperature: config.GetTemperature(),
-				Messages:    c.createMessages(system, input),
-			},
-		)
+	c.messages = c.createMessages(system, input)
+	response, err := client.ChatCompletion(c.messages, groq.WithModel(config.GetModel()))
 	if err != nil {
 		return "", c.checkError(err)
 	}
 
 	if len(response.Choices) == 0 {
-		return "", errors.New("received empty response from AI")
+		return "", errors.New("received empty response from Groq LLM")
 	}
 
 	c.messages = append(c.messages, response.Choices[0].Message)
@@ -44,22 +33,17 @@ func (c *chatImpl) Response(config llm.Config, system *llm.System, input string)
 	return response.Choices[0].Message.Content, nil
 }
 
-func (c *chatImpl) createMessages(
-	system *llm.System,
-	userInput string,
-) []openai.ChatCompletionMessage {
+func (c *chatImpl) createMessages(system *llm.System, userInput string) []groq.Message {
 	if len(c.messages) == 0 && system != nil {
-		c.messages = append(c.messages, openai.ChatCompletionMessage{
-			Role:    openai.ChatMessageRoleSystem,
+		c.messages = append(c.messages, groq.Message{
+			Role:    "system",
 			Content: system.Message,
-			Name:    system.Name,
 		})
 	}
 
-	c.messages = append(c.messages, openai.ChatCompletionMessage{
-		Role:    openai.ChatMessageRoleUser,
+	c.messages = append(c.messages, groq.Message{
+		Role:    "user",
 		Content: userInput,
-		Name:    "UserInput",
 	})
 
 	return c.messages
@@ -74,9 +58,9 @@ func (c *chatImpl) checkError(err error) error {
 }
 
 // NewChat creates a new instance of Chat.
-func NewChat(repo llm.ConfigRepo) llm.Chat {
+func NewGroqChat(repo llm.ConfigRepo) llm.Chat {
 	return &chatImpl{
 		repo:     repo,
-		messages: make([]openai.ChatCompletionMessage, 0),
+		messages: make([]groq.Message, 0),
 	}
 }

@@ -17,4 +17,6 @@ type Provider interface {
 	NewConfig(apiKey string, model string) Config
 	ValidateModel(string) error
 	ValidateTemperature(float32) error
+	MarshalConfig(Config) ([]byte, error)
+	UnmarshalConfig([]byte) (Config, error)
 }

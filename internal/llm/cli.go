@@ -2,8 +2,10 @@ package llm
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/core"
 )
 
 // AskConfigsCli is a command line interface that asks the user for the configuration.
@@ -16,21 +18,18 @@ type askConfigsCliImpl struct {
 }
 
 func (a *askConfigsCliImpl) Execute() (Config, error) {
-	questions := []*survey.Question{
-		a.createApiKeyQuestion(),
-		a.createModelQuestion(),
-	}
-
-	answers := make(map[string]interface{})
-	if err := survey.Ask(questions, &answers); err != nil {
+	// Get API Key
+	var apiKey string
+	apiKeyPrompt := a.createApiKeyQuestion().Prompt
+	if err := survey.AskOne(apiKeyPrompt, &apiKey); err != nil {
 		return nil, err
 	}
 
-	apiKey, ok1 := answers["APIKey"].(string)
-	model, ok2 := answers["Model"].(string)
-
-	if ok1 || ok2 {
-		return nil, errors.New("invalid input")
+	// Get Model
+	var model string
+	modelPrompt := a.createModelQuestion().Prompt
+	if err := survey.AskOne(modelPrompt, &model); err != nil {
+		return nil, err
 	}
 
 	return a.provider.NewConfig(apiKey, model), nil
@@ -67,10 +66,13 @@ func (a *askConfigsCliImpl) createModelQuestion() *survey.Question {
 		Name:   "Model",
 		Prompt: &prompt,
 		Validate: func(ans interface{}) error {
-			model, ok := ans.(string)
+			optionAnswer, ok := ans.(core.OptionAnswer)
 			if !ok {
-				return errors.New("invalid model")
+				return fmt.Errorf("unexpected type: %T, model type: %T", ans, optionAnswer.Value)
 			}
+			// do a type check and not assertion on optionAnswer.Value
+			model := optionAnswer.Value
+
 			return a.provider.ValidateModel(model)
 		},
 	}

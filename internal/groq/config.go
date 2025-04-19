@@ -58,7 +58,7 @@ func NewSystem(message, name string) *System {
 }
 
 const (
-	DEEPSEEK = "deepseek"
+	DEEPSEEK = "deepseek-r1-distill-llama-70b"
 	LLAMA    = "llama3-70b-8192"
 )
 

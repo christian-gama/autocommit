@@ -26,10 +26,11 @@ func Execute() error {
 func runCmd(cmd *cobra.Command, args []string) {
 	llmProvider := loadProvider()
 	providerFactory := provider.NewProviderFactory(llmProvider)
-
+	generatorCommand = autocommit.MakeGeneratorCommand(llmProvider)
 	verifyConfigCommand := providerFactory.MakeVerifyConfigCommand()
 	askConfigsCli := providerFactory.MakeAskConfigsCli()
 	systemMsgHealthCheck := autocommit.MakeSystemMsgHealthCheckCommand()
+	addInstructionCommand = autocommit.MakeAddInstructionCommand(llmProvider)
 
 	var err error
 	config, err = verifyConfigCommand.Execute(askConfigsCli.Execute)

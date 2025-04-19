@@ -44,6 +44,7 @@ func handleHTTPResponse(response *http.Response) error {
 	if err := json.Unmarshal(body, &parsedResponse); err != nil {
 		return fmt.Errorf("failed to parse response body: %w", err)
 	}
+	fmt.Println(parsedResponse.Error.Code)
 
 	return errors.New(parsedResponse.Error.Message)
 }

@@ -26,7 +26,8 @@ type ConfigRepo interface {
 
 // configRepoImpl is an implementation of Repo.
 type configRepoImpl struct {
-	storage *storage.Storage
+	storage  *storage.Storage
+	provider Provider
 }
 
 // DeleteConfig implements the Repo interface.
@@ -41,7 +42,7 @@ func (r *configRepoImpl) GetConfig() (Config, error) {
 		return nil, err
 	}
 
-	config, err := UnmarshalConfig(content)
+	config, err := r.provider.UnmarshalConfig(content)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +85,6 @@ func (r *configRepoImpl) Exists() bool {
 }
 
 // NewConfigRepo creates a new instance of Repo.
-func NewConfigRepo(storage *storage.Storage) ConfigRepo {
-	return &configRepoImpl{storage: storage}
+func NewConfigRepo(storage *storage.Storage, provider Provider) ConfigRepo {
+	return &configRepoImpl{storage: storage, provider: provider}
 }

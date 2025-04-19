@@ -1,12 +1,10 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/christian-gama/autocommit/internal/autocommit"
 	"github.com/christian-gama/autocommit/internal/git"
+	"github.com/christian-gama/autocommit/internal/groq"
 	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/christian-gama/autocommit/internal/openai"
 )
@@ -40,21 +38,17 @@ func loadProvider() llm.Provider {
 	case "OpenAI":
 		return openai.NewOpenAIProvider()
 	case "Groq":
-		fmt.Println("Groq not implemented yet")
-		os.Exit(0)
+		return groq.NewGroqProvider()
 	default:
 		panic("Invalid choice")
 	}
-	return nil
 }
 
 func init() {
-	llmProvider = openai.NewOpenAIProvider()
 	postCommitCli = autocommit.MakePostCommitCli()
-	generatorCommand = autocommit.MakeGeneratorCommand(llmProvider)
+
 	commitCommand = git.MakeCommitCommand()
 	clipboardCommand = autocommit.MakeClipboardCommand()
-	addInstructionCommand = autocommit.MakeAddInstructionCommand(llmProvider)
 	addInstructionCli = autocommit.MakeAddInstructionCli()
 	openSystemMsgCommand = autocommit.MakeOpenSystemMsgCommand()
 	systemMsgHealthCheck = autocommit.MakeSystemMsgHealthCheckCommand()
