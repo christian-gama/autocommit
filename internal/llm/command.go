@@ -65,6 +65,10 @@ type updateConfigCommandImpl struct {
 
 // Execute Implements the UpdateConfigCommand interface.
 func (u *updateConfigCommandImpl) Execute(config Config) error {
+	if config == nil {
+		return errors.New("config is nil")
+	}
+
 	savedConfig, err := u.repo.GetConfig()
 	if err != nil {
 		return err

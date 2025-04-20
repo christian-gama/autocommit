@@ -15,8 +15,10 @@ type Provider interface {
 	GetDefaultModel() string
 	GetModelHelpText() string
 	GetApiKeyLabel() string
+	GetModelLabel() string
 	GetApiKeyHelpText() string
-	NewConfig(apiKey string, model string) Config
+	GetTemperatureHelpText() string
+	NewConfig(apiKey string, model string, temperature float32) Config
 	ValidateModel(string) error
 	ValidateTemperature(float32) error
 	MarshalConfig(Config) ([]byte, error)

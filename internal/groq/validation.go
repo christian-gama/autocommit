@@ -6,6 +6,16 @@ import (
 	"net/http"
 )
 
+// ValidateTemperature validates the temperature for the OpenAI API.
+func ValidateTemperature(temperature float32) error {
+	if temperature <= 0 || temperature > 1 {
+		return fmt.Errorf(
+			"temperature must be greater than 0 and less than or equal to 1",
+		)
+	}
+	return nil
+}
+
 // ValidateApiKey validates the API key for the OpenAI API. It does so
 // by making a request to the models endpoint - if it fails, the API key is invalid.
 func ValidateApiKey(apiKey string) error {

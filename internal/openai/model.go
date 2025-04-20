@@ -7,11 +7,11 @@ type OpenAIConfig struct {
 	Model       string  `json:"openai_model"`
 }
 
-// NewConfig creates a new Config.
-func NewConfig(apiKey, model string) *OpenAIConfig {
+// NewOpenAIConfig creates a new Config.
+func NewOpenAIConfig(apiKey, model string, temperature float32) *OpenAIConfig {
 	return &OpenAIConfig{
 		ApiKey:      apiKey,
-		Temperature: 0.3,
+		Temperature: temperature,
 		Model:       model,
 	}
 }

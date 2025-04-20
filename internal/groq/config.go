@@ -6,11 +6,11 @@ type GroqConfig struct {
 	Model       string  `json:"groq_model"`
 }
 
-// NewConfig creates a new Config.
-func NewConfig(apiKey, model string) *GroqConfig {
+// NewGroqConfig creates a new Config.
+func NewGroqConfig(apiKey, model string, temperature float32) *GroqConfig {
 	return &GroqConfig{
 		ApiKey:      apiKey,
-		Temperature: 0.3,
+		Temperature: temperature,
 		Model:       model,
 	}
 }

@@ -71,11 +71,15 @@ func (o *OpenAIProvider) GetAPIKeyHelpText() string {
 }
 
 func (o *OpenAIProvider) GetModelLabel() string {
-	return "openai model"
+	return "OpenAI Model"
 }
 
 func (o *OpenAIProvider) GetDefaultModel() string {
 	return AllowedModels[0]
+}
+
+func (o *OpenAIProvider) GetTemperatureHelpText() string {
+	return "The temperature to use for the OpenAI API."
 }
 
 func (o *OpenAIProvider) ValidateTemperature(temperature float32) error {
@@ -120,6 +124,6 @@ func (o *OpenAIProvider) MarshalConfig(config llm.Config) ([]byte, error) {
 	return json.Marshal(openaiConfig)
 }
 
-func (o *OpenAIProvider) NewConfig(apiKey string, model string) llm.Config {
-	return NewConfig(apiKey, model)
+func (o *OpenAIProvider) NewConfig(apiKey string, model string, temperature float32) llm.Config {
+	return NewOpenAIConfig(apiKey, model, temperature)
 }

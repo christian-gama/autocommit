@@ -89,10 +89,6 @@ func (o *GroqProvider) GetAPIKeyHelpText() string {
 	return "The Groq API Key is used to authenticate your requests to the Groq API."
 }
 
-func (o *GroqProvider) GetModelLabel() string {
-	return "greq model"
-}
-
 func (o *GroqProvider) GetDefaultModel() string {
 	return AllowedModels[1]
 }
@@ -104,12 +100,20 @@ func (o *GroqProvider) ValidateTemperature(temperature float32) error {
 	return nil
 }
 
+func (o *GroqProvider) GetModelLabel() string {
+	return "Groq Model"
+}
+
 func (o *GroqProvider) GetAllowedModels() []string {
 	return AllowedModels
 }
 
 func (o *GroqProvider) GetApiKeyHelpText() string {
 	return "The Groq API Key is used to authenticate your requests to the Groq API."
+}
+
+func (o *GroqProvider) GetTemperatureHelpText() string {
+	return "The temperature to use for the Groq API."
 }
 
 func (o *GroqProvider) ValidateApiKey(apiKey string) error {
@@ -120,6 +124,6 @@ func (o *GroqProvider) GetApiKeyLabel() string {
 	return "Groq API Key"
 }
 
-func (o *GroqProvider) NewConfig(apiKey string, model string) llm.Config {
-	return NewConfig(apiKey, model)
+func (o *GroqProvider) NewConfig(apiKey string, model string, temperature float32) llm.Config {
+	return NewGroqConfig(apiKey, model, temperature)
 }

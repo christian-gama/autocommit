@@ -3,6 +3,7 @@ package llm
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/core"
@@ -33,7 +34,13 @@ func (a *askConfigsCliImpl) Execute() (Config, error) {
 		return nil, err
 	}
 
-	return a.provider.NewConfig(apiKey, model), nil
+	var temperature float32
+	temperaturePrompt := a.createTemperatureQuestion().Prompt
+	if err := survey.AskOne(temperaturePrompt, &temperature); err != nil {
+		return nil, err
+	}
+
+	return a.provider.NewConfig(apiKey, model, temperature), nil
 }
 
 func (a *askConfigsCliImpl) createApiKeyQuestion() *survey.Question {
@@ -57,7 +64,7 @@ func (a *askConfigsCliImpl) createApiKeyQuestion() *survey.Question {
 
 func (a *askConfigsCliImpl) createModelQuestion() *survey.Question {
 	prompt := survey.Select{
-		Message: "Model",
+		Message: a.provider.GetModelLabel(),
 		Options: a.provider.GetAllowedModels(),
 		Help:    a.provider.GetModelHelpText(),
 		Default: a.provider.GetDefaultModel(),
@@ -79,8 +86,39 @@ func (a *askConfigsCliImpl) createModelQuestion() *survey.Question {
 	}
 }
 
+func (a *askConfigsCliImpl) createTemperatureQuestion() *survey.Question {
+	prompt := survey.Input{
+		Message: "Temperature",
+		Help:    a.provider.GetTemperatureHelpText(),
+		Default: "0.5",
+	}
+
+	return &survey.Question{
+		Name:   "Temperature",
+		Prompt: &prompt,
+		Validate: func(ans interface{}) error {
+			// Ensure the answer is a string
+			answerStr, ok := ans.(string)
+			if !ok {
+				return errors.New("invalid input: temperature must be a string")
+			}
+
+			// Convert the string to a float64
+			temperature, err := strconv.ParseFloat(answerStr, 32)
+			if err != nil {
+				return errors.New("invalid input: temperature must be a valid number")
+			}
+
+			// Validate the temperature as a float32
+			return a.provider.ValidateTemperature(float32(temperature))
+		},
+	}
+}
+
 func NewAskConfigsCli(provider Provider) AskConfigsCli {
-	return &askConfigsCliImpl{provider: provider}
+	return &askConfigsCliImpl{
+		provider: provider,
+	}
 }
 
 // AskToChangeModelCli is a command line interface that asks the user if they want to change the model.

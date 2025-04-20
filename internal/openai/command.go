@@ -116,55 +116,55 @@ func NewOpenAIResetConfigCommand(repo llm.ConfigRepo) llm.ResetConfigCommand {
 // 	Execute(config *OpenAIConfig) error
 // }
 
-// updateConfigCommandImpl is an implementation of UpdateConfigCommand.
-// type updateConfigCommandImpl struct {
-// 	repo llm.ConfigRepo
-// }
+// openaiUpdateConfigCommandImpl is an implementation of UpdateConfigCommand.
+type openaiUpdateConfigCommandImpl struct {
+	repo llm.ConfigRepo
+}
 
 // Execute Implements the UpdateConfigCommand interface.
-// func (u *updateConfigCommandImpl) Execute(config llm.Config) error {
-// 	savedConfig, err := u.repo.GetConfig()
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	if savedConfig == nil {
-// 		return errors.New("Configs weren't initialized yet - skipping...")
-// 	}
-//
-// 	apiKey := config.GetAPIKey()
-// 	if apiKey != "" {
-// 		if err := ValidateApiKey(apiKey); err != nil {
-// 			return err
-// 		}
-//
-// 		savedConfig.SetAPIKey(apiKey)
-// 	}
-//
-// 	model := config.GetModel()
-// 	if model != "" {
-// 		if err := ValidateModel(model); err != nil {
-// 			return err
-// 		}
-//
-// 		savedConfig.SetModel(model)
-// 	}
+func (u *openaiUpdateConfigCommandImpl) Execute(config llm.Config) error {
+	savedConfig, err := u.repo.GetConfig()
+	if err != nil {
+		return err
+	}
 
-// 	temperature := config.GetTemperature()
-// 	if temperature != 0 {
-// 		if err := ValidateTemperature(temperature); err != nil {
-// 			return err
-// 		}
-//
-// 		savedConfig.SetTemperature(temperature)
-// 	}
-//
-// 	return u.repo.UpdateConfig(savedConfig)
-// }
-//
+	if savedConfig == nil {
+		return errors.New("Configs weren't initialized yet - skipping...")
+	}
+
+	apiKey := config.GetAPIKey()
+	if apiKey != "" {
+		if err := ValidateApiKey(apiKey); err != nil {
+			return err
+		}
+
+		savedConfig.SetAPIKey(apiKey)
+	}
+
+	model := config.GetModel()
+	if model != "" {
+		if err := ValidateModel(model); err != nil {
+			return err
+		}
+
+		savedConfig.SetModel(model)
+	}
+
+	temperature := config.GetTemperature()
+	if temperature != 0 {
+		if err := ValidateTemperature(temperature); err != nil {
+			return err
+		}
+
+		savedConfig.SetTemperature(temperature)
+	}
+
+	return u.repo.UpdateConfig(savedConfig)
+}
+
 // // NewUpdateConfigCommand creates a new instance of UpdateConfigCommand.
-// func NewUpdateConfigCommand(repo llm.ConfigRepo) llm.UpdateConfigCommand {
-// 	return &updateConfigCommandImpl{
-// 		repo: repo,
-// 	}
-// }
+func NewOpenAIUpdateConfigCommand(repo llm.ConfigRepo) llm.UpdateConfigCommand {
+	return &openaiUpdateConfigCommandImpl{
+		repo: repo,
+	}
+}
