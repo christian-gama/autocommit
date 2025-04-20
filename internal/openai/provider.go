@@ -15,7 +15,11 @@ func NewOpenAIProvider() *OpenAIProvider {
 }
 
 func (o *OpenAIProvider) MakeConfigRepo() llm.ConfigRepo {
-	return llm.NewConfigRepo(storage.NewStorage("config.json"), o)
+	return llm.NewConfigRepo(storage.NewStorage(o.GetConfigFileName()), o)
+}
+
+func (o *OpenAIProvider) GetConfigFileName() string {
+	return "openai_config.json"
 }
 
 func (o *OpenAIProvider) ChatCommand() llm.ChatCommand {

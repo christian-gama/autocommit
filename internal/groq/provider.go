@@ -34,7 +34,11 @@ func (o *GroqProvider) MarshalConfig(config llm.Config) ([]byte, error) {
 }
 
 func (o *GroqProvider) MakeConfigRepo() llm.ConfigRepo {
-	return llm.NewConfigRepo(storage.NewStorage("config.json"), o)
+	return llm.NewConfigRepo(storage.NewStorage(o.GetConfigFileName()), o)
+}
+
+func (o *GroqProvider) GetConfigFileName() string {
+	return "groq_config.json"
 }
 
 func (o *GroqProvider) ChatCommand() llm.ChatCommand {

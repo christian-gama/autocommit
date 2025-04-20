@@ -33,3 +33,21 @@ func NewChatCommand(chat llm.Chat) llm.ChatCommand {
 		chat: chat,
 	}
 }
+
+type groqResetConfigCommandImpl struct {
+	repo llm.ConfigRepo
+}
+
+func (c *groqResetConfigCommandImpl) Execute() error {
+	if !c.repo.Exists() {
+		return nil
+	}
+
+	return c.repo.DeleteConfig()
+}
+
+func NewGroqResetConfigCommand(repo llm.ConfigRepo) llm.ResetConfigCommand {
+	return &groqResetConfigCommandImpl{
+		repo: repo,
+	}
+}

@@ -89,26 +89,26 @@ func (v *verifyConfigCommandImpl) Execute(
 // 	Execute() error
 // }
 
-// resetConfigCommandImpl is an implementation of ResetConfigCommand.
-// type resetConfigCommandImpl struct {
-// 	repo llm.ConfigRepo
-// }
+// openaiResetConfigCommandImpl is an implementation of ResetConfigCommand.
+type openaiResetConfigCommandImpl struct {
+	repo llm.ConfigRepo
+}
 
 // Execute Implements the ResetConfigCommand interface.
-// func (r *resetConfigCommandImpl) Execute() error {
-// 	if !r.repo.Exists() {
-// 		return nil
-// 	}
-//
-// 	return r.repo.DeleteConfig()
-// }
+func (r *openaiResetConfigCommandImpl) Execute() error {
+	if !r.repo.Exists() {
+		return nil
+	}
+
+	return r.repo.DeleteConfig()
+}
 
 // NewResetConfigCommand creates a new instance of ResetConfigCommand.
-// func NewResetConfigCommand(repo llm.ConfigRepo) ResetConfigCommand {
-// 	return &resetConfigCommandImpl{
-// 		repo: repo,
-// 	}
-// }
+func NewOpenAIResetConfigCommand(repo llm.ConfigRepo) llm.ResetConfigCommand {
+	return &openaiResetConfigCommandImpl{
+		repo: repo,
+	}
+}
 
 // UpdateConfigCommand is the interface that wraps the basic Execute method.
 // type UpdateConfigCommand interface {

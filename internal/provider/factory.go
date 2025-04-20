@@ -14,7 +14,7 @@ func NewProviderFactory(provider llm.Provider) *ProviderFactory {
 }
 
 func (f *ProviderFactory) MakeConfigRepo() llm.ConfigRepo {
-	return llm.NewConfigRepo(storage.NewStorage("config.json"), f.provider)
+	return llm.NewConfigRepo(storage.NewStorage(f.provider.GetConfigFileName()), f.provider)
 }
 
 func (f *ProviderFactory) MakeVerifyConfigCommand() llm.VerifyConfigCommand {

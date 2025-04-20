@@ -2,6 +2,7 @@ package llm
 
 type Provider interface {
 	GetName() string
+	GetConfigFileName() string
 	GetAllowedModels() []string
 	AskConfigsCli() AskConfigsCli
 	AskToChangeModelCli() AskToChangeModelCli
