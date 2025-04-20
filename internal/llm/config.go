@@ -1,5 +1,6 @@
 package llm
 
+// Config is the interface that wraps the basic operations with the config file.
 type Config interface {
 	GetName() string
 	GetAPIKey() string
@@ -10,6 +11,7 @@ type Config interface {
 	SetModel(string)
 }
 
+// ConfigImpl is an implementation of Config
 type ConfigImpl struct {
 	ApiKey      string  `json:"api_key"`
 	Temperature float32 `json:"temperature"`

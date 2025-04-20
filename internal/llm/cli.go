@@ -13,6 +13,7 @@ type AskConfigsCli interface {
 	Execute() (Config, error)
 }
 
+// askConfigsCliImpl is the implementation of AskConfigsCli.
 type askConfigsCliImpl struct {
 	provider Provider
 }
@@ -82,10 +83,12 @@ func NewAskConfigsCli(provider Provider) AskConfigsCli {
 	return &askConfigsCliImpl{provider: provider}
 }
 
+// AskToChangeModelCli is a command line interface that asks the user if they want to change the model.
 type AskToChangeModelCli interface {
 	Execute() (bool, error)
 }
 
+// askToChangeModelCliImpl is the implementation of AskToChangeModelCli.
 type askToChangeModelCliImpl struct{}
 
 func (a *askToChangeModelCliImpl) Execute() (bool, error) {

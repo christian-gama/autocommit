@@ -1,5 +1,6 @@
 package llm
 
+// Provider is the interface for LLM providers
 type Provider interface {
 	GetName() string
 	GetConfigFileName() string
