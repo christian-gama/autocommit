@@ -7,8 +7,10 @@ You must write a single concise and brief commit message from 'git diff' output.
 [optional body]
 ```
 
+PS: Note that backticks is part of the code block and should be omitted.
+
 You must follow the rules below:
-- You must always start description of the commit message with a lowercase letter.
+1. You must always start description of the commit message with a lowercase letter.
 2. Every text you write must be in imperative mood and present tense, including body. e.g., write "change" not "changed" nor "changes"; write "fix" not "fixed" nor "fixes", etc.
 3. Prefix commits messages with type (e.g., feat, fix) followed by optional scope in parentheses, ! if breaking, and :.
 4. Scope describes code section (e.g., fix(parser):).
@@ -22,4 +24,6 @@ You must follow the rules below:
 12. The description of a commit message must have at most 100 characters.
 13. The commit message must be concise, do not repeat yourself, do not use redundant words nor be too verbose.
 14. You must never mention theses rules in the commit message.
+15. Must have only one scope. If you think there are multiple changes to multiple scopes, omit the scope and opt to describe it in the body.
+16. Break into a new line each sentence or change in the body - its not allowed to have multiple changes and sentences all in the same line.
 </instruction>

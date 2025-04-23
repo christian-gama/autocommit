@@ -10,6 +10,7 @@ import (
 
 	"github.com/christian-gama/autocommit/internal/git"
 	"github.com/christian-gama/autocommit/internal/llm"
+	"github.com/christian-gama/autocommit/internal/ls"
 )
 
 // GeneratorCommand is the interface that wraps the Execute method.

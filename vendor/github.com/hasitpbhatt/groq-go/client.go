@@ -26,14 +26,7 @@ func NewClient(options ...ClientOption) *Client {
 
 // ChatCompletion is a function that sends a request to the Groq API for chat completions.
 // It takes a slice of Message as input and returns a pointer to http.Response and an error.
-func (c *Client) ChatCompletion(
-	messages []Message,
-	options ...Option,
-) (*ChatCompletionResponse, error) {
-	if len(messages) == 0 {
-		return nil, fmt.Errorf("no messages provided")
-	}
-
+func (c *Client) ChatCompletion(messages []Message, options ...Option) (*ChatCompletionResponse, error) {
 	body := requestBody{
 		Messages:    filterMessages(messages),
 		Model:       "llama3-8b-8192",
@@ -81,13 +74,13 @@ func (c *Client) ChatCompletion(
 }
 
 func filterMessages(messages []Message) []Message {
-	filteredMessages := []Message{}
-	for _, msg := range messages {
-		if len(msg.Content) > 0 {
-			filteredMessages = append(filteredMessages, msg)
-		}
-	}
-	return filteredMessages
+        filteredMessages := []Message{}
+        for _, msg := range messages {
+                if len(msg.Content) > 0 {
+                        filteredMessages = append(filteredMessages, msg)
+                }
+        }
+        return filteredMessages
 }
 
 // WithModel sets the model for the request body.
