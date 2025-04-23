@@ -13,24 +13,9 @@ github.com/alecthomas/units
 # github.com/atotto/clipboard v0.1.4
 ## explicit
 github.com/atotto/clipboard
-# github.com/dave/dst v0.27.3
-## explicit; go 1.18
-github.com/dave/dst
-github.com/dave/dst/decorator
-github.com/dave/dst/decorator/resolver
-github.com/dave/dst/decorator/resolver/gopackages
-github.com/dave/dst/decorator/resolver/gotypes
-github.com/dave/dst/dstutil
-# github.com/fatih/structtag v1.2.0
-## explicit; go 1.12
-github.com/fatih/structtag
-# github.com/google/go-cmp v0.6.0
-## explicit; go 1.13
-github.com/google/go-cmp/cmp
-github.com/google/go-cmp/cmp/internal/diff
-github.com/google/go-cmp/cmp/internal/flags
-github.com/google/go-cmp/cmp/internal/function
-github.com/google/go-cmp/cmp/internal/value
+# github.com/hasitpbhatt/groq-go v0.0.0-20250222082140-3266472dd038
+## explicit; go 1.20
+github.com/hasitpbhatt/groq-go
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap

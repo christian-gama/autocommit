@@ -1,4 +1,4 @@
-package openai
+package groq
 
 import (
 	"errors"
@@ -23,7 +23,7 @@ func ValidateApiKey(apiKey string) error {
 		return errors.New("API key cannot be empty")
 	}
 
-	url := "https://api.openai.com/v1/models"
+	url := "https://api.groq.com/openai/v1/models"
 	if apiKey == "" {
 		return errors.New("API key cannot be empty")
 	}

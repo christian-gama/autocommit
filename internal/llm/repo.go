@@ -1,4 +1,4 @@
-package openai
+package llm
 
 import (
 	"errors"
@@ -9,16 +9,16 @@ import (
 // ConfigRepo is the interface that wraps the basic operations with the config file.
 type ConfigRepo interface {
 	// SaveConfig saves the config file.
-	SaveConfig(config *Config) error
+	SaveConfig(config Config) error
 
 	// GetConfig returns the config file.
-	GetConfig() (*Config, error)
+	GetConfig() (Config, error)
 
 	// DeleteConfig deletes the config file.
 	DeleteConfig() error
 
 	// UpdateConfig updates the config file.
-	UpdateConfig(config *Config) error
+	UpdateConfig(config Config) error
 
 	// Exists returns true if the config file exists.
 	Exists() bool
@@ -26,7 +26,8 @@ type ConfigRepo interface {
 
 // configRepoImpl is an implementation of Repo.
 type configRepoImpl struct {
-	storage *storage.Storage
+	storage  *storage.Storage
+	provider Provider
 }
 
 // DeleteConfig implements the Repo interface.
@@ -35,13 +36,13 @@ func (r *configRepoImpl) DeleteConfig() error {
 }
 
 // GetConfig implements the Repo interface.
-func (r *configRepoImpl) GetConfig() (*Config, error) {
+func (r *configRepoImpl) GetConfig() (Config, error) {
 	content, err := r.storage.Read()
 	if err != nil {
 		return nil, err
 	}
 
-	config, err := UnmarshalConfig(content)
+	config, err := r.provider.UnmarshalConfig(content)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func (r *configRepoImpl) GetConfig() (*Config, error) {
 }
 
 // SaveConfig implements the Repo interface.
-func (r *configRepoImpl) SaveConfig(config *Config) error {
+func (r *configRepoImpl) SaveConfig(config Config) error {
 	content, err := MarshalConfig(config)
 	if err != nil {
 		return err
@@ -64,7 +65,7 @@ func (r *configRepoImpl) SaveConfig(config *Config) error {
 }
 
 // UpdateConfig implements the Repo interface.
-func (r *configRepoImpl) UpdateConfig(config *Config) error {
+func (r *configRepoImpl) UpdateConfig(config Config) error {
 	content, err := MarshalConfig(config)
 	if err != nil {
 		return err
@@ -84,6 +85,6 @@ func (r *configRepoImpl) Exists() bool {
 }
 
 // NewConfigRepo creates a new instance of Repo.
-func NewConfigRepo(storage *storage.Storage) ConfigRepo {
-	return &configRepoImpl{storage: storage}
+func NewConfigRepo(storage *storage.Storage, provider Provider) ConfigRepo {
+	return &configRepoImpl{storage: storage, provider: provider}
 }

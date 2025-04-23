@@ -1,39 +1,54 @@
 package cmd
 
 import (
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/christian-gama/autocommit/internal/autocommit"
 	"github.com/christian-gama/autocommit/internal/git"
+	"github.com/christian-gama/autocommit/internal/groq"
+	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/christian-gama/autocommit/internal/openai"
 )
 
 var (
 	postCommitCli         autocommit.PostCommitCli
-	verifyConfigCommand   openai.VerifyConfigCommand
+	verifyConfigCommand   llm.VerifyConfigCommand
 	generatorCommand      autocommit.GeneratorCommand
-	askConfigsCli         openai.AskConfigsCli
+	askConfigsCli         llm.AskConfigsCli
 	commitCommand         git.CommitCommand
 	clipboardCommand      autocommit.ClipboardCommand
-	resetConfigCommand    openai.ResetConfigCommand
-	updateConfigCommand   openai.UpdateConfigCommand
-	askToChangeModelCli   openai.AskToChangeModelCli
+	resetConfigCommand    llm.ResetConfigCommand
+	updateConfigCommand   llm.UpdateConfigCommand
+	askToChangeModelCli   llm.AskToChangeModelCli
 	addInstructionCommand autocommit.AddInstructionCommand
 	addInstructionCli     autocommit.AddInstructionCli
-	config                *openai.Config
+	config                llm.Config
 	openSystemMsgCommand  autocommit.OpenSystemMsgCommand
 	systemMsgHealthCheck  autocommit.SystemMsgHealthCheckCommand
+	llmProvider           llm.Provider
 )
+
+func loadProvider() llm.Provider {
+	var choice string
+	_ = survey.AskOne(&survey.Select{
+		Message: "Choose your LLM Provider",
+		Options: []string{"OpenAI", "Groq"},
+	}, &choice)
+
+	switch choice {
+	case "OpenAI":
+		return openai.NewOpenAIProvider()
+	case "Groq":
+		return groq.NewGroqProvider()
+	default:
+		panic("Invalid choice")
+	}
+}
 
 func init() {
 	postCommitCli = autocommit.MakePostCommitCli()
-	verifyConfigCommand = openai.MakeVerifyConfigCommand()
-	generatorCommand = autocommit.MakeGeneratorCommand()
-	askConfigsCli = openai.MakeAskConfigsCli()
+
 	commitCommand = git.MakeCommitCommand()
 	clipboardCommand = autocommit.MakeClipboardCommand()
-	resetConfigCommand = openai.MakeResetConfigCommand()
-	updateConfigCommand = openai.MakeUpdateConfigCommand()
-	askToChangeModelCli = openai.MakeAskToChangeModelCli()
-	addInstructionCommand = autocommit.MakeAddInstructionCommand()
 	addInstructionCli = autocommit.MakeAddInstructionCli()
 	openSystemMsgCommand = autocommit.MakeOpenSystemMsgCommand()
 	systemMsgHealthCheck = autocommit.MakeSystemMsgHealthCheckCommand()

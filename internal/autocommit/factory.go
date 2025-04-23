@@ -2,13 +2,12 @@ package autocommit
 
 import (
 	"github.com/christian-gama/autocommit/internal/git"
-	"github.com/christian-gama/autocommit/internal/openai"
+	"github.com/christian-gama/autocommit/internal/llm"
 	"github.com/christian-gama/autocommit/internal/storage"
 )
 
-var chatCommand = openai.MakeChatCommand()
-
-func MakeGeneratorCommand() GeneratorCommand {
+func MakeGeneratorCommand(provider llm.Provider) GeneratorCommand {
+	chatCommand := provider.ChatCommand()
 	diffCommand := git.MakeDiffCommand()
 
 	return NewGeneratorCommand(chatCommand, diffCommand, MakeSystemMsgRepo())
@@ -26,8 +25,8 @@ func MakeClipboardCommand() ClipboardCommand {
 	return NewClipboardCommand(MakeClipboard())
 }
 
-func MakeAddInstructionCommand() AddInstructionCommand {
-	return NewAddInstructionCommand(chatCommand)
+func MakeAddInstructionCommand(provider llm.Provider) AddInstructionCommand {
+	return NewAddInstructionCommand(provider.ChatCommand())
 }
 
 func MakeAddInstructionCli() AddInstructionCli {
