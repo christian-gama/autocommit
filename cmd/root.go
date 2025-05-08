@@ -44,10 +44,10 @@ func runCmd(cmd *cobra.Command, args []string) {
 
 	fmt.Printf("🤖 Using model: %s\n", config.GetModel())
 
-	handleCmd(generatorCommand, cmd, args)
+	handleCmd(cmd, args)
 }
 
-func handleCmd(generator autocommit.GeneratorCommand, cmd *cobra.Command, args []string) {
+func handleCmd(cmd *cobra.Command, args []string) {
 	fmt.Printf("⌛ Creating a commit message...\n")
 	response, err := generatorCommand.Execute(config)
 	if err != nil {
@@ -140,7 +140,7 @@ func handleMaxToken(err error, cmd *cobra.Command, args []string) {
 	}
 
 	if answer {
-		handleCmd(generatorCommand, cmd, args)
+		handleCmd(cmd, args)
 		return
 	}
 

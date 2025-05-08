@@ -65,11 +65,11 @@ func (u *groqUpdateConfigCommandImpl) Execute(config llm.Config) error {
 	}
 
 	if savedConfig == nil {
-		return errors.New("Configs weren't initialized yet - skipping...")
+		return errors.New("configs weren't initialized yet")
 	}
 
-	apiKey := config.GetAPIKey()
-	if apiKey != "" {
+	if config.IsAPIKeySet() {
+		apiKey := config.GetAPIKey()
 		if err := ValidateApiKey(apiKey); err != nil {
 			return err
 		}
@@ -77,8 +77,8 @@ func (u *groqUpdateConfigCommandImpl) Execute(config llm.Config) error {
 		savedConfig.SetAPIKey(apiKey)
 	}
 
-	model := config.GetModel()
-	if model != "" {
+	if config.IsModelSet() {
+		model := config.GetModel()
 		if err := ValidateModel(model); err != nil {
 			return err
 		}
@@ -86,8 +86,8 @@ func (u *groqUpdateConfigCommandImpl) Execute(config llm.Config) error {
 		savedConfig.SetModel(model)
 	}
 
-	temperature := config.GetTemperature()
-	if temperature != 0 {
+	if config.IsTemperatureSet() {
+		temperature := config.GetTemperature()
 		if err := ValidateTemperature(temperature); err != nil {
 			return err
 		}

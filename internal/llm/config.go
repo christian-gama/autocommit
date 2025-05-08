@@ -9,6 +9,12 @@ type Config interface {
 	SetAPIKey(string)
 	SetTemperature(float32)
 	SetModel(string)
+	IsAPIKeySet() bool
+	IsModelSet() bool
+	IsTemperatureSet() bool
+	MarkAPIKeySet()
+	MarkModelSet()
+	MarkTemperatureSet()
 }
 
 // ConfigImpl is an implementation of Config

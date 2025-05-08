@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 )
 
 // ValidateTemperature validates the temperature for the OpenAI API.
@@ -53,10 +54,8 @@ func ValidateModel(model string) error {
 		return errors.New("model cannot be empty")
 	}
 
-	for _, v := range AllowedModels {
-		if v == model {
-			return nil
-		}
+	if slices.Contains(AllowedModels, model) {
+		return nil
 	}
 
 	return fmt.Errorf("model %s was not found", model)

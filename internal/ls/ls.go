@@ -44,9 +44,8 @@ func printDir(
 	indent := strings.Repeat("  ", level)
 
 	if currentDir != "." {
-		sb.WriteString(
-			fmt.Sprintf("%s📁 %s\n", indent, filepath.Base(currentDir)),
-		)
+		fmt.Fprintf(sb,
+			"%s📁 %s\n", indent, filepath.Base(currentDir))
 	}
 
 	for _, file := range dirs[currentDir] {
@@ -54,9 +53,8 @@ func printDir(
 			file,
 			"/",
 		) {
-			sb.WriteString(
-				fmt.Sprintf("%s📄 %s\n", strings.Repeat("  ", level+1), file),
-			)
+			fmt.Fprintf(sb,
+				"%s📄 %s\n", strings.Repeat("  ", level+1), file)
 		}
 	}
 

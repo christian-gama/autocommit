@@ -11,9 +11,7 @@ import (
 
 var (
 	postCommitCli         autocommit.PostCommitCli
-	verifyConfigCommand   llm.VerifyConfigCommand
 	generatorCommand      autocommit.GeneratorCommand
-	askConfigsCli         llm.AskConfigsCli
 	commitCommand         git.CommitCommand
 	clipboardCommand      autocommit.ClipboardCommand
 	resetConfigCommand    llm.ResetConfigCommand

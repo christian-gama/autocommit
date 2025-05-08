@@ -41,54 +41,6 @@ func NewChatCommand(chat llm.Chat) llm.ChatCommand {
 	}
 }
 
-// VerifyConfigCommand is the interface that wraps the basic Execute method.
-// type VerifyConfigCommand interface {
-// 	// Execute will verify if the configs were initialized and if not, it will initialize them.
-// 	Execute(getConfigsFn func() (*OpenAIConfig, error)) (*OpenAIConfig, error)
-// }
-
-// verifyConfigCommandImpl is an implementation of VerifyConfigCommand.
-type verifyConfigCommandImpl struct {
-	repo llm.ConfigRepo
-}
-
-// Execute Implements the VerifyConfigCommand interface.
-func (v *verifyConfigCommandImpl) Execute(
-	getConfigsFn func() (llm.Config, error),
-) (config llm.Config, err error) {
-	ok := v.repo.Exists()
-	if !ok {
-		config, err = getConfigsFn()
-		if err != nil {
-			return nil, err
-		}
-
-		if err := v.repo.SaveConfig(config); err != nil {
-			return nil, err
-		}
-	} else {
-		config, err = v.repo.GetConfig()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return config, err
-}
-
-// NewVerifyConfigCommand creates a new instance of VerifyConfigCommand.
-// func NewVerifyConfigCommand(repo llm.ConfigRepo) llm.VerifyConfigCommand {
-// 	return &verifyConfigCommandImpl{
-// 		repo: repo,
-// 	}
-// }
-
-// ResetConfigCommand is the interface that wraps the basic Execute method.
-// type ResetConfigCommand interface {
-// 	// Execute will reset the configs.
-// 	Execute() error
-// }
-
 // openaiResetConfigCommandImpl is an implementation of ResetConfigCommand.
 type openaiResetConfigCommandImpl struct {
 	repo llm.ConfigRepo
@@ -129,11 +81,11 @@ func (u *openaiUpdateConfigCommandImpl) Execute(config llm.Config) error {
 	}
 
 	if savedConfig == nil {
-		return errors.New("Configs weren't initialized yet - skipping...")
+		return errors.New("configs weren't initialized yet")
 	}
 
-	apiKey := config.GetAPIKey()
-	if apiKey != "" {
+	if config.IsAPIKeySet() {
+		apiKey := config.GetAPIKey()
 		if err := ValidateApiKey(apiKey); err != nil {
 			return err
 		}
@@ -141,8 +93,8 @@ func (u *openaiUpdateConfigCommandImpl) Execute(config llm.Config) error {
 		savedConfig.SetAPIKey(apiKey)
 	}
 
-	model := config.GetModel()
-	if model != "" {
+	if config.IsModelSet() {
+		model := config.GetModel()
 		if err := ValidateModel(model); err != nil {
 			return err
 		}
@@ -150,8 +102,8 @@ func (u *openaiUpdateConfigCommandImpl) Execute(config llm.Config) error {
 		savedConfig.SetModel(model)
 	}
 
-	temperature := config.GetTemperature()
-	if temperature != 0 {
+	if config.IsTemperatureSet() {
+		temperature := config.GetTemperature()
 		if err := ValidateTemperature(temperature); err != nil {
 			return err
 		}

@@ -75,7 +75,7 @@ func (u *updateConfigCommandImpl) Execute(config Config) error {
 	}
 
 	if savedConfig == nil {
-		return errors.New("configs weren't initialized yet - skipping...")
+		return errors.New("configs weren't initialized yet")
 	}
 
 	if config.GetAPIKey() != "" {

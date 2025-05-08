@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 )
 
 func ValidateApiKey(apiKey string, provider Provider) error {
@@ -40,10 +41,8 @@ func ValidateModel(model string, provider Provider) error {
 		return errors.New("model cannot be empty")
 	}
 
-	for _, v := range provider.GetAllowedModels() {
-		if v == model {
-			return nil
-		}
+	if slices.Contains(provider.GetAllowedModels(), model) {
+		return nil
 	}
 
 	return fmt.Errorf("model %s was not found", model)

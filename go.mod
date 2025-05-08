@@ -1,12 +1,12 @@
 module github.com/christian-gama/autocommit
 
-go 1.23
+go 1.24.2
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/atotto/clipboard v0.1.4
 	github.com/hasitpbhatt/groq-go v0.0.0-20250222082140-3266472dd038
-	github.com/sashabaranov/go-openai v1.36.1
+	github.com/sashabaranov/go-openai v1.39.1
 	github.com/spf13/cobra v1.8.1
 )
 
