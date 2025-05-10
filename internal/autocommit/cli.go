@@ -39,9 +39,7 @@ func (p *postCommitCliImpl) createActionQuestion(provider llm.Provider) *survey.
 		VimMode: true,
 		Options: []string{
 			CommitChangesOption,
-			RegenerateOption,
 			CopyToClipboardOption,
-			AddInstructionOption,
 			ExitOption,
 		},
 	}
@@ -56,45 +54,6 @@ func NewPostCommitCli() PostCommitCli {
 
 var (
 	CommitChangesOption   = fmt.Sprintf("%-2s Commit changes", "💾")
-	RegenerateOption      = fmt.Sprintf("%-2s Regenerate", "🔄")
 	CopyToClipboardOption = fmt.Sprintf("%-2s Copy to clipboard", "📋")
-	AddInstructionOption  = fmt.Sprintf("%-4s Add instruction", "✏️")
 	ExitOption            = fmt.Sprintf("%-2s Exit", "🚪")
 )
-
-// AddInstructionCli is an interface for executing add instruction CLI operations.
-type AddInstructionCli interface {
-	// Execute executes the add instruction CLI.
-	Execute() (string, error)
-}
-
-// addInstructionCliImpl is an implementation of AddInstructionCli.
-type addInstructionCliImpl struct{}
-
-// Execute implements the AddInstructionCli interface.
-func (a *addInstructionCliImpl) Execute() (string, error) {
-	questions := llm.CreateQuestions(provider, a.createActionQuestion)
-
-	var option string
-
-	err := survey.Ask(questions, &option)
-	if err != nil {
-		return "", err
-	}
-
-	return option, nil
-}
-
-func (a *addInstructionCliImpl) createActionQuestion(provider llm.Provider) *survey.Question {
-	prompt := survey.Input{
-		Message: "Add your your instruction",
-		Help:    "This instruction will be used to regenerate your commit message based on your instructions.",
-	}
-
-	return &survey.Question{Name: "Option", Prompt: &prompt, Validate: survey.Required}
-}
-
-// NewAddInstructionCli creates a new instance of AddInstructionCli.
-func NewAddInstructionCli() AddInstructionCli {
-	return &addInstructionCliImpl{}
-}

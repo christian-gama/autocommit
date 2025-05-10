@@ -42,20 +42,18 @@ func (g *generatorCommandImpl) Execute(config llm.Config) (string, error) {
 		return "", err
 	}
 
-	lastMessages, err := g.git.Log(5)
+	lastMessages, err := g.git.Log(8)
 	if err != nil {
 		return "", err
 	}
 
 	system := llm.NewSystem(systemMsg, "CommitMessageGenerator")
 	msg := fmt.Sprintf(
-		"Sample of previous git messages so that you can keep new messages consistent:\n%s\nNow here is the current project structure:\n%s\nAnd finally the git diff output:\n%s",
+		"Sample of previous git messages so that you can keep new messages style consistent, such as casing, spacing and line breaks:\n%s\nNow here is the current project structure:\n%s\nAnd finally the git diff output:\n%s",
 		lastMessages,
 		projectStructure,
 		diff,
 	)
-
-	fmt.Println(msg)
 
 	response, err := g.chatCommand.Execute(
 		config,

@@ -29,10 +29,6 @@ func MakeAddInstructionCommand(provider llm.Provider) AddInstructionCommand {
 	return NewAddInstructionCommand(provider.ChatCommand())
 }
 
-func MakeAddInstructionCli() AddInstructionCli {
-	return NewAddInstructionCli()
-}
-
 func MakeSystemMsgRepo() SystemMsgRepo {
 	return NewSystemMsgRepo(storage.NewStorage("system_msg.txt"))
 }

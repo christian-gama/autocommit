@@ -30,7 +30,6 @@ func runCmd(cmd *cobra.Command, args []string) {
 	verifyConfigCommand := providerFactory.MakeVerifyConfigCommand()
 	askConfigsCli := providerFactory.MakeAskConfigsCli()
 	systemMsgHealthCheck := autocommit.MakeSystemMsgHealthCheckCommand()
-	addInstructionCommand = autocommit.MakeAddInstructionCommand(llmProvider)
 
 	var err error
 	config, err = verifyConfigCommand.Execute(askConfigsCli.Execute)
@@ -55,10 +54,10 @@ func handleCmd(cmd *cobra.Command, args []string) {
 	}
 
 	printSuccessMessage(response)
-	handlePostCommit(response, cmd, args)
+	handlePostCommit(response)
 }
 
-func handlePostCommit(response string, cmd *cobra.Command, args []string) {
+func handlePostCommit(response string) {
 	option, err := postCommitCli.Execute()
 	if err != nil {
 		panic(err)
@@ -70,12 +69,6 @@ func handlePostCommit(response string, cmd *cobra.Command, args []string) {
 
 	case autocommit.CopyToClipboardOption:
 		handleCopyToClipboard(response)
-
-	case autocommit.RegenerateOption:
-		handleRegenerate(cmd, args)
-
-	case autocommit.AddInstructionOption:
-		handleNewInstructions(cmd, args)
 
 	case autocommit.ExitOption:
 		os.Exit(0)
@@ -92,36 +85,6 @@ func handleCopyToClipboard(response string) {
 	if err := clipboardCommand.Execute(response); err != nil {
 		panic(err)
 	}
-}
-
-func handleNewInstructions(cmd *cobra.Command, args []string) {
-	instructions, err := addInstructionCli.Execute()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("💡 Enhancing the message with your new instruction...\n")
-	response, err := addInstructionCommand.Execute(config, instructions)
-	if err != nil {
-		panic(err)
-	}
-
-	printSuccessMessage(response)
-	handlePostCommit(response, cmd, args)
-}
-
-func handleRegenerate(cmd *cobra.Command, args []string) {
-	fmt.Printf("🔄 Regenerating the commit message...\n")
-	response, err := addInstructionCommand.Execute(
-		config,
-		"Recreate the commit message from scratch. As a reminder, stick to the previous rules.",
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	printSuccessMessage(response)
-	handlePostCommit(response, cmd, args)
 }
 
 func handleMaxToken(err error, cmd *cobra.Command, args []string) {
