@@ -8,7 +8,7 @@ import (
 
 func MakeGeneratorCommand(provider llm.Provider) GeneratorCommand {
 	chatCommand := provider.ChatCommand()
-	diffCommand := git.MakeDiffCommand()
+	diffCommand := git.New()
 
 	return NewGeneratorCommand(chatCommand, diffCommand, MakeSystemMsgRepo())
 }

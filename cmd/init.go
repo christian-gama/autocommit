@@ -12,7 +12,7 @@ import (
 var (
 	postCommitCli         autocommit.PostCommitCli
 	generatorCommand      autocommit.GeneratorCommand
-	commitCommand         git.CommitCommand
+	gitCommand            *git.Git
 	clipboardCommand      autocommit.ClipboardCommand
 	resetConfigCommand    llm.ResetConfigCommand
 	updateConfigCommand   llm.UpdateConfigCommand
@@ -45,7 +45,7 @@ func loadProvider() llm.Provider {
 func init() {
 	postCommitCli = autocommit.MakePostCommitCli()
 
-	commitCommand = git.MakeCommitCommand()
+	gitCommand = git.New()
 	clipboardCommand = autocommit.MakeClipboardCommand()
 	addInstructionCli = autocommit.MakeAddInstructionCli()
 	openSystemMsgCommand = autocommit.MakeOpenSystemMsgCommand()

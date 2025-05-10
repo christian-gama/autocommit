@@ -83,7 +83,7 @@ func handlePostCommit(response string, cmd *cobra.Command, args []string) {
 }
 
 func handleCommit(response string) {
-	if err := commitCommand.Execute(response); err != nil {
+	if err := gitCommand.Commit(response); err != nil {
 		panic(err)
 	}
 }

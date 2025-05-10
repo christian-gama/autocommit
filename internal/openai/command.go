@@ -6,19 +6,13 @@ import (
 	"github.com/christian-gama/autocommit/internal/llm"
 )
 
-// ChatCommand is the interface that wraps the basic Execute method.
-// type ChatCommand interface {
-// 	// Execute returns the response from the AI.
-// 	Execute(config llm.Config, system *llm.System, input string) (string, error)
-// }
-
-// chatCommandImpl is an implementation of ChatCommand.
-type chatCommandImpl struct {
+// chatCommand is an implementation of ChatCommand.
+type chatCommand struct {
 	chat llm.Chat
 }
 
 // Execute implements the ChatCommand interface.
-func (c *chatCommandImpl) Execute(
+func (c *chatCommand) Execute(
 	config llm.Config,
 	system *llm.System,
 	input string,
@@ -36,18 +30,18 @@ func (c *chatCommandImpl) Execute(
 
 // NewChatCommand creates a new instance of ChatCommand.
 func NewChatCommand(chat llm.Chat) llm.ChatCommand {
-	return &chatCommandImpl{
+	return &chatCommand{
 		chat: chat,
 	}
 }
 
-// openaiResetConfigCommandImpl is an implementation of ResetConfigCommand.
-type openaiResetConfigCommandImpl struct {
+// openaiResetConfigCommand is an implementation of ResetConfigCommand.
+type openaiResetConfigCommand struct {
 	repo llm.ConfigRepo
 }
 
 // Execute Implements the ResetConfigCommand interface.
-func (r *openaiResetConfigCommandImpl) Execute() error {
+func (r *openaiResetConfigCommand) Execute() error {
 	if !r.repo.Exists() {
 		return nil
 	}
@@ -57,24 +51,18 @@ func (r *openaiResetConfigCommandImpl) Execute() error {
 
 // NewResetConfigCommand creates a new instance of ResetConfigCommand.
 func NewOpenAIResetConfigCommand(repo llm.ConfigRepo) llm.ResetConfigCommand {
-	return &openaiResetConfigCommandImpl{
+	return &openaiResetConfigCommand{
 		repo: repo,
 	}
 }
 
-// UpdateConfigCommand is the interface that wraps the basic Execute method.
-// type UpdateConfigCommand interface {
-// 	// Execute will update the configs.
-// 	Execute(config *OpenAIConfig) error
-// }
-
-// openaiUpdateConfigCommandImpl is an implementation of UpdateConfigCommand.
-type openaiUpdateConfigCommandImpl struct {
+// openaiUpdateConfigCommand is an implementation of UpdateConfigCommand.
+type openaiUpdateConfigCommand struct {
 	repo llm.ConfigRepo
 }
 
 // Execute Implements the UpdateConfigCommand interface.
-func (u *openaiUpdateConfigCommandImpl) Execute(config llm.Config) error {
+func (u *openaiUpdateConfigCommand) Execute(config llm.Config) error {
 	savedConfig, err := u.repo.GetConfig()
 	if err != nil {
 		return err
@@ -114,9 +102,9 @@ func (u *openaiUpdateConfigCommandImpl) Execute(config llm.Config) error {
 	return u.repo.UpdateConfig(savedConfig)
 }
 
-// // NewUpdateConfigCommand creates a new instance of UpdateConfigCommand.
+// NewUpdateConfigCommand creates a new instance of UpdateConfigCommand.
 func NewOpenAIUpdateConfigCommand(repo llm.ConfigRepo) llm.UpdateConfigCommand {
-	return &openaiUpdateConfigCommandImpl{
+	return &openaiUpdateConfigCommand{
 		repo: repo,
 	}
 }

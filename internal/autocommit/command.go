@@ -10,7 +10,6 @@ import (
 
 	"github.com/christian-gama/autocommit/internal/git"
 	"github.com/christian-gama/autocommit/internal/llm"
-	"github.com/christian-gama/autocommit/internal/ls"
 )
 
 // GeneratorCommand is the interface that wraps the Execute method.
@@ -22,18 +21,18 @@ type GeneratorCommand interface {
 // generatorCommandImpl is an implementation of GeneratorCommand.
 type generatorCommandImpl struct {
 	chatCommand   llm.ChatCommand
-	diffCommand   git.DiffCommand
+	git           *git.Git
 	systemMsgRepo SystemMsgRepo
 }
 
 // Execute implements the GeneratorCommand interface.
 func (g *generatorCommandImpl) Execute(config llm.Config) (string, error) {
-	diff, err := g.diffCommand.Execute()
+	diff, err := g.git.Diff()
 	if err != nil {
 		return "", err
 	}
 
-	projectStructure, err := ls.ListProjectStructure()
+	projectStructure, err := g.git.ListProjectStructure()
 	if err != nil {
 		return "", err
 	}
@@ -43,18 +42,20 @@ func (g *generatorCommandImpl) Execute(config llm.Config) (string, error) {
 		return "", err
 	}
 
+	lastMessages, err := g.git.Log(5)
+	if err != nil {
+		return "", err
+	}
+
 	system := llm.NewSystem(systemMsg, "CommitMessageGenerator")
 	msg := fmt.Sprintf(
-		`As a reminder, be concise and always write the texts in imperative mood and in present tense.
-
-Current project structure:
-%s
-
-Git diff output:
-%s`,
+		"Sample of previous git messages so that you can keep new messages consistent:\n%s\nNow here is the current project structure:\n%s\nAnd finally the git diff output:\n%s",
+		lastMessages,
 		projectStructure,
 		diff,
 	)
+
+	fmt.Println(msg)
 
 	response, err := g.chatCommand.Execute(
 		config,
@@ -71,12 +72,12 @@ Git diff output:
 // NewGeneratorCommand creates a new instance of GeneratorCommand.
 func NewGeneratorCommand(
 	chatCommand llm.ChatCommand,
-	diffCommand git.DiffCommand,
+	git *git.Git,
 	systemMsgRepo SystemMsgRepo,
 ) GeneratorCommand {
 	return &generatorCommandImpl{
 		chatCommand:   chatCommand,
-		diffCommand:   diffCommand,
+		git:           git,
 		systemMsgRepo: systemMsgRepo,
 	}
 }
