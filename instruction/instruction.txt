@@ -51,6 +51,7 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 22. Avoid circumlocutory, go straight to the point.
 23. AVoid repeating ideas without adding value.
 24. Write in a succinct and no-nonsense tone—like a seasoned engineer writing a changelog.
+25. Never use markdown in the commit message.
 
 ## Interpreting git diff
 

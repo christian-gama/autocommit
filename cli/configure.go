@@ -1,3 +1,4 @@
+// Package cli provides the command-line interface for the autocommit tool.
 package cli
 
 import (
@@ -8,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Configure is a command that allows users to configure LLM providers.
+// It guides the user through setting up or modifying provider details.
 var Configure = &cobra.Command{
 	Use:   "configure",
 	Short: "Configure an existing LLM provider or add a new one",
@@ -27,6 +30,7 @@ var Configure = &cobra.Command{
 	},
 }
 
+// loadConfig loads the existing configuration or creates a new one if none exists.
 func loadConfig() (*config.Config, error) {
 	cfg, _, err := config.LoadOrNew()
 	if err != nil {
@@ -36,6 +40,8 @@ func loadConfig() (*config.Config, error) {
 	return cfg, nil
 }
 
+// configureLLM guides the user through the LLM provider configuration process,
+// prompting for provider, credential, model, and default status.
 func configureLLM(cfg *config.Config) error {
 	askConfig := ask.NewConfig()
 

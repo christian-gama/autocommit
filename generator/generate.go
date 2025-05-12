@@ -1,3 +1,4 @@
+// Package generator provides functionality to generate commit messages using LLMs.
 package generator
 
 import (
@@ -11,11 +12,14 @@ import (
 	"github.com/tmc/langchaingo/llms"
 )
 
+// Generator handles the generation of commit messages using language models.
 type Generator struct {
 	model llms.Model
 	msgs  []llms.MessageContent
 }
 
+// New creates a new Generator instance with the provided language model.
+// It loads the instruction template and current project context.
 func New(model llms.Model) (*Generator, error) {
 	instruction, err := instruction.Load()
 	if err != nil {
@@ -45,6 +49,8 @@ func New(model llms.Model) (*Generator, error) {
 	}, nil
 }
 
+// Generate produces a commit message using the configured language model.
+// Optional additionalPrompts can be provided to guide the generation process.
 func (a *Generator) Generate(ctx context.Context, additionalPrompts ...string) (string, error) {
 	if len(additionalPrompts) > 0 {
 		for _, prompt := range additionalPrompts {

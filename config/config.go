@@ -1,3 +1,4 @@
+// Package config provides configuration management for the autocommit tool.
 package config
 
 import (
@@ -13,26 +14,31 @@ const (
 	_configFileName = "config.json"
 )
 
+// ErrConfigNotFound is returned when the configuration file cannot be found.
 var ErrConfigNotFound = errors.New("config file not found")
 
-type llm struct {
-	Provider   string
-	Credential string
-	Model      string
-	IsDefault  bool
+type llmSettings struct {
+	Provider   string `json:"provider"`
+	Credential string `json:"credential"`
+	Model      string `json:"model"`
+	IsDefault  bool   `json:"is_default"`
 }
 
+// Config manages the configuration for LLM providers and their credentials.
 type Config struct {
-	llms map[string]*llm
+	llms map[string]*llmSettings
 }
 
+// New creates a new empty configuration instance.
 func New() (*Config, error) {
 	return &Config{
-		llms: make(map[string]*llm),
+		llms: make(map[string]*llmSettings),
 	}, nil
 
 }
 
+// LoadOrNew attempts to load an existing configuration file, or creates a new one
+// if no configuration exists. Returns the config, whether it's new, and any error.
 func LoadOrNew() (cfg *Config, isNew bool, err error) {
 	cfg, err = Load()
 	if err != nil {
@@ -52,6 +58,8 @@ func LoadOrNew() (cfg *Config, isNew bool, err error) {
 	return cfg, isNew, nil
 }
 
+// Load reads the configuration file from disk and returns a populated Config.
+// Returns ErrConfigNotFound if the configuration file doesn't exist.
 func Load() (*Config, error) {
 	config, err := New()
 	if err != nil {
@@ -74,10 +82,14 @@ func Load() (*Config, error) {
 	return config, nil
 }
 
+// HasAnyLLM returns true if there are any LLM providers configured.
 func (c *Config) HasAnyLLM() bool {
 	return len(c.llms) > 0
 }
 
+// SetLLM configures an LLM provider with the given details.
+// If isDefault is true, it will make this the default provider and unset any
+// previous default. Ensures there is always at least one default provider.
 func (c *Config) SetLLM(provider, model, credential string, isDefault bool) error {
 	var hasDefault bool
 
@@ -95,7 +107,7 @@ func (c *Config) SetLLM(provider, model, credential string, isDefault bool) erro
 		return fmt.Errorf("must have at least one default LLM")
 	}
 
-	c.llms[provider] = &llm{
+	c.llms[provider] = &llmSettings{
 		Provider:   provider,
 		Credential: credential,
 		Model:      model,
@@ -105,12 +117,16 @@ func (c *Config) SetLLM(provider, model, credential string, isDefault bool) erro
 	return nil
 }
 
-func (c *Config) LLM(provider string) (*llm, bool) {
+// LLM returns the configuration for a specific provider.
+// Returns the LLM config and a boolean indicating if it was found.
+func (c *Config) LLM(provider string) (*llmSettings, bool) {
 	llm, ok := c.llms[provider]
 	return llm, ok
 }
 
-func (c *Config) DefaultLLM() (*llm, bool) {
+// DefaultLLM returns the configuration for the default LLM provider.
+// Returns the default LLM config and a boolean indicating if a default was found.
+func (c *Config) DefaultLLM() (*llmSettings, bool) {
 	for _, llm := range c.llms {
 		if llm.IsDefault {
 			return llm, true
@@ -120,24 +136,17 @@ func (c *Config) DefaultLLM() (*llm, bool) {
 }
 
 func (c *Config) Marshal() ([]byte, error) {
-	type llmData struct {
-		Provider   string `json:"provider"`
-		Credential string `json:"credential"`
-		Model      string `json:"model"`
-		Active     bool   `json:"active"`
-	}
-
 	var configData struct {
-		LLMS []*llmData `json:"llms"`
+		LLMS []*llmSettings `json:"llms"`
 	}
 
 	for _, llm := range c.llms {
 		configData.LLMS = append(
-			configData.LLMS, &llmData{
+			configData.LLMS, &llmSettings{
 				Provider:   llm.Provider,
 				Credential: llm.Credential,
 				Model:      llm.Model,
-				Active:     llm.IsDefault,
+				IsDefault:  llm.IsDefault,
 			},
 		)
 	}
@@ -151,15 +160,8 @@ func (c *Config) Marshal() ([]byte, error) {
 }
 
 func (c *Config) Unmarshal(data []byte) error {
-	type llmData struct {
-		Provider   string `json:"provider"`
-		Credential string `json:"credential"`
-		Model      string `json:"model"`
-		Active     bool   `json:"active"`
-	}
-
 	var configData struct {
-		LLMS []*llmData `json:"llms"`
+		LLMS []*llmSettings `json:"llms"`
 	}
 
 	if err := json.Unmarshal(data, &configData); err != nil {
@@ -167,19 +169,23 @@ func (c *Config) Unmarshal(data []byte) error {
 	}
 
 	for _, data := range configData.LLMS {
-		c.llms[data.Provider] = &llm{
+		c.llms[data.Provider] = &llmSettings{
 			Provider:   data.Provider,
 			Credential: data.Credential,
 			Model:      data.Model,
-			IsDefault:  data.Active,
+			IsDefault:  data.IsDefault,
 		}
 	}
 
 	return nil
 }
 
+// Save writes the configuration to disk, validating the configuration before saving.
+// Creates the configuration directory if it doesn't exist.
 func (c *Config) Save() error {
 	var errs []error
+
+	hasUniqueDefault := false
 
 	for _, llm := range c.llms {
 		if llm.Provider == "" {
@@ -189,6 +195,22 @@ func (c *Config) Save() error {
 		if llm.Model == "" {
 			errs = append(errs, errors.New("model cannot be empty"))
 		}
+
+		if llm.Credential == "" {
+			errs = append(errs, errors.New("credential cannot be empty"))
+		}
+
+		if llm.IsDefault {
+			if hasUniqueDefault {
+				errs = append(errs, fmt.Errorf("multiple default LLMs found: %s", llm.Provider))
+			} else {
+				hasUniqueDefault = true
+			}
+		}
+	}
+
+	if !hasUniqueDefault {
+		errs = append(errs, errors.New("no default LLM found"))
 	}
 
 	if len(errs) > 0 {
@@ -213,8 +235,9 @@ func (c *Config) Save() error {
 	return os.WriteFile(c.configPath(), content, os.ModePerm)
 }
 
+// Remove clears all LLM configurations and removes the config file from disk.
 func (c *Config) Remove() error {
-	c.llms = make(map[string]*llm)
+	c.llms = make(map[string]*llmSettings)
 
 	if _, err := os.Stat(c.configPath()); os.IsNotExist(err) {
 		return nil
@@ -231,6 +254,7 @@ func (c *Config) configPath() string {
 	return path.Join(Dir(), _configFileName)
 }
 
+// Dir returns the path to the configuration directory.
 func Dir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {

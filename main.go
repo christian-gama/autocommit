@@ -18,6 +18,8 @@ func main() {
 	}
 }
 
+// clearScreen clears the terminal screen. It uses platform-specific
+// commands based on the runtime environment.
 func clearScreen() {
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cmd", "/c", "cls")

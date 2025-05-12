@@ -1,3 +1,4 @@
+// Package instruction provides functionality to manage the instruction template used by the LLM.
 package instruction
 
 import (
@@ -16,6 +17,8 @@ const _instructionFileName = "instruction.txt"
 //go:embed instruction.txt
 var _defaultInstruction embed.FS
 
+// Load reads the instruction template from disk. If the file doesn't exist,
+// it creates a new instruction file with default content first.
 func Load() (string, error) {
 	content, err := os.ReadFile(filePath())
 	if err != nil {
@@ -40,6 +43,8 @@ func Load() (string, error) {
 	return string(content), nil
 }
 
+// Restore resets the instruction file back to its default content,
+// removing any customizations.
 func Restore() error {
 	if _, err := os.Stat(config.Dir()); !os.IsNotExist(err) {
 		if err := os.Remove(filePath()); err != nil {
@@ -50,6 +55,8 @@ func Restore() error {
 	return Create()
 }
 
+// Create writes the default instruction template to disk.
+// Creates the configuration directory if it doesn't exist.
 func Create() error {
 	if _, err := os.Stat(config.Dir()); os.IsNotExist(err) {
 		if err := os.MkdirAll(config.Dir(), os.ModePerm); err != nil {
@@ -65,6 +72,8 @@ func Create() error {
 	return os.WriteFile(filePath(), content, os.ModePerm)
 }
 
+// Open launches the instruction file in the default text editor
+// for the current operating system.
 func Open() error {
 	var cmd *exec.Cmd
 	switch runtime.GOOS {

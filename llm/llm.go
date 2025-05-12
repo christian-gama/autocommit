@@ -1,3 +1,4 @@
+// Package llm provides integration with various language model providers.
 package llm
 
 import (
@@ -7,6 +8,8 @@ import (
 	"github.com/tmc/langchaingo/llms"
 )
 
+// New creates a language model instance based on the default provider in the config.
+// It instantiates and configures the appropriate LLM client based on the user's configuration.
 func New(config *config.Config) (llms.Model, error) {
 	defaultLLM, ok := config.DefaultLLM()
 	if !ok {

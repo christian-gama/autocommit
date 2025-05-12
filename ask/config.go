@@ -1,3 +1,4 @@
+// Package ask provides interactive prompt utilities for the autocommit tool.
 package ask
 
 import (
@@ -5,12 +6,15 @@ import (
 	"github.com/christian-gama/autocommit/llm"
 )
 
+// Config provides methods for prompting user configuration choices.
 type Config struct{}
 
+// NewConfig creates a new Config instance for prompting users about LLM configuration.
 func NewConfig() *Config {
 	return &Config{}
 }
 
+// Provider prompts the user to select an LLM provider from available options.
 func (c *Config) Provider() (string, error) {
 	var provider string
 	if err := survey.AskOne(
@@ -29,6 +33,8 @@ func (c *Config) Provider() (string, error) {
 	return provider, nil
 }
 
+// Credential prompts the user to enter their credential (API key) for the selected
+// LLM provider, with an optional default value.
 func (c *Config) Credential(defaultValue string) (string, error) {
 	var credential string
 	if err := survey.AskOne(
@@ -46,6 +52,8 @@ func (c *Config) Credential(defaultValue string) (string, error) {
 	return credential, nil
 }
 
+// Model prompts the user to select a specific model from the available options
+// for the given provider, with an optional default value.
 func (c *Config) Model(provider string, defaultValue string) (string, error) {
 	var defaultModel any
 
@@ -71,6 +79,8 @@ func (c *Config) Model(provider string, defaultValue string) (string, error) {
 	return model, nil
 }
 
+// IsDefault prompts the user to specify whether the selected provider should
+// be used as the default, with an optional default value.
 func (c *Config) IsDefault(defaultValue bool) (bool, error) {
 	var isDefault bool
 	if err := survey.AskOne(

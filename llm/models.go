@@ -1,3 +1,4 @@
+// Package llm provides integration with various language model providers.
 package llm
 
 import (
@@ -14,8 +15,10 @@ import (
 	lcopenai "github.com/tmc/langchaingo/llms/openai"
 )
 
+// OpenAI is the identifier for the OpenAI LLM provider.
 const OpenAI = "OpenAI"
 
+// makeOpenAI creates and configures an OpenAI language model instance.
 func makeOpenAI(config *config.Config) (llms.Model, error) {
 	llm, ok := config.LLM(OpenAI)
 	if !ok {
@@ -29,8 +32,10 @@ func makeOpenAI(config *config.Config) (llms.Model, error) {
 	return lcopenai.New(lcopenai.WithModel(llm.Model))
 }
 
+// Ollama2 is the identifier for the Ollama LLM provider.
 const Ollama2 = "Ollama 2"
 
+// makeOllama creates and configures an Ollama language model instance.
 func makeOllama(config *config.Config) (llms.Model, error) {
 	llm, ok := config.LLM(Ollama2)
 	if !ok {
@@ -44,8 +49,10 @@ func makeOllama(config *config.Config) (llms.Model, error) {
 	return lcollama.New(lcollama.WithModel(llm.Model))
 }
 
+// Mistral is the identifier for the Mistral AI LLM provider.
 const Mistral = "Mistral"
 
+// makeMistral creates and configures a Mistral language model instance.
 func makeMistral(config *config.Config) (llms.Model, error) {
 	llm, ok := config.LLM(Mistral)
 	if !ok {
@@ -59,8 +66,10 @@ func makeMistral(config *config.Config) (llms.Model, error) {
 	return lcmistral.New(lcmistral.WithModel(llm.Model))
 }
 
+// GoogleAI is the identifier for the Google AI LLM provider.
 const GoogleAI = "Google AI"
 
+// makeGoogleAI creates and configures a Google AI language model instance.
 func makeGoogleAI(config *config.Config) (llms.Model, error) {
 	llm, ok := config.LLM(GoogleAI)
 	if !ok {
@@ -74,6 +83,8 @@ func makeGoogleAI(config *config.Config) (llms.Model, error) {
 	return lcgoogleai.New(context.Background(), lcgoogleai.WithAPIKey(llm.Credential), lcgoogleai.WithDefaultModel(llm.Model))
 }
 
+// Models returns a list of available model identifiers for the specified provider.
+// This is used to populate selection menus in the configuration UI.
 func Models(provider string) []string {
 	switch provider {
 	case OpenAI:

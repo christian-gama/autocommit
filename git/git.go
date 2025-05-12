@@ -1,3 +1,4 @@
+// Package git provides Git operations for the autocommit tool.
 package git
 
 import (
@@ -9,6 +10,8 @@ import (
 	"strings"
 )
 
+// Commit creates a Git commit with the provided message.
+// It uses the staged changes in the Git repository.
 func Commit(message string) error {
 	if err := git("commit", "-m", message).Run(); err != nil {
 		return err
@@ -17,6 +20,8 @@ func Commit(message string) error {
 	return nil
 }
 
+// MinimalDiff returns the Git diff of the staged changes.
+// It returns an error if there are no staged changes.
 func MinimalDiff() (string, error) {
 	output, err := git("diff", "--no-color", "--minimal", "--cached", "-U3").CombinedOutput()
 	if err != nil {
@@ -30,6 +35,8 @@ func MinimalDiff() (string, error) {
 	return string(output), nil
 }
 
+// ListFiles returns a formatted string representation of all files in the Git repository.
+// The output is organized as a directory tree structure.
 func ListFiles() (string, error) {
 	output, err := git("rev-parse", "--show-toplevel").CombinedOutput()
 	if err != nil {

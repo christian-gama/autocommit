@@ -1,3 +1,4 @@
+// Package cli provides the command-line interface for the autocommit tool.
 package cli
 
 import (
@@ -13,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// autoCommitDeps contains all dependencies required by the autocommit command.
 type autoCommitDeps struct {
 	cfg       *config.Config
 	generator *generator.Generator
@@ -57,6 +59,8 @@ func newAutoCommitDeps(cmd *cobra.Command) (*autoCommitDeps, error) {
 	}, nil
 }
 
+// AutoCommit is the main command for the autocommit tool. It uses LLM models to
+// generate commit messages based on the changes made in the current Git repository.
 var AutoCommit = &cobra.Command{
 	Use:   "autocommit",
 	Short: "Autocommit is a CLI tool that uses LLM models to generate commit messages based on the changes made in your current repository.",
