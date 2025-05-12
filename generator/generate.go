@@ -31,12 +31,12 @@ func New(model llms.Model) (*Generator, error) {
 
 	msgs = append(msgs, llms.MessageContent{
 		Role:  llms.ChatMessageTypeSystem,
-		Parts: []llms.ContentPart{llms.TextContent{Text: instruction}},
+		Parts: []llms.ContentPart{llms.TextPart(instruction)},
 	})
 
 	msgs = append(msgs, llms.MessageContent{
 		Role:  llms.ChatMessageTypeHuman,
-		Parts: []llms.ContentPart{llms.TextContent{Text: content}},
+		Parts: []llms.ContentPart{llms.TextPart(content)},
 	})
 
 	return &Generator{
@@ -50,7 +50,7 @@ func (a *Generator) Generate(ctx context.Context, additionalPrompts ...string) (
 		for _, prompt := range additionalPrompts {
 			msg := llms.MessageContent{
 				Role:  llms.ChatMessageTypeHuman,
-				Parts: []llms.ContentPart{llms.TextContent{Text: prompt}},
+				Parts: []llms.ContentPart{llms.TextPart(prompt)},
 			}
 			a.msgs = append(a.msgs, msg)
 		}
@@ -70,7 +70,7 @@ func (a *Generator) Generate(ctx context.Context, additionalPrompts ...string) (
 
 	a.msgs = append(a.msgs, llms.MessageContent{
 		Role:  llms.ChatMessageTypeAI,
-		Parts: []llms.ContentPart{llms.TextContent{Text: c1.Content}},
+		Parts: []llms.ContentPart{llms.TextPart(c1.Content)},
 	})
 
 	return strings.TrimSpace(boundText(c1.Content)), nil

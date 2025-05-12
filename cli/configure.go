@@ -45,19 +45,26 @@ func configure(cfg *config.Config) error {
 		defaults.IsDefault = llm.IsDefault
 	}
 
-	model, err := askConfig.Model(provider, defaults.Model)
-	if err != nil {
-		return err
-	}
-
 	credential, err := askConfig.Credential(defaults.Credential)
 	if err != nil {
 		return err
 	}
 
-	isDefault, err := askConfig.IsDefault(defaults.IsDefault)
+	model, err := askConfig.Model(provider, defaults.Model)
 	if err != nil {
 		return err
+	}
+
+	var isDefault bool
+	if cfg.HasAnyLLM() {
+		isDefault, err = askConfig.IsDefault(defaults.IsDefault)
+		if err != nil {
+			return err
+		}
+	} else {
+		// If there are no existing LLMs, set the first one as default
+		// to avoid having to ask the user.
+		isDefault = true
 	}
 
 	if err := cfg.SetLLM(provider, model, credential, isDefault); err != nil {

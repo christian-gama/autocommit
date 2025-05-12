@@ -4,13 +4,11 @@ Following a consistent convention for Git commit messages improves collaboration
 
 You must generate only ONE commit message following the structure below, independent of the number of changes made. Its only allowed to have one description when you are asked for a git message.
 
-```txt
 <type>[optional scope][!]: <description>
 
 [optional body]
 
 [optional footer(s)]
-```
 
 Where:
 
@@ -67,56 +65,41 @@ When writing a commit message based on git diff output:
 
 1. Simple Fix:
 
-```txt
 fix: correct typo in user welcome email
-```
 
 2. New Feature with Scope:
 
-```txt
 feat(auth): add support for multi-factor authentication
-```
 
 3. Refactor with Body:
 
-```txt
 refactor(api): simplify user fetching logic
 
 Remove redundant database calls by implementing caching.
 Improve overall response time for user endpoints.
-```
 
 4. Documentation Change:
 
-```txt
 docs: update README with setup instructions
-```
 
 5. Breaking Change with footer and no body:
 
-```txt
 feat(config)!: remove deprecated `apiKey` setting
 
 BREAKING CHANGE: the `apiKey` configuration option is removed
 users must now use the `authToken` option instead
 refer to the migration guide for details.
-```
 
 6. Chore:
 
-```txt
 chore: update dependencies to latest versions
-```
 
 7. Style Change:
 
-```txt
 style: apply linter rules across codebase
-```
 
 8. Fix Spanning Multiple Areas (No Scope):
 
-```txt
 fix: resolve issues with user session persistence
 
 Correct session handling in both the api and ui components.
@@ -124,11 +107,9 @@ Correct session handling in both the api and ui components.
 Ensure user remains logged in across browser restarts.
 
 Use secure cookies for session storage.
-```
 
 9. Breaking changes with body and footer:
 
-```txt
 fix!: prevent racing of requests
 
 Introduce a request id and a reference to latest request.
@@ -138,10 +119,9 @@ Dismiss incoming responses other than from latest request.
 Add mutex to prevent multiple requests from being sent.
 
 BREAKING CHANGE: this change alters the request handling logic.
-```
 
 10. A complex change with multiple areas:
-```txt
+
 feat(cli): add interactive commit message actions with clipboard support
 
 Add a new `ask` package to handle user actions such as commit, regenerate,
@@ -154,6 +134,5 @@ Refactor ask package to use Config struct for configuration prompts.
 
 Allows regeneration, adding instructions, committing, or copying the commit message
 to clipboard.
-```
 
 Rembember that you must have only one `<type>[optional scope][!]: <description>` in your output, but you can have as many [optional body] and [optional footer(s)] as you want.

@@ -1,10 +1,8 @@
 package ask
 
 import (
-	"fmt"
-
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/sashabaranov/go-openai"
+	"github.com/christian-gama/autocommit/llm"
 )
 
 type Config struct{}
@@ -18,7 +16,7 @@ func (c *Config) Provider() (string, error) {
 	if err := survey.AskOne(
 		&survey.Select{
 			Message: "Provider:",
-			Options: []string{"openai", "anthropic", "google"},
+			Options: []string{llm.OpenAI, llm.Ollama2, llm.Mistral, llm.GoogleAI},
 			Help:    "The provider of the LLM.",
 			VimMode: true,
 		},
@@ -49,12 +47,18 @@ func (c *Config) Credential(defaultValue string) (string, error) {
 }
 
 func (c *Config) Model(provider string, defaultValue string) (string, error) {
+	var defaultModel any
+
+	if defaultValue != "" {
+		defaultModel = defaultValue
+	}
+
 	var model string
 	if err := survey.AskOne(
 		&survey.Select{
 			Message: "Model:",
-			Options: c.models(provider),
-			Default: defaultValue,
+			Options: llm.Models(provider),
+			Default: defaultModel,
 			Help:    "The model to use.",
 			VimMode: true,
 		},
@@ -81,23 +85,4 @@ func (c *Config) IsDefault(defaultValue bool) (bool, error) {
 	}
 
 	return isDefault, nil
-}
-
-func (c *Config) models(provider string) []string {
-	switch provider {
-	case "openai":
-		return []string{
-			openai.GPT4o,
-			openai.GPT4Dot1,
-			openai.GPT4Dot1Mini,
-			openai.GPT4Dot1Nano,
-			openai.O1,
-			openai.O1Mini,
-			openai.O3,
-			openai.O3Mini,
-			openai.O4Mini,
-		}
-	default:
-		panic(fmt.Sprintf("unsupported provider: %s", provider))
-	}
 }

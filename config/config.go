@@ -74,6 +74,10 @@ func Load() (*Config, error) {
 	return config, nil
 }
 
+func (c *Config) HasAnyLLM() bool {
+	return len(c.llms) > 0
+}
+
 func (c *Config) SetLLM(provider, model, credential string, isDefault bool) error {
 	var hasDefault bool
 

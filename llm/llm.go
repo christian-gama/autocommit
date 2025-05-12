@@ -14,8 +14,14 @@ func New(config *config.Config) (llms.Model, error) {
 	}
 
 	switch defaultLLM.Provider {
-	case _openai:
+	case OpenAI:
 		return makeOpenAI(config)
+	case Ollama2:
+		return makeOllama(config)
+	case Mistral:
+		return makeMistral(config)
+	case GoogleAI:
+		return makeGoogleAI(config)
 	default:
 		return nil, fmt.Errorf("unsupported LLM provider: %s", defaultLLM.Provider)
 	}

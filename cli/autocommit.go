@@ -3,9 +3,6 @@ package cli
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
-	"runtime"
 
 	"github.com/atotto/clipboard"
 	"github.com/christian-gama/autocommit/ask"
@@ -33,6 +30,14 @@ var AutoCommit = &cobra.Command{
 			}
 		}
 
+		currentModel, ok := cfg.DefaultLLM()
+		if !ok {
+			cmd.PrintErrf("Error getting default LLM model: %v\n", err)
+			return
+		}
+
+		fmt.Printf("🤖 Using model: %s\n", currentModel.Model)
+
 		model, err := llm.New(cfg)
 		if err != nil {
 			cmd.PrintErrf("Error creating LLM model: %v\n", err)
@@ -51,7 +56,6 @@ var AutoCommit = &cobra.Command{
 			return
 		}
 
-		clearScreen()
 		cmd.Printf("💬 Commit message:"+
 			"\n==================================================================================================\n%s"+
 			"\n==================================================================================================\n",
@@ -119,20 +123,4 @@ var AutoCommit = &cobra.Command{
 			}
 		}
 	},
-}
-
-func clearScreen() {
-	if runtime.GOOS == "windows" {
-		cmd := exec.Command("cmd", "/c", "cls")
-		cmd.Stdout = os.Stdout
-		if err := cmd.Run(); err != nil {
-			panic(err)
-		}
-	} else {
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		if err := cmd.Run(); err != nil {
-			panic(err)
-		}
-	}
 }
