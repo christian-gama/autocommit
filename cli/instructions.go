@@ -13,7 +13,7 @@ var restoreInstruction = &cobra.Command{
 			cmd.PrintErrf("Error restoring instructions file: %v\n", err)
 			return
 		}
-		cmd.Println("Instructions file has been restored to default")
+		cmd.Println("✅ Instructions file has been restored to default")
 	},
 }
 

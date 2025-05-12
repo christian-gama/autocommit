@@ -13,114 +13,130 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type autoCommitDeps struct {
+	cfg       *config.Config
+	generator *generator.Generator
+	askAction *ask.Action
+	cmd       *cobra.Command
+}
+
+func newAutoCommitDeps(cmd *cobra.Command) (*autoCommitDeps, error) {
+	cfg, isNew, err := config.LoadOrNew()
+	if err != nil {
+		return nil, fmt.Errorf("error loading config: %w", err)
+	}
+
+	if isNew {
+		if err := configureLLM(cfg); err != nil {
+			return nil, fmt.Errorf("error configuring LLM provider: %w", err)
+		}
+	}
+
+	currentModel, ok := cfg.DefaultLLM()
+	if !ok {
+		return nil, fmt.Errorf("error getting default LLM model")
+	}
+
+	fmt.Printf("🤖 Using model: %s\n", currentModel.Model)
+
+	model, err := llm.New(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("error creating LLM model: %w", err)
+	}
+
+	generator, err := generator.New(model)
+	if err != nil {
+		return nil, fmt.Errorf("error creating generator: %w", err)
+	}
+
+	return &autoCommitDeps{
+		cfg:       cfg,
+		generator: generator,
+		askAction: ask.NewAction(),
+		cmd:       cmd,
+	}, nil
+}
+
 var AutoCommit = &cobra.Command{
 	Use:   "autocommit",
 	Short: "Autocommit is a CLI tool that uses LLM models to generate commit messages based on the changes made in your current repository.",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg, isNew, err := config.LoadOrNew()
+		deps, err := newAutoCommitDeps(cmd)
 		if err != nil {
-			cmd.PrintErrf("Error loading config: %v\n", err)
+			cmd.PrintErrln(err)
 			return
 		}
 
-		if isNew {
-			if err := configure(cfg); err != nil {
-				cmd.PrintErrf("Error configuring LLM provider: %v\n", err)
-				return
-			}
-		}
-
-		currentModel, ok := cfg.DefaultLLM()
-		if !ok {
-			cmd.PrintErrf("Error getting default LLM model: %v\n", err)
-			return
-		}
-
-		fmt.Printf("🤖 Using model: %s\n", currentModel.Model)
-
-		model, err := llm.New(cfg)
-		if err != nil {
-			cmd.PrintErrf("Error creating LLM model: %v\n", err)
-			return
-		}
-
-		generator, err := generator.New(model)
-		if err != nil {
-			cmd.PrintErrf("Error creating generator: %v\n", err)
-			return
-		}
-
-		completion, err := generator.Generate(context.Background())
-		if err != nil {
-			cmd.PrintErrf("Error generating commit message: %v\n", err)
-			return
-		}
-
-		cmd.Printf("💬 Commit message:"+
-			"\n==================================================================================================\n%s"+
-			"\n==================================================================================================\n",
-			completion,
-		)
-		askAction := ask.NewAction()
-
-		for {
-			action, err := askAction.Action()
-			if err != nil {
-				cmd.PrintErrf("Error asking for action: %v\n", err)
-				return
-			}
-
-			switch action {
-			case ask.ActionAddInstruction:
-				instruction, err := askAction.Instruction()
-				if err != nil {
-					cmd.PrintErrf("Error asking for instruction: %v\n", err)
-					return
-				}
-
-				completion, err = generator.Generate(context.Background(), instruction)
-				if err != nil {
-					cmd.PrintErrf("Error generating commit message: %v\n", err)
-					return
-				}
-
-				cmd.Printf("💬 Commit message:"+
-					"\n==================================================================================================\n%s"+
-					"\n==================================================================================================\n",
-					completion,
-				)
-			case ask.ActionCommit:
-				if err := git.Commit(completion); err != nil {
-					cmd.PrintErrf("Error committing changes: %v\n", err)
-					return
-				}
-
-				return
-			case ask.ActionCopyToClipboard:
-				err := clipboard.WriteAll(fmt.Sprintf("git commit -m %q", completion))
-				if err != nil {
-					cmd.PrintErrf("Error copying to clipboard: %v\n", err)
-					return
-				}
-
-				return
-			case ask.ActionRegenerate:
-				completion, err := generator.Generate(context.Background(), "Regenerate the commit message with a different output.")
-				if err != nil {
-					cmd.PrintErrf("Error generating commit message: %v\n", err)
-					return
-				}
-
-				cmd.Printf("💬 Commit message:"+
-					"\n==================================================================================================\n%s"+
-					"\n==================================================================================================\n",
-					completion,
-				)
-			case ask.ActionExit:
-				return
-			default:
-				panic(fmt.Sprintf("unexpected ask.ActionOption: %#v", action))
-			}
-		}
+		runAutoCommit(deps)
 	},
+}
+
+func runAutoCommit(deps *autoCommitDeps) {
+	completion, err := deps.generator.Generate(context.Background())
+	if err != nil {
+		deps.cmd.PrintErrf("Error generating commit message: %v\n", err)
+		return
+	}
+
+	printCommitMessage(deps.cmd, completion)
+
+	for {
+		action, err := deps.askAction.Action()
+		if err != nil {
+			deps.cmd.PrintErrln(err)
+			return
+		}
+
+		switch action {
+		case ask.ActionAddInstruction:
+			instruction, err := deps.askAction.Instruction()
+			if err != nil {
+				deps.cmd.PrintErrln(err)
+				return
+			}
+
+			completion, err = deps.generator.Generate(context.Background(), instruction)
+			if err != nil {
+				deps.cmd.PrintErrln(err)
+				return
+			}
+
+			printCommitMessage(deps.cmd, completion)
+		case ask.ActionCommit:
+			if err := git.Commit(completion); err != nil {
+				deps.cmd.PrintErrln(err)
+				return
+			}
+
+			return
+		case ask.ActionCopyToClipboard:
+			err := clipboard.WriteAll(fmt.Sprintf("git commit -m %q", completion))
+			if err != nil {
+				deps.cmd.PrintErrln(err)
+				return
+			}
+
+			return
+		case ask.ActionRegenerate:
+			completion, err := deps.generator.Generate(context.Background(), "Regenerate the commit message with a different output.")
+			if err != nil {
+				deps.cmd.PrintErrln(err)
+				return
+			}
+
+			printCommitMessage(deps.cmd, completion)
+		case ask.ActionExit:
+			return
+		default:
+			panic(fmt.Sprintf("unexpected ask.ActionOption: %#v", action))
+		}
+	}
+}
+
+func printCommitMessage(cmd *cobra.Command, completion string) {
+	cmd.Printf("💬 Commit message:"+
+		"\n==================================================================================================\n%s"+
+		"\n==================================================================================================\n",
+		completion,
+	)
 }

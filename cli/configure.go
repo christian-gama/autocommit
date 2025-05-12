@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/christian-gama/autocommit/ask"
 	"github.com/christian-gama/autocommit/config"
 	"github.com/spf13/cobra"
@@ -10,22 +12,31 @@ var Configure = &cobra.Command{
 	Use:   "configure",
 	Short: "Configure an existing LLM provider or add a new one",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg, _, err := config.LoadOrNew()
+		cfg, err := loadConfig()
 		if err != nil {
-			cmd.PrintErrf("Error loading config: %v\n", err)
+			cmd.PrintErrln(err)
 			return
 		}
 
-		if err := configure(cfg); err != nil {
-			cmd.PrintErrf("Error configuring LLM provider: %v\n", err)
+		if err := configureLLM(cfg); err != nil {
+			cmd.PrintErrln(err)
 			return
 		}
 
-		cmd.Println("LLM provider configured successfully.")
+		cmd.Println("✅ LLM provider configured successfully.")
 	},
 }
 
-func configure(cfg *config.Config) error {
+func loadConfig() (*config.Config, error) {
+	cfg, _, err := config.LoadOrNew()
+	if err != nil {
+		return nil, fmt.Errorf("error loading config: %w", err)
+	}
+
+	return cfg, nil
+}
+
+func configureLLM(cfg *config.Config) error {
 	askConfig := ask.NewConfig()
 
 	provider, err := askConfig.Provider()
