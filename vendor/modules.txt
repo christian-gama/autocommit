@@ -1,4 +1,4 @@
-# github.com/AlecAivazis/survey/v2 v2.3.6
+# github.com/AlecAivazis/survey/v2 v2.3.7
 ## explicit; go 1.13
 github.com/AlecAivazis/survey/v2
 github.com/AlecAivazis/survey/v2/core
@@ -10,9 +10,6 @@ github.com/alecthomas/template/parse
 # github.com/alecthomas/units v0.0.0-20231202071711-9a357b53e9c9
 ## explicit; go 1.15
 github.com/alecthomas/units
-# github.com/atotto/clipboard v0.1.4
-## explicit
-github.com/atotto/clipboard
 # github.com/dave/dst v0.27.3
 ## explicit; go 1.18
 github.com/dave/dst
@@ -21,6 +18,10 @@ github.com/dave/dst/decorator/resolver
 github.com/dave/dst/decorator/resolver/gopackages
 github.com/dave/dst/decorator/resolver/gotypes
 github.com/dave/dst/dstutil
+# github.com/dlclark/regexp2 v1.10.0
+## explicit; go 1.13
+github.com/dlclark/regexp2
+github.com/dlclark/regexp2/syntax
 # github.com/fatih/structtag v1.2.0
 ## explicit; go 1.12
 github.com/fatih/structtag
@@ -31,9 +32,9 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/hasitpbhatt/groq-go v0.0.0-20250222082140-3266472dd038
-## explicit; go 1.20
-github.com/hasitpbhatt/groq-go
+# github.com/google/uuid v1.6.0
+## explicit
+github.com/google/uuid
 # github.com/hpcloud/tail v1.0.0
 ## explicit
 # github.com/inconshreveable/mousetrap v1.1.0
@@ -51,6 +52,9 @@ github.com/mattn/go-isatty
 # github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
 ## explicit
 github.com/mgutz/ansi
+# github.com/pkoukk/tiktoken-go v0.1.6
+## explicit; go 1.19
+github.com/pkoukk/tiktoken-go
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
@@ -64,17 +68,24 @@ github.com/segmentio/golines
 # github.com/sirupsen/logrus v1.9.3
 ## explicit; go 1.13
 github.com/sirupsen/logrus
-# github.com/spf13/cobra v1.8.1
+# github.com/spf13/cobra v1.9.1
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.6
 ## explicit; go 1.12
 github.com/spf13/pflag
+# github.com/tmc/langchaingo v0.1.13
+## explicit; go 1.22.0
+github.com/tmc/langchaingo/callbacks
+github.com/tmc/langchaingo/llms
+github.com/tmc/langchaingo/llms/openai
+github.com/tmc/langchaingo/llms/openai/internal/openaiclient
+github.com/tmc/langchaingo/schema
 # github.com/x-cray/logrus-prefixed-formatter v0.5.2
 ## explicit
 github.com/x-cray/logrus-prefixed-formatter
-# golang.org/x/crypto v0.18.0
-## explicit; go 1.18
+# golang.org/x/crypto v0.29.0
+## explicit; go 1.20
 golang.org/x/crypto/ssh/terminal
 # golang.org/x/mod v0.17.0
 ## explicit; go 1.18
@@ -95,7 +106,14 @@ golang.org/x/sys/windows
 golang.org/x/term
 # golang.org/x/text v0.21.0
 ## explicit; go 1.18
+golang.org/x/text/cases
+golang.org/x/text/internal
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/language
 golang.org/x/text/transform
+golang.org/x/text/unicode/norm
 golang.org/x/text/width
 # golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d
 ## explicit; go 1.19
