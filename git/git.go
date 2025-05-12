@@ -30,22 +30,6 @@ func MinimalDiff() (string, error) {
 	return string(output), nil
 }
 
-func LastCommitMessages(n int) (string, error) {
-	output, err := git(
-		"log",
-		"--pretty=format:%s",
-		"--no-color",
-		"--no-merges",
-		"--no-abbrev-commit",
-		"-n", fmt.Sprint(n),
-	).CombinedOutput()
-	if err != nil {
-		return "", err
-	}
-
-	return string(output), nil
-}
-
 func ListFiles() (string, error) {
 	output, err := git("rev-parse", "--show-toplevel").CombinedOutput()
 	if err != nil {

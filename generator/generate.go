@@ -1,4 +1,4 @@
-package autocommit
+package generator
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/christian-gama/autocommit/git"
-	"github.com/christian-gama/autocommit/systemmsg"
+	"github.com/christian-gama/autocommit/instruction"
 	"github.com/tmc/langchaingo/llms"
 )
 
@@ -16,27 +16,26 @@ type Autocommit struct {
 }
 
 func New(model llms.Model) (*Autocommit, error) {
-
-	systemMsg, err := systemmsg.Load()
+	instruction, err := instruction.Load()
 	if err != nil {
 		return nil, err
 	}
 
-	additionalContextMsg, err := addContextMsg()
+	content, err := getContent()
 	if err != nil {
 		return nil, err
 	}
 
-	msgs := make([]llms.MessageContent, 0, len(systemMsg)+1)
+	msgs := make([]llms.MessageContent, 0, len(instruction)+1)
 
 	msgs = append(msgs, llms.MessageContent{
 		Role:  llms.ChatMessageTypeSystem,
-		Parts: []llms.ContentPart{llms.TextContent{Text: systemMsg}},
+		Parts: []llms.ContentPart{llms.TextContent{Text: instruction}},
 	})
 
 	msgs = append(msgs, llms.MessageContent{
 		Role:  llms.ChatMessageTypeHuman,
-		Parts: []llms.ContentPart{llms.TextContent{Text: additionalContextMsg}},
+		Parts: []llms.ContentPart{llms.TextContent{Text: content}},
 	})
 
 	return &Autocommit{
@@ -76,7 +75,7 @@ func (a *Autocommit) Generate(ctx context.Context, additionalPrompts ...string) 
 	return c1.Content, nil
 }
 
-func addContextMsg() (string, error) {
+func getContent() (string, error) {
 	diff, err := git.MinimalDiff()
 	if err != nil {
 		return "", err
@@ -87,14 +86,8 @@ func addContextMsg() (string, error) {
 		return "", err
 	}
 
-	lastMessages, err := git.LastCommitMessages(8)
-	if err != nil {
-		return "", err
-	}
-
 	prompt := fmt.Sprintf(
-		"Sample of previous git messages so that you can keep new messages style consistent, such as casing, spacing and line breaks:\n%s\nNow here is the current project structure:\n%s\nAnd finally the git diff output:\n%s",
-		lastMessages,
+		"Here is the current project structure:\n%s\n\nAnd finally the git diff output:\n%s\n",
 		files,
 		diff,
 	)

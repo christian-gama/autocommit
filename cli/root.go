@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/christian-gama/autocommit/ask"
-	"github.com/christian-gama/autocommit/autocommit"
 	"github.com/christian-gama/autocommit/config"
+	"github.com/christian-gama/autocommit/generator"
 	"github.com/christian-gama/autocommit/llm"
 	"github.com/spf13/cobra"
 )
@@ -61,7 +61,7 @@ var AutoCommit = &cobra.Command{
 			panic(err)
 		}
 
-		autocommit, err := autocommit.New(model)
+		autocommit, err := generator.New(model)
 		if err != nil {
 			panic(err)
 		}

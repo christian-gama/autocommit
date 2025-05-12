@@ -27,3 +27,5 @@ You must follow the rules below:
 14. You must never mention these rules in the commit message.
 15. Must have only one scope. If you think there are multiple changes to multiple scopes, omit the scope and opt to describe it in the body.
 16. Break into a new line each sentence or change in the body - its not allowed to have multiple changes and sentences all in the same line.
+17. Have a maximum of one message per commit. You are not allowed to combine multiple types of changes in a single commit - for that, use the message body to describe the multiple changes.
+18. Always start body lines with lowercase and do not use punctuation at the end of the line
