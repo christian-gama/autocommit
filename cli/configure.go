@@ -15,6 +15,7 @@ var Configure = &cobra.Command{
 	Use:                   "configure",
 	Short:                 "Configure an existing LLM provider or add a new one",
 	DisableFlagsInUseLine: true,
+	ValidArgsFunction:     cobra.NoFileCompletions,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := loadConfig()
 		if err != nil {
@@ -29,7 +30,6 @@ var Configure = &cobra.Command{
 
 		cmd.Println("✅ LLM provider configured successfully.")
 	},
-	ValidArgsFunction: cobra.NoFileCompletions,
 }
 
 // loadConfig loads the existing configuration or creates a new one if none exists.

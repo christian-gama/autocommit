@@ -12,6 +12,7 @@ var restoreInstruction = &cobra.Command{
 	Use:                   "restore",
 	Short:                 "Restore the instructions file to its default state",
 	DisableFlagsInUseLine: true,
+	ValidArgsFunction:     cobra.NoFileCompletions,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := instruction.Restore(); err != nil {
 			cmd.PrintErrf("Error restoring instructions file: %v\n", err)
@@ -19,7 +20,6 @@ var restoreInstruction = &cobra.Command{
 		}
 		cmd.Println("✅ Instructions file has been restored to default")
 	},
-	Example: "autocommit instructions restore",
 }
 
 // Instruction is a command that opens the instructions file in the default text editor,
@@ -34,5 +34,5 @@ var Instruction = &cobra.Command{
 			return
 		}
 	},
-	Example: "autocommit instructions",
+	ValidArgsFunction: cobra.NoFileCompletions,
 }

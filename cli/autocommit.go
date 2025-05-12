@@ -4,6 +4,9 @@ package cli
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/atotto/clipboard"
 	"github.com/christian-gama/autocommit/ask"
@@ -17,9 +20,13 @@ import (
 // AutoCommit is the main command for the autocommit tool. It uses LLM models to
 // generate commit messages based on the changes made in the current Git repository.
 var AutoCommit = &cobra.Command{
+	Use:                   "autocommit",
 	Short:                 "Autocommit is a CLI tool that uses LLM models to generate commit messages based on the changes made in your current repository.",
 	DisableFlagsInUseLine: true,
+	ValidArgsFunction:     cobra.NoFileCompletions,
 	Run: func(cmd *cobra.Command, args []string) {
+		clearScreen()
+
 		deps, err := newAutoCommitDeps(cmd)
 		if err != nil {
 			cmd.PrintErrln(err)
@@ -28,7 +35,6 @@ var AutoCommit = &cobra.Command{
 
 		runAutoCommit(deps)
 	},
-	Example: "autocommit",
 }
 
 // autoCommitDeps contains all dependencies required by the autocommit command.
@@ -144,4 +150,22 @@ func printCommitMessage(cmd *cobra.Command, completion string) {
 		"\n==================================================================================================\n",
 		completion,
 	)
+}
+
+// clearScreen clears the terminal screen. It uses platform-specific
+// commands based on the runtime environment.
+func clearScreen() {
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	} else {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	}
 }
