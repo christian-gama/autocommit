@@ -3,6 +3,9 @@ package cli
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/atotto/clipboard"
 	"github.com/christian-gama/autocommit/ask"
@@ -48,7 +51,8 @@ var AutoCommit = &cobra.Command{
 			return
 		}
 
-		cmd.Printf("Generated commit message:\n%s", completion)
+		clearScreen()
+		cmd.Printf("💬 Commit message:\n%s", completion)
 
 		askAction := ask.NewAction()
 
@@ -73,7 +77,7 @@ var AutoCommit = &cobra.Command{
 					return
 				}
 
-				cmd.Println("Generated commit message:\n", completion)
+				cmd.Printf("💬 Commit message:\n%s", completion)
 			case ask.ActionCommit:
 				if err := git.Commit(completion); err != nil {
 					cmd.PrintErrf("Error committing changes: %v\n", err)
@@ -104,4 +108,20 @@ var AutoCommit = &cobra.Command{
 			}
 		}
 	},
+}
+
+func clearScreen() {
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	} else {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	}
 }
