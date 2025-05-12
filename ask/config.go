@@ -7,7 +7,13 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-func Provider() (string, error) {
+type Config struct{}
+
+func NewConfig() *Config {
+	return &Config{}
+}
+
+func (c *Config) Provider() (string, error) {
 	var provider string
 	if err := survey.AskOne(
 		&survey.Select{
@@ -25,7 +31,7 @@ func Provider() (string, error) {
 	return provider, nil
 }
 
-func Credential(defaultValue string) (string, error) {
+func (c *Config) Credential(defaultValue string) (string, error) {
 	var credential string
 	if err := survey.AskOne(
 		&survey.Input{
@@ -42,12 +48,12 @@ func Credential(defaultValue string) (string, error) {
 	return credential, nil
 }
 
-func Model(provider string, defaultValue string) (string, error) {
+func (c *Config) Model(provider string, defaultValue string) (string, error) {
 	var model string
 	if err := survey.AskOne(
 		&survey.Select{
 			Message: "Model:",
-			Options: models(provider),
+			Options: c.models(provider),
 			Default: defaultValue,
 			Help:    "The model to use.",
 			VimMode: true,
@@ -61,7 +67,7 @@ func Model(provider string, defaultValue string) (string, error) {
 	return model, nil
 }
 
-func IsDefault(defaultValue bool) (bool, error) {
+func (c *Config) IsDefault(defaultValue bool) (bool, error) {
 	var isDefault bool
 	if err := survey.AskOne(
 		&survey.Confirm{
@@ -77,7 +83,7 @@ func IsDefault(defaultValue bool) (bool, error) {
 	return isDefault, nil
 }
 
-func models(provider string) []string {
+func (c *Config) models(provider string) []string {
 	switch provider {
 	case "openai":
 		return []string{

@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
+	github.com/atotto/clipboard v0.1.4
 	github.com/sashabaranov/go-openai v1.39.1
 	github.com/spf13/cobra v1.9.1
 	github.com/tmc/langchaingo v0.1.13

@@ -510,8 +510,7 @@ func (f *fileDecorator) findIndentedComments(from int, indents [2]int) (frags [2
 				frags[stage] = append(frags[stage], current)
 				continue
 			}
-			switch stage {
-			case 0:
+			if stage == 0 {
 				// Check indent matches. If not, move to second stage or exit if that doesn't match.
 				if current.Indent != indents[0] {
 					if current.Indent == indents[1] {
@@ -520,7 +519,7 @@ func (f *fileDecorator) findIndentedComments(from int, indents [2]int) (frags [2
 						return
 					}
 				}
-			case 1:
+			} else if stage == 1 {
 				if current.Indent != indents[1] {
 					return
 				}
@@ -594,7 +593,7 @@ func (f fileDecorator) debug(w io.Writer) {
 		return s.String()[strings.Index(s.String(), ":")+1:]
 	}
 	nodeType := func(n ast.Node) string {
-		return strings.ReplaceAll(fmt.Sprintf("%T", n), "*ast.", "")
+		return strings.Replace(fmt.Sprintf("%T", n), "*ast.", "", -1)
 	}
 	for _, v := range f.fragments {
 		switch v := v.(type) {

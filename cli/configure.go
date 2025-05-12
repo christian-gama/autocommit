@@ -26,7 +26,9 @@ var Configure = &cobra.Command{
 }
 
 func configure(cfg *config.Config) error {
-	provider, err := ask.Provider()
+	askConfig := ask.NewConfig()
+
+	provider, err := askConfig.Provider()
 	if err != nil {
 		return err
 	}
@@ -43,17 +45,17 @@ func configure(cfg *config.Config) error {
 		defaults.IsDefault = llm.IsDefault
 	}
 
-	model, err := ask.Model(provider, defaults.Model)
+	model, err := askConfig.Model(provider, defaults.Model)
 	if err != nil {
 		return err
 	}
 
-	credential, err := ask.Credential(defaults.Credential)
+	credential, err := askConfig.Credential(defaults.Credential)
 	if err != nil {
 		return err
 	}
 
-	isDefault, err := ask.IsDefault(defaults.IsDefault)
+	isDefault, err := askConfig.IsDefault(defaults.IsDefault)
 	if err != nil {
 		return err
 	}

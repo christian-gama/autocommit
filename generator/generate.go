@@ -73,7 +73,70 @@ func (a *Generator) Generate(ctx context.Context, additionalPrompts ...string) (
 		Parts: []llms.ContentPart{llms.TextContent{Text: c1.Content}},
 	})
 
-	return strings.TrimSpace(c1.Content), nil
+	return strings.TrimSpace(boundText(c1.Content)), nil
+}
+
+const maxLength = 100
+
+func boundText(text string) string {
+	// Split while preserving empty lines
+	lines := strings.Split(text, "\n")
+
+	var result []string
+	var lastLineWasEmpty = false
+
+	for _, line := range lines {
+		// Handle empty lines (newlines)
+		if len(strings.TrimSpace(line)) == 0 {
+			// If this is an empty line but the previous wasn't empty
+			// we add exactly one empty line to preserve a single newline
+			if !lastLineWasEmpty {
+				result = append(result, "")
+				lastLineWasEmpty = true
+			}
+			// Skip additional empty lines to avoid multiple consecutive newlines
+			continue
+		}
+
+		// Reset the empty line tracker
+		lastLineWasEmpty = false
+
+		// Process non-empty line until it's fully bounded
+		currentLine := line
+		for len(currentLine) > 0 {
+			if len(currentLine) <= maxLength {
+				// Line fits within the limit
+				result = append(result, currentLine)
+				break
+			} else {
+				// Need to truncate and wrap
+				// Find the last space before the limit if possible
+				cutPoint := maxLength - 1 // Leave room for the hyphen
+
+				// Try to find a space to break at
+				foundSpace := false
+				for i := cutPoint; i >= 0; i-- {
+					if currentLine[i] == ' ' {
+						cutPoint = i
+						foundSpace = true
+						break
+					}
+				}
+
+				// If no space was found, just cut at the limit
+				if !foundSpace {
+					result = append(result, currentLine[:cutPoint]+"-")
+					currentLine = currentLine[cutPoint:]
+				} else {
+					// Cut at the space
+					result = append(result, currentLine[:cutPoint])
+					currentLine = currentLine[cutPoint+1:] // Skip the space
+				}
+			}
+		}
+	}
+
+	return strings.Join(result, "\n")
 }
 
 func getContent() (string, error) {
