@@ -10,6 +10,19 @@ import (
 )
 
 func main() {
+	defer func() {
+		if err := recover(); err != nil {
+			const redColor = "\033[31m"
+			const resetColor = "\033[0m"
+			fmt.Printf(
+				"%sX Sorry, something went wrong: %s%s\n",
+				redColor,
+				err,
+				resetColor,
+			)
+		}
+	}()
+
 	clearScreen()
 
 	if err := cli.AutoCommit.Execute(); err != nil {

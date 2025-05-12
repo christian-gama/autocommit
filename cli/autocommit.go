@@ -14,6 +14,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// AutoCommit is the main command for the autocommit tool. It uses LLM models to
+// generate commit messages based on the changes made in the current Git repository.
+var AutoCommit = &cobra.Command{
+	Short:                 "Autocommit is a CLI tool that uses LLM models to generate commit messages based on the changes made in your current repository.",
+	DisableFlagsInUseLine: true,
+	Run: func(cmd *cobra.Command, args []string) {
+		deps, err := newAutoCommitDeps(cmd)
+		if err != nil {
+			cmd.PrintErrln(err)
+			return
+		}
+
+		runAutoCommit(deps)
+	},
+	Example: "autocommit",
+}
+
 // autoCommitDeps contains all dependencies required by the autocommit command.
 type autoCommitDeps struct {
 	cfg       *config.Config
@@ -57,22 +74,6 @@ func newAutoCommitDeps(cmd *cobra.Command) (*autoCommitDeps, error) {
 		askAction: ask.NewAction(),
 		cmd:       cmd,
 	}, nil
-}
-
-// AutoCommit is the main command for the autocommit tool. It uses LLM models to
-// generate commit messages based on the changes made in the current Git repository.
-var AutoCommit = &cobra.Command{
-	Use:   "autocommit",
-	Short: "Autocommit is a CLI tool that uses LLM models to generate commit messages based on the changes made in your current repository.",
-	Run: func(cmd *cobra.Command, args []string) {
-		deps, err := newAutoCommitDeps(cmd)
-		if err != nil {
-			cmd.PrintErrln(err)
-			return
-		}
-
-		runAutoCommit(deps)
-	},
 }
 
 func runAutoCommit(deps *autoCommitDeps) {
