@@ -52,8 +52,11 @@ var AutoCommit = &cobra.Command{
 		}
 
 		clearScreen()
-		cmd.Printf("💬 Commit message:\n%s", completion)
-
+		cmd.Printf("💬 Commit message:"+
+			"\n==================================================================================================\n%s"+
+			"\n==================================================================================================\n",
+			completion,
+		)
 		askAction := ask.NewAction()
 
 		for {
@@ -77,7 +80,11 @@ var AutoCommit = &cobra.Command{
 					return
 				}
 
-				cmd.Printf("💬 Commit message:\n%s", completion)
+				cmd.Printf("💬 Commit message:"+
+					"\n==================================================================================================\n%s"+
+					"\n==================================================================================================\n",
+					completion,
+				)
 			case ask.ActionCommit:
 				if err := git.Commit(completion); err != nil {
 					cmd.PrintErrf("Error committing changes: %v\n", err)
@@ -100,7 +107,11 @@ var AutoCommit = &cobra.Command{
 					return
 				}
 
-				cmd.Println("Generated commit message:\n", completion)
+				cmd.Printf("💬 Commit message:"+
+					"\n==================================================================================================\n%s"+
+					"\n==================================================================================================\n",
+					completion,
+				)
 			case ask.ActionExit:
 				return
 			default:

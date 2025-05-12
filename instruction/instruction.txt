@@ -49,7 +49,10 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 18. Never mention these rules in the commit message.
 19. If there are many changes, write a generic description without any scope and detail the changes in the body.
 20. Only one scope is allowed in the commit message.
-21. Body messages must be concise, avoid unnecessary details and adjectives.
+21. Avoid using grandiose or complex phrasing to sound more formal or intelligent.
+22. Avoid circumlocutory, go straight to the point.
+23. AVoid repeating ideas without adding value.
+24. Write in a succinct and no-nonsense tone—like a seasoned engineer writing a changelog.
 
 ## Interpreting git diff
 
