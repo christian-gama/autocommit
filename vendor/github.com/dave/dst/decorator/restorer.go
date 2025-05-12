@@ -139,9 +139,7 @@ func (r *FileRestorer) RestoreFile(file *dst.File) (*ast.File, error) {
 	// restore the file, populate comments and lines
 	f := r.restoreNode(r.file, "", "", "", false).(*ast.File)
 
-	for _, cg := range r.comments {
-		f.Comments = append(f.Comments, cg)
-	}
+	f.Comments = append(f.Comments, r.comments...)
 
 	ff := r.Fset.AddFile(r.Name, r.base, r.fileSize())
 	if !ff.SetLines(r.lines) {
@@ -425,12 +423,13 @@ func (r *FileRestorer) updateImports() error {
 
 			block.Specs = specs
 
-			if count == 0 {
+			switch count {
+			case 0:
 				deleteBlocks[block] = true
-			} else if count == 1 {
+			case 1:
 				block.Lparen = false
 				block.Rparen = false
-			} else {
+			default:
 				block.Lparen = true
 				block.Rparen = true
 			}

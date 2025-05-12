@@ -481,7 +481,7 @@ func (f *fileDecorator) decorateScope(s *ast.Scope) (*dst.Scope, error) {
 func debug(w io.Writer, file dst.Node) {
 	var result string
 	nodeType := func(n dst.Node) string {
-		return strings.Replace(fmt.Sprintf("%T", n), "*dst.", "", -1)
+		return strings.ReplaceAll(fmt.Sprintf("%T", n), "*dst.", "")
 	}
 	dst.Inspect(file, func(n dst.Node) bool {
 		if n == nil {

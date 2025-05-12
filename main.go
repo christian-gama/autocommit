@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/christian-gama/autocommit/cli"
 )
 
 func main() {
 	if err := cli.AutoCommit.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Println("Error executing command:", err)
+		os.Exit(1)
 	}
 }

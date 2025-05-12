@@ -7,17 +7,12 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-func Provider(defaultValue string) (string, error) {
-	if defaultValue == "" {
-		defaultValue = "openai"
-	}
-
+func Provider() (string, error) {
 	var provider string
 	if err := survey.AskOne(
 		&survey.Select{
 			Message: "Provider:",
 			Options: []string{"openai", "anthropic", "google"},
-			Default: defaultValue,
 			Help:    "The provider of the LLM.",
 			VimMode: true,
 		},

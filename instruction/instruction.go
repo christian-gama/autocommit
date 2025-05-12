@@ -4,7 +4,9 @@ import (
 	"embed"
 	"errors"
 	"os"
+	"os/exec"
 	"path"
+	"runtime"
 
 	"github.com/christian-gama/autocommit/config"
 )
@@ -61,6 +63,23 @@ func Create() error {
 	}
 
 	return os.WriteFile(filePath(), content, os.ModePerm)
+}
+
+func Open() error {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", filePath())
+	case "linux", "darwin":
+		cmd = exec.Command("open", filePath())
+	default:
+		return errors.New("unsupported platform")
+	}
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd.Run()
 }
 
 func filePath() string {

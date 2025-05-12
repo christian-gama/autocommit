@@ -16,26 +16,10 @@ const (
 var ErrConfigNotFound = errors.New("config file not found")
 
 type llm struct {
-	provider   string
-	credential string
-	model      string
-	isDefault  bool
-}
-
-func (l *llm) Provider() string {
-	return l.provider
-}
-
-func (l *llm) Credential() string {
-	return l.credential
-}
-
-func (l *llm) Model() string {
-	return l.model
-}
-
-func (l *llm) IsDefault() bool {
-	return l.isDefault
+	Provider   string
+	Credential string
+	Model      string
+	IsDefault  bool
 }
 
 type Config struct {
@@ -47,6 +31,25 @@ func New() (*Config, error) {
 		llms: make(map[string]*llm),
 	}, nil
 
+}
+
+func LoadOrNew() (cfg *Config, isNew bool, err error) {
+	cfg, err = Load()
+	if err != nil {
+		if !errors.Is(err, ErrConfigNotFound) {
+			return nil, false, err
+		}
+	}
+
+	if cfg == nil {
+		cfg, err = New()
+		if err != nil {
+			return nil, false, err
+		}
+		isNew = true
+	}
+
+	return cfg, isNew, nil
 }
 
 func Load() (*Config, error) {
@@ -76,8 +79,8 @@ func (c *Config) SetLLM(provider, model, credential string, isDefault bool) erro
 
 	if isDefault {
 		for _, llm := range c.llms {
-			if llm.isDefault {
-				llm.isDefault = false
+			if llm.IsDefault {
+				llm.IsDefault = false
 				hasDefault = true
 				break
 			}
@@ -89,32 +92,27 @@ func (c *Config) SetLLM(provider, model, credential string, isDefault bool) erro
 	}
 
 	c.llms[provider] = &llm{
-		provider:   provider,
-		credential: credential,
-		model:      model,
-		isDefault:  isDefault,
+		Provider:   provider,
+		Credential: credential,
+		Model:      model,
+		IsDefault:  isDefault,
 	}
 
 	return nil
 }
 
-func (c *Config) LLM(provider string) (*llm, error) {
+func (c *Config) LLM(provider string) (*llm, bool) {
 	llm, ok := c.llms[provider]
-	if !ok {
-		return nil, fmt.Errorf("llm %s not found", provider)
-	}
-
-	return llm, nil
+	return llm, ok
 }
 
-func (c *Config) DefaultLLM() (*llm, error) {
+func (c *Config) DefaultLLM() (*llm, bool) {
 	for _, llm := range c.llms {
-		if llm.isDefault {
-			return llm, nil
+		if llm.IsDefault {
+			return llm, true
 		}
 	}
-
-	return nil, errors.New("no active LLM found")
+	return nil, false
 }
 
 func (c *Config) Marshal() ([]byte, error) {
@@ -132,10 +130,10 @@ func (c *Config) Marshal() ([]byte, error) {
 	for _, llm := range c.llms {
 		configData.LLMS = append(
 			configData.LLMS, &llmData{
-				Provider:   llm.provider,
-				Credential: llm.credential,
-				Model:      llm.model,
-				Active:     llm.isDefault,
+				Provider:   llm.Provider,
+				Credential: llm.Credential,
+				Model:      llm.Model,
+				Active:     llm.IsDefault,
 			},
 		)
 	}
@@ -166,10 +164,10 @@ func (c *Config) Unmarshal(data []byte) error {
 
 	for _, data := range configData.LLMS {
 		c.llms[data.Provider] = &llm{
-			provider:   data.Provider,
-			credential: data.Credential,
-			model:      data.Model,
-			isDefault:  data.Active,
+			Provider:   data.Provider,
+			Credential: data.Credential,
+			Model:      data.Model,
+			IsDefault:  data.Active,
 		}
 	}
 
@@ -180,11 +178,11 @@ func (c *Config) Save() error {
 	var errs []error
 
 	for _, llm := range c.llms {
-		if llm.provider == "" {
+		if llm.Provider == "" {
 			errs = append(errs, errors.New("provider cannot be empty"))
 		}
 
-		if llm.model == "" {
+		if llm.Model == "" {
 			errs = append(errs, errors.New("model cannot be empty"))
 		}
 	}

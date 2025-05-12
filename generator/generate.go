@@ -4,18 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/christian-gama/autocommit/git"
 	"github.com/christian-gama/autocommit/instruction"
 	"github.com/tmc/langchaingo/llms"
 )
 
-type Autocommit struct {
+type Generator struct {
 	model llms.Model
 	msgs  []llms.MessageContent
 }
 
-func New(model llms.Model) (*Autocommit, error) {
+func New(model llms.Model) (*Generator, error) {
 	instruction, err := instruction.Load()
 	if err != nil {
 		return nil, err
@@ -38,13 +39,13 @@ func New(model llms.Model) (*Autocommit, error) {
 		Parts: []llms.ContentPart{llms.TextContent{Text: content}},
 	})
 
-	return &Autocommit{
+	return &Generator{
 		model: model,
 		msgs:  msgs,
 	}, nil
 }
 
-func (a *Autocommit) Generate(ctx context.Context, additionalPrompts ...string) (string, error) {
+func (a *Generator) Generate(ctx context.Context, additionalPrompts ...string) (string, error) {
 	if len(additionalPrompts) > 0 {
 		for _, prompt := range additionalPrompts {
 			msg := llms.MessageContent{
@@ -72,7 +73,7 @@ func (a *Autocommit) Generate(ctx context.Context, additionalPrompts ...string) 
 		Parts: []llms.ContentPart{llms.TextContent{Text: c1.Content}},
 	})
 
-	return c1.Content, nil
+	return strings.TrimSpace(c1.Content), nil
 }
 
 func getContent() (string, error) {
