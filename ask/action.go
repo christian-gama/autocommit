@@ -13,12 +13,12 @@ type ActionOption string
 const (
 	// ActionCommit commits the changes with the generated message.
 	ActionCommit ActionOption = "✅ Commit"
-	// ActionAddInstruction adds a custom instruction to guide message generation.
-	ActionAddInstruction ActionOption = "📝 Add instruction"
-	// ActionRegenerate regenerates a new commit message.
-	ActionRegenerate ActionOption = "🔄 Regenerate"
 	// ActionCopyToClipboard copies the commit command to the clipboard.
 	ActionCopyToClipboard ActionOption = "📋 Copy to clipboard"
+	// ActionRegenerate regenerates a new commit message.
+	ActionRegenerate ActionOption = "🔄 Regenerate"
+	// ActionAddInstruction adds a custom instruction to guide message generation.
+	ActionAddInstruction ActionOption = "📝 Add instruction"
 	// ActionExit exits the application without committing.
 	ActionExit ActionOption = "🚪 Exit"
 )
@@ -39,12 +39,12 @@ func (a *Action) Action() (ActionOption, error) {
 
 	if err := survey.AskOne(
 		&survey.Select{
-			Message: "What do you want to do?",
+			Message: "What now?",
 			Options: []string{
 				string(ActionCommit),
-				string(ActionAddInstruction),
-				string(ActionRegenerate),
 				string(ActionCopyToClipboard),
+				string(ActionRegenerate),
+				string(ActionAddInstruction),
 				string(ActionExit),
 			},
 			Default: string(ActionCommit),

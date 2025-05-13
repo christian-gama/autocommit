@@ -1,4 +1,3 @@
-// Package cli provides the command-line interface for the autocommit tool.
 package cli
 
 import (
@@ -19,7 +18,9 @@ import (
 // generate commit messages based on the changes made in the current Git repository.
 var AutoCommitCmd = &cobra.Command{
 	Use:                   "autocommit",
-	Short:                 "Autocommit is a CLI tool that uses LLM models to generate commit messages based on the changes made in your current repository.",
+	Short:                 "Generate AI-powered git commit messages interactively",
+	Long:                  description,
+	Example:               example,
 	DisableFlagsInUseLine: true,
 	ValidArgsFunction:     cobra.NoFileCompletions,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
