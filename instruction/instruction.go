@@ -43,6 +43,19 @@ func Load() (string, error) {
 	return string(content), nil
 }
 
+func HasInstruction() bool {
+	if _, err := os.Stat(filePath()); os.IsNotExist(err) {
+		return false
+	}
+
+	content, err := os.ReadFile(filePath())
+	if err != nil {
+		return false
+	}
+
+	return len(content) > 0
+}
+
 // Restore resets the instruction file back to its default content,
 // removing any customizations.
 func Restore() error {
@@ -84,9 +97,6 @@ func Open() error {
 	default:
 		return errors.New("unsupported platform")
 	}
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 
 	return cmd.Run()
 }

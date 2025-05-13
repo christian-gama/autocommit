@@ -2,52 +2,23 @@
 package cli
 
 import (
-	"fmt"
-
-	"github.com/christian-gama/autocommit/ask"
-	"github.com/christian-gama/autocommit/config"
 	"github.com/spf13/cobra"
 )
 
-// Configure is a command that allows users to configure LLM providers.
+// configureCmd is a command that allows users to configureCmd LLM providers.
 // It guides the user through setting up or modifying provider details.
-var Configure = &cobra.Command{
+var configureCmd = &cobra.Command{
 	Use:                   "configure",
 	Short:                 "Configure an existing LLM provider or add a new one",
 	DisableFlagsInUseLine: true,
 	ValidArgsFunction:     cobra.NoFileCompletions,
-	Run: func(cmd *cobra.Command, args []string) {
-		cfg, err := loadConfig()
-		if err != nil {
-			cmd.PrintErrln(err)
-			return
-		}
-
-		if err := configureLLM(cfg); err != nil {
-			cmd.PrintErrln(err)
-			return
-		}
-
-		cmd.Println("✅ LLM provider configured successfully.")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runConfigure()
 	},
 }
 
-// loadConfig loads the existing configuration or creates a new one if none exists.
-func loadConfig() (*config.Config, error) {
-	cfg, _, err := config.LoadOrNew()
-	if err != nil {
-		return nil, fmt.Errorf("error loading config: %w", err)
-	}
-
-	return cfg, nil
-}
-
-// configureLLM guides the user through the LLM provider configuration process,
-// prompting for provider, credential, model, and default status.
-func configureLLM(cfg *config.Config) error {
-	askConfig := ask.NewConfig()
-
-	provider, err := askConfig.Provider()
+func runConfigure() error {
+	provider, err := _askConfig.Provider()
 	if err != nil {
 		return err
 	}
@@ -58,25 +29,25 @@ func configureLLM(cfg *config.Config) error {
 		IsDefault  bool
 	}
 
-	if llm, ok := cfg.LLM(provider); ok {
+	if llm, ok := _config.LLM(provider); ok {
 		defaults.Model = llm.Model
 		defaults.Credential = llm.Credential
 		defaults.IsDefault = llm.IsDefault
 	}
 
-	credential, err := askConfig.Credential(defaults.Credential)
+	credential, err := _askConfig.Credential(defaults.Credential)
 	if err != nil {
 		return err
 	}
 
-	model, err := askConfig.Model(provider, defaults.Model)
+	model, err := _askConfig.Model(provider, defaults.Model)
 	if err != nil {
 		return err
 	}
 
 	var isDefault bool
-	if cfg.HasAnyLLM() {
-		isDefault, err = askConfig.IsDefault(defaults.IsDefault)
+	if _config.HasAnyLLM() {
+		isDefault, err = _askConfig.IsDefault(defaults.IsDefault)
 		if err != nil {
 			return err
 		}
@@ -86,11 +57,11 @@ func configureLLM(cfg *config.Config) error {
 		isDefault = true
 	}
 
-	if err := cfg.SetLLM(provider, model, credential, isDefault); err != nil {
+	if err := _config.SetLLM(provider, model, credential, isDefault); err != nil {
 		return err
 	}
 
-	if err := cfg.Save(); err != nil {
+	if err := _config.Save(); err != nil {
 		return err
 	}
 

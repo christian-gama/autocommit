@@ -62,7 +62,7 @@ func (a *Generator) Generate(ctx context.Context, additionalPrompts ...string) (
 		}
 	}
 
-	resp, err := a.model.GenerateContent(ctx, a.msgs)
+	resp, err := a.model.GenerateContent(ctx, a.msgs, llms.WithTemperature(1))
 	if err != nil {
 		return "", err
 	}

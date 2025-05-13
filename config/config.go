@@ -37,25 +37,34 @@ func New() (*Config, error) {
 
 }
 
+func HasConfig() bool {
+	_, err := os.Stat(Dir())
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	_, err = os.Stat(path.Join(Dir(), _configFileName))
+	return !os.IsNotExist(err)
+}
+
 // LoadOrNew attempts to load an existing configuration file, or creates a new one
 // if no configuration exists. Returns the config, whether it's new, and any error.
-func LoadOrNew() (cfg *Config, isNew bool, err error) {
+func LoadOrNew() (cfg *Config, err error) {
 	cfg, err = Load()
 	if err != nil {
 		if !errors.Is(err, ErrConfigNotFound) {
-			return nil, false, err
+			return nil, err
 		}
 	}
 
 	if cfg == nil {
 		cfg, err = New()
 		if err != nil {
-			return nil, false, err
+			return nil, err
 		}
-		isNew = true
 	}
 
-	return cfg, isNew, nil
+	return cfg, nil
 }
 
 // Load reads the configuration file from disk and returns a populated Config.
@@ -103,8 +112,16 @@ func (c *Config) SetLLM(provider, model, credential string, isDefault bool) erro
 		}
 	}
 
-	if !isDefault && !hasDefault {
+	if !isDefault && !hasDefault && len(c.llms) == 0 {
 		return fmt.Errorf("must have at least one default LLM")
+	}
+
+	// If len is greater than 0 and we have no default, we make the first one default
+	if !isDefault && !hasDefault && len(c.llms) > 0 {
+		for _, llm := range c.llms {
+			llm.IsDefault = true
+			break
+		}
 	}
 
 	c.llms[provider] = &llmSettings{
@@ -133,6 +150,15 @@ func (c *Config) DefaultLLM() (*llmSettings, bool) {
 		}
 	}
 	return nil, false
+}
+
+// CurrentModel returns the model of the default LLM provider.
+func (c *Config) CurrentModel() (string, bool) {
+	llm, ok := c.DefaultLLM()
+	if !ok {
+		return "", false
+	}
+	return llm.Model, true
 }
 
 func (c *Config) Marshal() ([]byte, error) {
