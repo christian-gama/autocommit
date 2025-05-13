@@ -1,3 +1,4 @@
+<instructions>
 # Commit Message Guidelines
 
 Following a consistent convention for Git commit messages improves collaboration, automates processes (like generating changelogs), and makes project history easier to understand. This guide outlines the Conventional Commits specification, incorporating best practices.
@@ -49,9 +50,13 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 20. Only one scope is allowed in the commit message.
 21. Avoid using grandiose or complex phrasing to sound more formal or intelligent.
 22. Avoid circumlocutory, go straight to the point.
-23. AVoid repeating ideas without adding value.
+23. Avoid repeating ideas without adding value.
 24. Write in a succinct and no-nonsense tone—like a seasoned engineer writing a changelog.
 25. Never use markdown in the commit message.
+26. Avoid long body paragraphs, be concise and to the point.
+27. When mentioning a file or code symbols, use backticks to highlight them.
+28. Avoid nitpicking or trivial changes in the commit message, such as renaming variables, adding comments, or changing whitespace, unless it's the only change in the commit.
+29. Whenever a similar but repetitive change is made, avoid repeating the similar changes - be more generic and concise.
 
 ## Interpreting git diff
 
@@ -66,41 +71,56 @@ When writing a commit message based on git diff output:
 
 1. Simple Fix:
 
+<example>
 fix: correct typo in user welcome email
+</example>
 
 2. New Feature with Scope:
 
+<example>
 feat(auth): add support for multi-factor authentication
+</example>
 
 3. Refactor with Body:
 
+<example>
 refactor(api): simplify user fetching logic
 
 Remove redundant database calls by implementing caching.
 Improve overall response time for user endpoints.
+</example>
 
 4. Documentation Change:
 
+<example>
 docs: update README with setup instructions
+</example>
 
 5. Breaking Change with footer and no body:
 
+<example>
 feat(config)!: remove deprecated `apiKey` setting
 
 BREAKING CHANGE: the `apiKey` configuration option is removed
 users must now use the `authToken` option instead
 refer to the migration guide for details.
+</example>
 
 6. Chore:
 
+<example>
 chore: update dependencies to latest versions
+</example>
 
 7. Style Change:
 
+<example>
 style: apply linter rules across codebase
+</example>
 
 8. Fix Spanning Multiple Areas (No Scope):
 
+<example>
 fix: resolve issues with user session persistence
 
 Correct session handling in both the api and ui components.
@@ -108,9 +128,11 @@ Correct session handling in both the api and ui components.
 Ensure user remains logged in across browser restarts.
 
 Use secure cookies for session storage.
+</example>
 
 9. Breaking changes with body and footer:
 
+<example>
 fix!: prevent racing of requests
 
 Introduce a request id and a reference to latest request.
@@ -120,9 +142,11 @@ Dismiss incoming responses other than from latest request.
 Add mutex to prevent multiple requests from being sent.
 
 BREAKING CHANGE: this change alters the request handling logic.
+</example>
 
 10. A complex change with multiple areas:
 
+<example>
 feat(cli): add interactive commit message actions with clipboard support
 
 Add a new `ask` package to handle user actions such as commit, regenerate,
@@ -135,5 +159,22 @@ Refactor ask package to use Config struct for configuration prompts.
 
 Allows regeneration, adding instructions, committing, or copying the commit message
 to clipboard.
+</example>
+
+11. Another complex change with multiple areas:
+<example>
+refactor: modularize CLI command handling and improve config and instruction management
+
+Implement PreRunE and RunE hooks for autocommit command; Extract handler
+functions for existing operations.
+
+Move initialization of global dependencies to cli package init.
+
+Simplify `config.LoadOrNew` signature; Add `HasConfig` and CurrentModel helpers;
+Enhance `SetLLM` logic to enforce or assign default providers.
+
+Add temperature parameter to `generator.GenerateContent` to control LLM sampling.
+</example>
 
 Rembember that you must have only one `<type>[optional scope][!]: <description>` in your output, but you can have as many [optional body] and [optional footer(s)] as you want.
+</instructions>
