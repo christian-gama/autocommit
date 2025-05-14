@@ -22,7 +22,11 @@ func (g GoogleAI) New(config *config.Config) (llms.Model, error) {
 		return nil, fmt.Errorf("set API_KEY: %w", err)
 	}
 
-	return googleai.New(context.Background(), googleai.WithAPIKey(llm.Credential), googleai.WithDefaultModel(llm.Model))
+	return googleai.New(
+		context.Background(),
+		googleai.WithAPIKey(llm.Credential),
+		googleai.WithDefaultModel(llm.Model),
+	)
 }
 
 func (g GoogleAI) Name() string {

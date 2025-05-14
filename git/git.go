@@ -29,7 +29,9 @@ func MinimalDiff() (string, error) {
 	}
 
 	if len(output) == 0 {
-		return "", errors.New("there are no changes to commit - did you forget to stage your changes?")
+		return "", errors.New(
+			"there are no changes to commit - did you forget to stage your changes?",
+		)
 	}
 
 	return string(output), nil

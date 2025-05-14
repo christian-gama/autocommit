@@ -97,7 +97,9 @@ func handleInteraction(completion string) (err error) {
 
 		case ask.ActionRegenerate:
 			{
-				completion, err = handleGeneration("Regenerate the commit message with a different output.")
+				completion, err = handleGeneration(
+					"Regenerate the commit message with a different output.",
+				)
 				if err != nil {
 					return err
 				}
