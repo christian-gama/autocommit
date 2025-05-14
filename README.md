@@ -111,6 +111,8 @@ You can change provider settings anytime by running `autocommit configure` again
    `git add .`
 2. Run AutoCommit:
    `autocommit`
+   OR (optional)
+   `autocommit --instruction "Add additional instructions to improve the commit message here"`
 3. Follow the prompts to:
    - Commit with the generated message
    - Copy the message to clipboard
