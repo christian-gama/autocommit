@@ -1,6 +1,6 @@
 # AutoCommit
 
-AutoCommit generates git commit messages from your staged changes using AI. It currently supports OpenAI, Ollama 2, Mistral, and Google AI models.
+AutoCommit generates git commit messages from your staged changes using AI. It currently supports OpenAI, Ollama 2, Mistral, Groq and Google AI models.
 
 ## Features
 
@@ -93,6 +93,15 @@ Run `autocommit configure` to choose a provider. Set your credential (such as AP
     - gemini-2.5-pro-exp-03-25
     - gemini-2.5-pro-preview-05-06
     - gemini-2.5-flash-preview-04-17
+
+- **Groq**
+  - Requires a Groq API key from [Groq](https://console.groq.com/keys)
+  - Supported models:
+    - gemma2-9b-it
+    - llama-3.3-70b-versatile
+    - llama-3.1-8b-instant
+    - llama3-70b-8192
+    - llama3-8b-8192
 
 You can change provider settings anytime by running `autocommit configure` again.
 
