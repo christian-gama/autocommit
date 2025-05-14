@@ -10,12 +10,10 @@ import (
 	openai "github.com/tmc/langchaingo/llms/openai"
 )
 
-// OpenAI is the identifier for the OpenAI LLM provider.
-const OpenAI = "OpenAI"
+type OpenAI struct{}
 
-// MakeOpenAI creates and configures an OpenAI language model instance.
-func MakeOpenAI(config *config.Config) (llms.Model, error) {
-	llm, ok := config.LLM(OpenAI)
+func (o OpenAI) New(config *config.Config) (llms.Model, error) {
+	llm, ok := config.LLM(o.Name())
 	if !ok {
 		return nil, fmt.Errorf("no OpenAI LLM provider found")
 	}
@@ -27,14 +25,20 @@ func MakeOpenAI(config *config.Config) (llms.Model, error) {
 	return openai.New(openai.WithModel(llm.Model))
 }
 
-var OpenAIModels = []string{
-	goopenai.GPT4o,
-	goopenai.GPT4Dot1,
-	goopenai.GPT4Dot1Mini,
-	goopenai.GPT4Dot1Nano,
-	goopenai.O1,
-	goopenai.O1Mini,
-	goopenai.O3,
-	goopenai.O3Mini,
-	goopenai.O4Mini,
+func (o OpenAI) Name() string {
+	return "OpenAI"
+}
+
+func (o OpenAI) Models() []string {
+	return []string{
+		goopenai.GPT4o,
+		goopenai.GPT4Dot1,
+		goopenai.GPT4Dot1Mini,
+		goopenai.GPT4Dot1Nano,
+		goopenai.O1,
+		goopenai.O1Mini,
+		goopenai.O3,
+		goopenai.O3Mini,
+		goopenai.O4Mini,
+	}
 }

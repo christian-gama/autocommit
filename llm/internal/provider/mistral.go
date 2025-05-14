@@ -9,12 +9,10 @@ import (
 	"github.com/tmc/langchaingo/llms/mistral"
 )
 
-// Mistral is the identifier for the Mistral AI LLM provider.
-const Mistral = "Mistral"
+type Mistral struct{}
 
-// MakeMistral creates and configures a Mistral language model instance.
-func MakeMistral(config *config.Config) (llms.Model, error) {
-	llm, ok := config.LLM(Mistral)
+func (m Mistral) New(config *config.Config) (llms.Model, error) {
+	llm, ok := config.LLM(m.Name())
 	if !ok {
 		return nil, fmt.Errorf("no Mistral LLM provider found")
 	}
@@ -25,9 +23,14 @@ func MakeMistral(config *config.Config) (llms.Model, error) {
 
 	return mistral.New(mistral.WithModel(llm.Model))
 }
+func (m Mistral) Name() string {
+	return "Mistral"
+}
 
-var MistralModels = []string{
-	"mistral-large-latest",
-	"mistral-medium-latest",
-	"mistral-small-latest",
+func (m Mistral) Models() []string {
+	return []string{
+		"mistral-large-latest",
+		"mistral-medium-latest",
+		"mistral-small-latest",
+	}
 }

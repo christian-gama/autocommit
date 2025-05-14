@@ -10,12 +10,10 @@ import (
 	"github.com/tmc/langchaingo/llms/googleai"
 )
 
-// GoogleAI is the identifier for the Google AI LLM provider.
-const GoogleAI = "Google AI"
+type GoogleAI struct{}
 
-// MakeGoogleAI creates and configures a Google AI language model instance.
-func MakeGoogleAI(config *config.Config) (llms.Model, error) {
-	llm, ok := config.LLM(GoogleAI)
+func (g GoogleAI) New(config *config.Config) (llms.Model, error) {
+	llm, ok := config.LLM(g.Name())
 	if !ok {
 		return nil, fmt.Errorf("no Google AI LLM provider found")
 	}
@@ -27,8 +25,15 @@ func MakeGoogleAI(config *config.Config) (llms.Model, error) {
 	return googleai.New(context.Background(), googleai.WithAPIKey(llm.Credential), googleai.WithDefaultModel(llm.Model))
 }
 
-var GoogleAIModels = []string{
-	"mistral-large-latest",
-	"mistral-medium-latest",
-	"mistral-small-latest",
+func (g GoogleAI) Name() string {
+	return "Google AI"
+}
+
+func (g GoogleAI) Models() []string {
+	return []string{
+		"gemini-2.0-flash",
+		"gemini-2.5-pro-exp-03-25",
+		"gemini-2.5-pro-preview-05-06",
+		"gemini-2.5-flash-preview-04-17",
+	}
 }

@@ -9,12 +9,10 @@ import (
 	openai "github.com/tmc/langchaingo/llms/openai"
 )
 
-// Groq is the identifier for the Groq LLM provider.
-const Groq = "Groq"
+type Groq struct{}
 
-// MakeGroq creates and configures an Groq language model instance.
-func MakeGroq(config *config.Config) (llms.Model, error) {
-	llm, ok := config.LLM(Groq)
+func (g Groq) New(config *config.Config) (llms.Model, error) {
+	llm, ok := config.LLM(g.Name())
 	if !ok {
 		return nil, fmt.Errorf("no Groq LLM provider found")
 	}
@@ -30,10 +28,16 @@ func MakeGroq(config *config.Config) (llms.Model, error) {
 	)
 }
 
-var GroqModels = []string{
-	"gemma2-9b-it",
-	"llama-3.3-70b-versatile",
-	"llama-3.1-8b-instant",
-	"llama3-70b-8192",
-	"llama3-8b-8192",
+func (Groq) Name() string {
+	return "Groq"
+}
+
+func (Groq) Models() []string {
+	return []string{
+		"gemma2-9b-it",
+		"llama-3.3-70b-versatile",
+		"llama-3.1-8b-instant",
+		"llama3-70b-8192",
+		"llama3-8b-8192",
+	}
 }

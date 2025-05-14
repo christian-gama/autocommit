@@ -9,19 +9,38 @@ import (
 	"github.com/tmc/langchaingo/llms"
 )
 
-type providerRegistry map[string]struct {
-	factory provider.Func
-	models  []string
+// Providers is a registry of available LLM providers.
+var Providers = newProviderRegistry([]provider.Provider{
+	provider.OpenAI{},
+	provider.GoogleAI{},
+	provider.Mistral{},
+	provider.Groq{},
+	provider.Ollama2{},
+})
+
+type providerRegistry map[string]provider.Provider
+
+func newProviderRegistry(providers []provider.Provider) providerRegistry {
+	m := make(providerRegistry, len(providers))
+	for _, provider := range providers {
+		if _, exists := m[provider.Name()]; exists {
+			panic(fmt.Sprintf("duplicate provider name: %s", provider.Name()))
+		}
+
+		m[provider.Name()] = provider
+	}
+
+	return m
 }
 
 // Models returns a list of available models for the specified provider.
-func (r providerRegistry) Models(provider string) []string {
-	models, ok := r[provider]
+func (r providerRegistry) Models(providerName string) []string {
+	p, ok := r[providerName]
 	if !ok {
 		return nil
 	}
 
-	return models.models
+	return p.Models()
 }
 
 // List returns a list of all available LLM providers.
@@ -34,44 +53,16 @@ func (r providerRegistry) List() []string {
 }
 
 // New creates a new LLM model based on the default provider specified in the
-func (r providerRegistry) New(config *config.Config) (llms.Model, error) {
-	defaultLLM, ok := config.DefaultLLM()
+func (r providerRegistry) New(cfg *config.Config) (llms.Model, error) {
+	defaultLLM, ok := cfg.DefaultLLM()
 	if !ok {
 		return nil, fmt.Errorf("no default LLM provider found")
 	}
 
-	providerConfig, ok := r[defaultLLM.Provider]
+	p, ok := r[defaultLLM.Provider]
 	if !ok {
 		return nil, fmt.Errorf("unsupported provider: %s", defaultLLM.Provider)
 	}
 
-	return providerConfig.factory(config)
-}
-
-// Providers is a registry of available LLM providers and their corresponding
-var Providers = providerRegistry{
-	provider.OpenAI: {
-		factory: provider.MakeOpenAI,
-		models:  provider.OpenAIModels,
-	},
-
-	provider.GoogleAI: {
-		factory: provider.MakeGoogleAI,
-		models:  provider.GoogleAIModels,
-	},
-
-	provider.Ollama2: {
-		factory: provider.MakeOllama2,
-		models:  provider.Ollama2Models,
-	},
-
-	provider.Mistral: {
-		factory: provider.MakeMistral,
-		models:  provider.MistralModels,
-	},
-
-	provider.Groq: {
-		factory: provider.MakeGroq,
-		models:  provider.GroqModels,
-	},
+	return p.New(cfg)
 }
