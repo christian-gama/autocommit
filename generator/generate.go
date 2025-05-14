@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/christian-gama/autocommit/git"
-	"github.com/christian-gama/autocommit/instruction"
+	"github.com/christian-gama/autocommit/v2/git"
+	"github.com/christian-gama/autocommit/v2/instruction"
 	"github.com/tmc/langchaingo/llms"
 )
 

@@ -9,7 +9,7 @@ import (
 	"path"
 	"runtime"
 
-	"github.com/christian-gama/autocommit/config"
+	"github.com/christian-gama/autocommit/v2/config"
 )
 
 const _instructionFileName = "instruction.txt"

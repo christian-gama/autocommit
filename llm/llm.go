@@ -4,8 +4,8 @@ package llm
 import (
 	"fmt"
 
-	"github.com/christian-gama/autocommit/config"
-	"github.com/christian-gama/autocommit/llm/internal/provider"
+	"github.com/christian-gama/autocommit/v2/config"
+	"github.com/christian-gama/autocommit/v2/llm/internal/provider"
 	"github.com/tmc/langchaingo/llms"
 )
 

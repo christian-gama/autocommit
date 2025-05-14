@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/christian-gama/autocommit/config"
+	"github.com/christian-gama/autocommit/v2/config"
 	goopenai "github.com/sashabaranov/go-openai"
 	"github.com/tmc/langchaingo/llms"
 	openai "github.com/tmc/langchaingo/llms/openai"

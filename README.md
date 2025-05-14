@@ -16,7 +16,7 @@ AutoCommit generates git commit messages from your staged changes using AI. It c
 Ensure you have go installed and run:
 
 ```sh
-go install github.com/christian-gama/autocommit
+go install github.com/christian-gama/autocommit/v2@latest
 ```
 
 ### Manual

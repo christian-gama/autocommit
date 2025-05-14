@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/christian-gama/autocommit/config"
+	"github.com/christian-gama/autocommit/v2/config"
 	"github.com/tmc/langchaingo/llms"
 )
 

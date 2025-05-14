@@ -1,4 +1,4 @@
-module github.com/christian-gama/autocommit
+module github.com/christian-gama/autocommit/v2
 
 go 1.24.2
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/christian-gama/autocommit/cli"
+	"github.com/christian-gama/autocommit/v2/cli"
 )
 
 func main() {

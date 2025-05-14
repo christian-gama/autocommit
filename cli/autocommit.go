@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	"github.com/atotto/clipboard"
-	"github.com/christian-gama/autocommit/ask"
-	"github.com/christian-gama/autocommit/config"
-	"github.com/christian-gama/autocommit/generator"
-	"github.com/christian-gama/autocommit/git"
-	"github.com/christian-gama/autocommit/instruction"
-	"github.com/christian-gama/autocommit/llm"
+	"github.com/christian-gama/autocommit/v2/ask"
+	"github.com/christian-gama/autocommit/v2/config"
+	"github.com/christian-gama/autocommit/v2/generator"
+	"github.com/christian-gama/autocommit/v2/git"
+	"github.com/christian-gama/autocommit/v2/instruction"
+	"github.com/christian-gama/autocommit/v2/llm"
 	"github.com/spf13/cobra"
 )
 

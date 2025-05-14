@@ -2,7 +2,7 @@
 package cli
 
 import (
-	"github.com/christian-gama/autocommit/instruction"
+	"github.com/christian-gama/autocommit/v2/instruction"
 	"github.com/spf13/cobra"
 )
 

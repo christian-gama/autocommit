@@ -3,7 +3,7 @@ package ask
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/christian-gama/autocommit/llm"
+	"github.com/christian-gama/autocommit/v2/llm"
 )
 
 // Config provides methods for prompting user configuration choices.

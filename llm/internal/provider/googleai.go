@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/christian-gama/autocommit/config"
+	"github.com/christian-gama/autocommit/v2/config"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/googleai"
 )
