@@ -59,6 +59,14 @@ var AutoCommitCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if instructionFlag != "" {
+			completion, err := handleGeneration(instructionFlag)
+			if err != nil {
+				return err
+			}
+			return handleInteraction(completion)
+		}
+
 		completion, err := handleGeneration()
 		if err != nil {
 			return err
