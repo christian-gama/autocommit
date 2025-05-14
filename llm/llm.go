@@ -69,4 +69,9 @@ var Providers = providerRegistry{
 		factory: provider.MakeMistral,
 		models:  provider.MistralModels,
 	},
+
+	provider.Groq: {
+		factory: provider.MakeGroq,
+		models:  provider.GroqModels,
+	},
 }
