@@ -43,7 +43,7 @@ var AutoCommitCmd = &cobra.Command{
 
 		fmt.Printf("🤖 Using model: %s\n", currentModel)
 
-		model, err := llm.New(_config)
+		model, err := llm.Providers.New(_config)
 		if err != nil {
 			return fmt.Errorf("error creating LLM model: %w", err)
 		}

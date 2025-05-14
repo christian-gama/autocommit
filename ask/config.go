@@ -20,7 +20,7 @@ func (c *Config) Provider() (string, error) {
 	if err := survey.AskOne(
 		&survey.Select{
 			Message: "Provider:",
-			Options: []string{llm.OpenAI, llm.Ollama2, llm.Mistral, llm.GoogleAI},
+			Options: llm.Providers.List(),
 			Help:    "The provider of the LLM.",
 			VimMode: true,
 		},
@@ -65,7 +65,7 @@ func (c *Config) Model(provider string, defaultValue string) (string, error) {
 	if err := survey.AskOne(
 		&survey.Select{
 			Message: "Model:",
-			Options: llm.Models(provider),
+			Options: llm.Providers.Models(provider),
 			Default: defaultModel,
 			Help:    "The model to use.",
 			VimMode: true,
