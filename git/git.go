@@ -4,6 +4,7 @@ package git
 import (
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
@@ -13,7 +14,11 @@ import (
 // Commit creates a Git commit with the provided message.
 // It uses the staged changes in the Git repository.
 func Commit(message string) error {
-	if err := git("commit", "-m", message).Run(); err != nil {
+	cmd := git("commit", "-m", message)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	if err := cmd.Run(); err != nil {
 		return err
 	}
 
