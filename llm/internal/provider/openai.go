@@ -31,10 +31,13 @@ func (o OpenAI) Name() string {
 
 func (o OpenAI) Models() []string {
 	return []string{
-		goopenai.GPT4o,
 		goopenai.GPT4Dot1,
 		goopenai.GPT4Dot1Mini,
 		goopenai.GPT4Dot1Nano,
+		goopenai.GPT4o,
+		goopenai.GPT5,
+		goopenai.GPT5Mini,
+		goopenai.GPT5Nano,
 		goopenai.O1,
 		goopenai.O1Mini,
 		goopenai.O3,

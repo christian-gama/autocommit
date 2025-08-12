@@ -169,10 +169,11 @@ github.com/pkoukk/tiktoken-go
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/sashabaranov/go-openai v1.39.1
+# github.com/sashabaranov/go-openai v1.41.1
 ## explicit; go 1.18
 github.com/sashabaranov/go-openai
 github.com/sashabaranov/go-openai/internal
+github.com/sashabaranov/go-openai/jsonschema
 # github.com/segmentio/golines v0.12.2
 ## explicit; go 1.21
 github.com/segmentio/golines
