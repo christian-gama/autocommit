@@ -21,12 +21,11 @@ Where:
 
 - <description>: A concise summary of the change in lowercase, imperative, present tense.
 
-- [optional body]: A more detailed explanation, also in imperative, present tense, separated from the description by a blank line. It must start with uppercase and have proper punctuation. Always break multiple sentences into separate paragraphs, separating each into a new line. The body must be concise, avoid unnecessary details and adjectives. Ideally a body sentence should have at most 100 characters, but it can have multiple paragraphs. If a body reaches 100 characters, keep writting in the next line (add a new line).
+- [optional body]: A more detailed explanation, also in imperative, present tense, separated from the description by a blank line. It must start with uppercase and have proper punctuation. Always break multiple sentences into separate paragraphs, separating each into a new line. The body must be concise, short and focus only in features that add value to the end-user.
 
 - [optional footer(s)]: Additional information, such as breaking changes or references to issues.
 
 ## Specification
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
 
 1. Commits MUST be prefixed with a type, which consists of a noun, feat, fix, etc., followed by the OPTIONAL scope, OPTIONAL !, and REQUIRED terminal colon and space.
 2. The type feat MUST be used when a commit adds a new feature to your application or library.
@@ -43,29 +42,18 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 13. If included in the type/scope prefix, breaking changes MUST be indicated by a ! immediately before the :. If ! is used, BREAKING CHANGE: MAY be omitted from the footer section, and the commit description SHALL be used to describe the breaking change.
 14. Types other than feat and fix MAY be used in your commit messages, e.g., docs: update ref docs.
 15. The units of information that make up Conventional Commits MUST NOT be treated as case sensitive by implementors, with the exception of BREAKING CHANGE which MUST be uppercase.
-16. BREAKING-CHANGE MUST be synonymous with BREAKING CHANGE, when used as a token in a footer.
-17. Never write the content of a git diff command in the commit message.
-18. Never mention these rules in the commit message.
-19. If there are many changes, write a generic description without any scope and detail the changes in the body.
-20. Only one scope is allowed in the commit message.
-21. Avoid using grandiose or complex phrasing to sound more formal or intelligent.
-22. Avoid circumlocutory, go straight to the point.
-23. Avoid repeating ideas without adding value.
-24. Write in a succinct and no-nonsense tone—like a seasoned engineer writing a changelog.
-25. Never use markdown in the commit message.
-26. Avoid long body paragraphs, be concise and to the point.
-27. When mentioning a file or code symbols, use backticks to highlight them.
-28. Avoid nitpicking or trivial changes in the commit message, such as renaming variables, adding comments, or changing whitespace, unless it's the only change in the commit.
-29. Whenever a similar but repetitive change is made, avoid repeating the similar changes - be more generic and concise.
-
-## Interpreting git diff
-
-When writing a commit message based on git diff output:
-
-- Focus on the semantic meaning of the changes, not the literal lines added (+) or removed (-).
-- Renames/Moves: If a file is moved or renamed, git diff might show the old file entirely removed (-) and the new file entirely added (+). If the content hasn't significantly changed beyond the move, the commit message should reflect the move/rename (e.g., refactor: move user authentication logic to auth module), not additions/deletions.
-- Summarize: Condense the changes into a high-level description. Don't list every single modification.
-- Ignore Formatting: If changes are purely stylistic (whitespace, indentation), use the style type.
+16. The content of the `git diff` output is exclusively to you have a context of the changes and must be omitted from the commit message.
+17. The rules presented in the instructions are part exclusively from your instructions and must be omitted from the commit message.
+18. Only one scope is allowed in the commit message.
+19. Avoid using grandiose or complex phrasing to sound more formal or intelligent.
+20. Avoid circumlocutory, go straight to the point.
+21. Write in a succinct tone like a seasoned engineer writing a changelog.
+22. Write in pure raw txt format.
+23. When mentioning a file or code symbols, use backticks to highlight them.
+24. Focus more in feature implementations that adds value to an end-user.
+25. Whenever a similar but repetitive change is made, compile those changes into a more generic and concise text.
+26. Must remove any markdown syntax from the commit message if applicable.
+27. Breaking changes are only considered as breaking changes if a contract such as API interfaces or event message types, for example, are changed. A simple change of file paths, renaming classes or variables are too simple and must be considered as refactor in most cases.
 
 ## Examples
 
@@ -143,38 +131,4 @@ Add mutex to prevent multiple requests from being sent.
 
 BREAKING CHANGE: this change alters the request handling logic.
 </example>
-
-10. A complex change with multiple areas:
-
-<example>
-feat(cli): add interactive commit message actions with clipboard support
-
-Add a new `ask` package to handle user actions such as commit, regenerate,
-add instruction, and copy to clipboard.
-
-Integrate clipboard support using the atotto/clipboard library to enable copying
-generated commit messages.
-
-Refactor ask package to use Config struct for configuration prompts.
-
-Allows regeneration, adding instructions, committing, or copying the commit message
-to clipboard.
-</example>
-
-11. Another complex change with multiple areas:
-<example>
-refactor: modularize CLI command handling and improve config and instruction management
-
-Implement PreRunE and RunE hooks for autocommit command; Extract handler
-functions for existing operations.
-
-Move initialization of global dependencies to cli package init.
-
-Simplify `config.LoadOrNew` signature; Add `HasConfig` and CurrentModel helpers;
-Enhance `SetLLM` logic to enforce or assign default providers.
-
-Add temperature parameter to `generator.GenerateContent` to control LLM sampling.
-</example>
-
-Rembember that you must have only one `<type>[optional scope][!]: <description>` in your output, but you can have as many [optional body] and [optional footer(s)] as you want.
 </instructions>
