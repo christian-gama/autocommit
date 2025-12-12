@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/christian-gama/autocommit/v2/config"
-	goopenai "github.com/sashabaranov/go-openai"
 	"github.com/tmc/langchaingo/llms"
 	openai "github.com/tmc/langchaingo/llms/openai"
 )
@@ -31,17 +30,9 @@ func (o OpenAI) Name() string {
 
 func (o OpenAI) Models() []string {
 	return []string{
-		goopenai.GPT4Dot1,
-		goopenai.GPT4Dot1Mini,
-		goopenai.GPT4Dot1Nano,
-		goopenai.GPT4o,
-		goopenai.GPT5,
-		goopenai.GPT5Mini,
-		goopenai.GPT5Nano,
-		goopenai.O1,
-		goopenai.O1Mini,
-		goopenai.O3,
-		goopenai.O3Mini,
-		goopenai.O4Mini,
+		"gpt-5",
+		"gpt-5-mini",
+		"gpt-5-nano",
+		"gpt-5.2",
 	}
 }

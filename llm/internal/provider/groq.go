@@ -34,10 +34,8 @@ func (Groq) Name() string {
 
 func (Groq) Models() []string {
 	return []string{
-		"gemma2-9b-it",
+		"qwen/qwen3-32b",
 		"llama-3.3-70b-versatile",
 		"llama-3.1-8b-instant",
-		"llama3-70b-8192",
-		"llama3-8b-8192",
 	}
 }
